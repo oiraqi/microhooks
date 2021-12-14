@@ -5,7 +5,7 @@ public abstract class EventProducer<T, U> {
     public void publish(T key, U payload, String label, String[] streams) {        
         Event<T, U> event = new Event<>(key, payload, label);
         for (int i = 0; i < streams.length; i++) {
-            publish(key, event, streams[i]);
+            publish(key, event, "${appName}#" + streams[i]);
         }
     }
 
