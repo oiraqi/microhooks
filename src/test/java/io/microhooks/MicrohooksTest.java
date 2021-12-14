@@ -3,29 +3,13 @@
  */
 package io.microhooks;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-//import org.junit.Test;
+import org.junit.Test;
 //import static org.junit.Assert.*;
 
-@SpringBootApplication
-@RestController
 public class MicrohooksTest {
-    /*@Test public void testSomeLibraryMethod() {
+    @Test public void testSomeLibraryMethod() {
         //Library classUnderTest = new Library();
         //assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
-    }*/
-
-    public static void main(String[] args) {
-        SpringApplication.run(MicrohooksTest.class, args);
-    }
-
-    @GetMapping("/hello")
-    public String sayHello() {
-        return "Hello!";
     }
     
 }
