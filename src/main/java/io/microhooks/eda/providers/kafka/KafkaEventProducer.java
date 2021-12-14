@@ -11,7 +11,7 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
     private KafkaProducer<T, Event<T, U>> producer;
 
-    private void init() {
+    public KafkaEventProducer() {
         Properties props = new Properties();
         props.put("bootstrap.servers", BOOTSTRAP_SERVERS);
         props.put("acks", "all");
@@ -22,11 +22,6 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
     @Override
     protected void publish(T key, Event<T, U> event, String stream) {
-        synchronized (producer) {
-            if (producer == null) {
-                init();
-            }
-        }
         producer.send(new ProducerRecord<>(stream, key, event));
     }
     
