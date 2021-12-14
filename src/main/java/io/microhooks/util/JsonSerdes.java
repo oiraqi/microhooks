@@ -4,6 +4,7 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonSerdes {
+    //Thread-safe, as long as we don't call setConfig and setDateFormat
     final ObjectMapper mapper = new ObjectMapper();
     private static JsonSerdes singleton = null;
 
