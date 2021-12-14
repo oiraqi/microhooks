@@ -16,7 +16,7 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
         Properties props = new Properties();
         props.put("bootstrap.servers", BOOTSTRAP_SERVERS);
         props.put("acks", "all");
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.put("key.serializer", "io.microhooks.providers.kafka.GenericKafkaSerializer");
         props.put("value.serializer", "io.microhooks.providers.kafka.GenericKafkaSerializer");
         producer = new KafkaProducer<>(props);
     }
@@ -24,7 +24,7 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
     @Override
     public void publish(T key, Event<T, U> event, String[] streams) {
         for (int i = 0; i < streams.length; i++) {
-            producer.send(new ProducerRecord<T, Event<T, U>>("${appName}#" + streams[i], key, event));
+            producer.send(new ProducerRecord<>("${appName}#" + streams[i], key, event));
         }
     }
     
