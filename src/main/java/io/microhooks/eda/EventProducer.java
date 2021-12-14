@@ -4,7 +4,9 @@ public abstract class EventProducer<T, U> {
 
     public void publish(T key, U payload, String label, String[] streams) {        
         Event<T, U> event = new Event<>(key, payload, label);
-        publish(key, event, streams);
+        for (int i = 0; i < streams.length; i++) {
+            publish(key, event, streams[i]);
+        }
     }
 
     public void publish(U payload, String label, String[] streams) {
@@ -19,6 +21,6 @@ public abstract class EventProducer<T, U> {
         publish(null, payload, null, streams);
     }
 
-    protected abstract void publish(T key, Event<T, U> event, String[] streams);
+    protected abstract void publish(T key, Event<T, U> event, String stream);
 
 }

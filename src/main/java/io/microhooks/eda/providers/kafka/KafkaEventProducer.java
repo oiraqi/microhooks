@@ -22,10 +22,8 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
     }
 
     @Override
-    public void publish(T key, Event<T, U> event, String[] streams) {
-        for (int i = 0; i < streams.length; i++) {
-            producer.send(new ProducerRecord<>("${appName}#" + streams[i], key, event));
-        }
+    public void publish(T key, Event<T, U> event, String stream) {
+        producer.send(new ProducerRecord<>("${appName}#" + stream, key, event));
     }
     
 }
