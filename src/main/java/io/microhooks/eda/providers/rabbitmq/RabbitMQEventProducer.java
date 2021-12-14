@@ -12,7 +12,7 @@ public class RabbitMQEventProducer<T, U> extends EventProducer<T, U> {
     }
 
     @Override
-    public void publish(T key, Event<T, U> event, String stream) {
+    protected void publish(T key, Event<T, U> event, String stream) {
         //To do
     }
     
