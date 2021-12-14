@@ -19,7 +19,7 @@ public class EventProducerConfig {
         if (brokerType.trim().equals("kafka")) {
             return new KafkaEventProducer<>();
         }
-        else if (brokerType.trim().equals("rabbitmq")) {
+        if (brokerType.trim().equals("rabbitmq")) {
             return new RabbitMQEventProducer<>();
         }
         throw new BrokerNotSupportedException(brokerType);
