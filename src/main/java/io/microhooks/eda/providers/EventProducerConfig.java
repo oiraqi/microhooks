@@ -13,14 +13,17 @@ public class EventProducerConfig {
 
     @Value("${io.microhooks.providers.broker.type:kafka}")
     private String brokerType;
+
+    @Value("${io.microhooks.providers.broker.cluster}")
+    protected String brokers;
     
     @Bean
     public <T, U> EventProducer<T, U> eventProducer() {        
         if (brokerType.trim().equals("kafka")) {
-            return new KafkaEventProducer<>();
+            return new KafkaEventProducer<>(brokers);
         }
         if (brokerType.trim().equals("rabbitmq")) {
-            return new RabbitMQEventProducer<>();
+            return new RabbitMQEventProducer<>(brokers);
         }
         throw new BrokerNotSupportedException(brokerType);
     }

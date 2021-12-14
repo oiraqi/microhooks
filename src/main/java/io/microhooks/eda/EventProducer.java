@@ -1,11 +1,9 @@
 package io.microhooks.eda;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public abstract class EventProducer<T, U> {
-
-    @Value("${io.microhooks.providers.broker.cluster}")
-    protected String brokers;
 
     public void publish(T key, U payload, String label, String[] streams) {   
         if (streams == null || streams.length == 0) {

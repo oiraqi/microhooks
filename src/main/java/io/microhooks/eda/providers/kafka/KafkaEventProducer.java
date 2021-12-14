@@ -11,12 +11,13 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
     private KafkaProducer<T, Event<T, U>> producer;
 
-    public KafkaEventProducer() {
+    public KafkaEventProducer(String brokers) {
         Properties props = new Properties();
+        System.out.println(brokers);
         props.put("bootstrap.servers", brokers);
         props.put("acks", "all");
-        props.put("key.serializer", "io.microhooks.providers.kafka.GenericKafkaSerializer");
-        props.put("value.serializer", "io.microhooks.providers.kafka.GenericKafkaSerializer");
+        props.put("key.serializer", "io.microhooks.eda.providers.kafka.GenericKafkaSerializer");
+        props.put("value.serializer", "io.microhooks.eda.providers.kafka.GenericKafkaSerializer");
         producer = new KafkaProducer<>(props);
     }
 
