@@ -1,4 +1,4 @@
-package io.microhooks.providers.kafka;
+package io.microhooks.eda.providers.kafka;
 
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;

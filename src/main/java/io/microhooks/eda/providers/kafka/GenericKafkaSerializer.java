@@ -1,4 +1,4 @@
-package io.microhooks.providers.kafka;
+package io.microhooks.eda.providers.kafka;
 
 import java.io.IOException;
 import org.apache.kafka.common.serialization.Serializer;
