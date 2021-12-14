@@ -1,7 +1,5 @@
 package io.microhooks.eda;
 
-import java.util.Date;
-
 public abstract class EventProducer<T, U> {
 
     public void publish(T key, U payload, String label, String[] streams) {        
