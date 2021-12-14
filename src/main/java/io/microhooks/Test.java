@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.microhooks.eda.EventProducer;
 
-//import org.junit.Test;
-//import static org.junit.Assert.*;
-
 @SpringBootApplication
 @RestController
 public class Test {
