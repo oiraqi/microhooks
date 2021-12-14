@@ -13,7 +13,7 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
     public KafkaEventProducer() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", BOOTSTRAP_SERVERS);
+        props.put("bootstrap.servers", brokers);
         props.put("acks", "all");
         props.put("key.serializer", "io.microhooks.providers.kafka.GenericKafkaSerializer");
         props.put("value.serializer", "io.microhooks.providers.kafka.GenericKafkaSerializer");
