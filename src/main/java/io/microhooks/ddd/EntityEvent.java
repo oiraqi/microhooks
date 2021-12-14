@@ -13,7 +13,7 @@ public class EntityEvent<T, U> extends Event<T, U> {
                 || (!label.equals(CREATED) &&
                         !label.equals(UPDATED) &&
                         !label.equals(DELETED))) {
-            throw new IllegalArgumentException(label);
+            throw new IllegalArgumentException("Label " + label + " not supported for EntityEvent");
         }
     }
 }
