@@ -5,8 +5,6 @@ import io.microhooks.eda.EventProducer;
 
 public class RabbitMQEventProducer<T, U> extends EventProducer<T, U> {
 
-    private static final String BOOTSTRAP_SERVERS = "${io.microhooks.providers.broker.cluster}";
-
     public RabbitMQEventProducer() {
         //To do
     }

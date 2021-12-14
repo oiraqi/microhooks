@@ -10,7 +10,6 @@ import io.microhooks.eda.EventProducer;
 public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
     private KafkaProducer<T, Event<T, U>> producer;
-    private static final String BOOTSTRAP_SERVERS = "${io.microhooks.providers.broker.cluster}";
 
     public KafkaEventProducer() {
         Properties props = new Properties();
