@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface DataSource {
-    String name() default "";
+@Target(ElementType.METHOD)
+public @interface OnDelete {
+    
 }

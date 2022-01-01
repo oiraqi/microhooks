@@ -1,11 +1,11 @@
 package io.microhooks.ddd.internal;
 
-import javax.persistence.PrePersist;
+import javax.persistence.PostPersist;
 
 public class SourceListener {
     
-    @PrePersist
-    public void onPrePersist(Object o) {
+    @PostPersist
+    public void onPostPersist(Object o) {
         System.out.println("Hi!");
     }
 }
