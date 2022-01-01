@@ -3,6 +3,9 @@
  */
 package io.microhooks;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,18 +18,37 @@ import io.microhooks.eda.EventProducer;
 @RestController
 public class Test {
 
+    /*@Autowired
+    EventProducer<String, String> eventProducer;*/
+
     @Autowired
-    EventProducer<String, String> eventProducer;
+    TestRepository repo;
     
     public static void main(String[] args) {
         SpringApplication.run(Test.class, args);
     }
 
     @GetMapping("/hello")
-    public String sayHello() {
-        eventProducer.publish("key1", "payload1", "label1", new String[] {"stream1"});
+    public String sayHello() throws Exception {
+        StringBuilder sb = new StringBuilder();
+        //eventProducer.publish("key1", "payload1", "label1", new String[] {"stream1"});
+        Annotation[] annotations = TestEntity.class.getAnnotations();
+        for (Annotation annotation : annotations) {
+            Class<? extends Annotation> type = annotation.annotationType();
+            sb.append(type.getName() + " ");
+            for (Method method : type.getDeclaredMethods()) {
+                Object value = method.invoke(annotation, (Object[])null);
+                if (value instanceof Class<?>) {
+                    System.out.println(" " + method.getName() + ": " + ((Class<?>)value).getName());
+                }
+            }
+        }
+
+        TestEntity entity = new TestEntity();
+        entity.setName("Hi!");
+        repo.save(entity);
         
-        return "Hello!";
+        return sb.toString();
     }
     
 }
