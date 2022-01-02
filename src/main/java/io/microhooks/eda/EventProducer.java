@@ -1,8 +1,8 @@
 package io.microhooks.eda;
 
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@Component
 public abstract class EventProducer<T, U> {
 
     public void publish(T key, U payload, String label, String[] streams) {   

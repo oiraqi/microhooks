@@ -14,14 +14,15 @@ public class Logging {
 
     @Around("@annotation(io.microhooks.util.logging.Logged)")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        
-        log.trace("Entering: " + joinPoint.getSignature().toLongString());
-
-        Object proceed = joinPoint.proceed();
-
-        log.trace("Exiting: " + joinPoint.getSignature().toLongString());
-
-        return proceed;
+        try {
+            log.trace("Entering: " + joinPoint.getSignature().toLongString());
+            Object proceed = joinPoint.proceed();
+            log.trace("Exiting: " + joinPoint.getSignature().toLongString());
+            return proceed;
+        } catch (Throwable throwable) {
+            log.warn("An error occured at: " + joinPoint.getSignature().toLongString());
+            throw throwable;
+        }
     }
 
 }

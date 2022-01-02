@@ -13,13 +13,14 @@ import io.microhooks.ddd.OnUpdate;
 import io.microhooks.ddd.TrackedFields;
 import io.microhooks.eda.Event;
 import io.microhooks.eda.MappedEvent;
+
 import lombok.Data;
 
 @Entity
 @Data
 @Source
 public class TestEntity {
-        
+
     @Id
     @GeneratedValue
     private long id;
@@ -27,11 +28,11 @@ public class TestEntity {
     private String name;
 
     @OnCreate
-    public List<MappedEvent<Long, TestDTO>> onCreate() {
-        ArrayList<MappedEvent<Long, TestDTO>> mappedEvents = new ArrayList<>();
+    public List<MappedEvent<Object, Object>> onCreate() {
+        ArrayList<MappedEvent<Object, Object>> mappedEvents = new ArrayList<>();
         mappedEvents
                 .add(new MappedEvent<>(new Event<>(1L, new TestDTO(1, "Omar"), "Label"),
-                    new String[] { "test" }));
+                        new String[] { "test" }));
         return mappedEvents;
     }
 
@@ -40,5 +41,4 @@ public class TestEntity {
         return new ArrayList<>();
     }
 
-    
 }

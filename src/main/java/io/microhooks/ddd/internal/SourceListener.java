@@ -6,6 +6,6 @@ public class SourceListener {
     
     @PostPersist
     public void onPostPersist(Object o) {
-        System.out.println("Hi!");
+        System.out.println("Hi from Source Listener!");
     }
 }
