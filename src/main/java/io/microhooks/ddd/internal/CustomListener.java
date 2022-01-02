@@ -19,20 +19,12 @@ import io.microhooks.util.logging.Logged;
 public class CustomListener {
     private EventProducer<Object, Object> eventProducer;
 
-    private void init() {
-        eventProducer = new EventProducerConfig().<Object, Object>eventProducer();
-    }
-
     @PostPersist
     @Logged
     @SuppressWarnings("unchecked")
     public void onPostPersist(Object o) throws Exception {
-        if (eventProducer == null) {
-            init();
-        }
-
         for (Method method : o.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(OnCreate.class)) {                
+            if (method.isAnnotationPresent(OnCreate.class)) {
                 List<MappedEvent<Object, Object>> mappedEvents = (List<MappedEvent<Object, Object>>) method.invoke(o);
                 publish(mappedEvents);
                 return;
@@ -44,14 +36,11 @@ public class CustomListener {
     @Logged
     @SuppressWarnings("unchecked")
     public void onPostUpdate(Object o) throws Exception {
-        if (eventProducer == null) {
-            init();
-        }
-
         for (Method method : o.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(OnUpdate.class)) {
-                TrackedFields trackedFields = null;             
-                List<MappedEvent<Object, Object>> mappedEvents = (List<MappedEvent<Object, Object>>) method.invoke(o, trackedFields);
+                TrackedFields trackedFields = null;
+                List<MappedEvent<Object, Object>> mappedEvents = (List<MappedEvent<Object, Object>>) method.invoke(o,
+                        trackedFields);
                 publish(mappedEvents);
                 return;
             }
@@ -62,10 +51,6 @@ public class CustomListener {
     @Logged
     @SuppressWarnings("unchecked")
     public void onPostRemove(Object o) throws Exception {
-        if (eventProducer == null) {
-            init();
-        }
-
         for (Method method : o.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(OnDelete.class)) {
                 List<MappedEvent<Object, Object>> mappedEvents = (List<MappedEvent<Object, Object>>) method.invoke(o);
@@ -75,8 +60,11 @@ public class CustomListener {
         }
     }
 
-    private void publish (List<MappedEvent<Object, Object>> mappedEvents) {
+    private void publish(List<MappedEvent<Object, Object>> mappedEvents) {
+        if (eventProducer == null) {
+            eventProducer = new EventProducerConfig().<Object, Object>eventProducer();
+        }
         mappedEvents.forEach(mappedEvent -> eventProducer.publish(mappedEvent.getKey(),
-                        mappedEvent.getPayload(), mappedEvent.getLabel(), mappedEvent.getStreams()));
+                mappedEvent.getPayload(), mappedEvent.getLabel(), mappedEvent.getStreams()));
     }
 }
