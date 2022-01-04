@@ -13,10 +13,10 @@ public class RabbitMQEventProducer<T, U> extends EventProducer<T, U> {
     }
 
     @Override
-    protected void publish(T key, Event<T, U> event, String stream) {
+    public void publish(Event<T, U> event, String stream) {
         //To do
         try {
-            System.out.println("RabbitMQ: " + key + " / " + new String(JsonSerdes.getSingleton().serialize(event)) + " / " + stream);
+            System.out.println("RabbitMQ: " + event.getKey() + " / " + new String(JsonSerdes.getSingleton().serialize(event)) + " / " + stream);
         } catch (IOException e) {
             e.printStackTrace();
         }

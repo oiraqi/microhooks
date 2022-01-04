@@ -25,7 +25,10 @@ public class EventProducerConfig {
         if (brokerType.trim().equals("rabbitmq")) {
             return new RabbitMQEventProducer<>(brokers);
         }
-        return null;
-        // throw new BrokerNotSupportedException(brokerType);
+        if (brokerType.trim().equals("null")) {
+            return new NullEventProducer<>();
+        }
+        
+        throw new BrokerNotSupportedException(brokerType);
     }
 }

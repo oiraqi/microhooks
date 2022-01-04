@@ -12,14 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.microhooks.eda.EventProducer;
-
 @SpringBootApplication
 @RestController
 public class Test {
-
-    /*@Autowired
-    EventProducer<String, String> eventProducer;*/
 
     @Autowired
     TestRepository repo;
@@ -31,7 +26,6 @@ public class Test {
     @GetMapping("/hello")
     public String sayHello() throws Exception {
         StringBuilder sb = new StringBuilder();
-        //eventProducer.publish("key1", "payload1", "label1", new String[] {"stream1"});
         Annotation[] annotations = TestEntity.class.getAnnotations();
         for (Annotation annotation : annotations) {
             Class<? extends Annotation> type = annotation.annotationType();

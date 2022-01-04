@@ -2,15 +2,16 @@ package io.microhooks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import io.microhooks.ddd.Source;
+import io.microhooks.ddd.Track;
 import io.microhooks.ddd.OnCreate;
 import io.microhooks.ddd.OnUpdate;
-import io.microhooks.ddd.TrackedFields;
 import io.microhooks.eda.Event;
 import io.microhooks.eda.MappedEvent;
 
@@ -25,6 +26,7 @@ public class TestEntity {
     @GeneratedValue
     private long id;
 
+    @Track
     private String name;
 
     @OnCreate
@@ -37,7 +39,7 @@ public class TestEntity {
     }
 
     @OnUpdate
-    public List<MappedEvent<Long, TestDTO>> onUpdate(TrackedFields trackedFields) {
+    public List<MappedEvent<Long, TestDTO>> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
         return new ArrayList<>();
     }
 

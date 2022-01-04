@@ -3,7 +3,6 @@ package io.microhooks;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
 import org.springframework.context.ApplicationListener;
 
-import io.microhooks.ddd.OnCreate;
 import io.microhooks.ddd.internal.CustomListener;
 import io.microhooks.ddd.internal.SourceListener;
 
@@ -18,6 +17,7 @@ public class ApplicationBootstrap implements ApplicationListener<ApplicationPrep
 
         public void onApplicationEvent(ApplicationPreparedEvent ev) {
                 System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxx");
+                
                 ByteBuddyAgent.install();
                 // lookup entity classes with @source
                 new ByteBuddy()
@@ -27,6 +27,6 @@ public class ApplicationBootstrap implements ApplicationListener<ApplicationPrep
                                                 .build())
                                 .make()
                                 .load(TestEntity.class.getClassLoader(),
-                                ClassReloadingStrategy.fromInstalledAgent());
+                                                ClassReloadingStrategy.fromInstalledAgent());
         }
 }
