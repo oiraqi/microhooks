@@ -3,7 +3,6 @@ package io.microhooks.ddd.internal;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
