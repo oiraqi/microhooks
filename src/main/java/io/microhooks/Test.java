@@ -40,6 +40,11 @@ public class Test {
 
         TestEntity entity = new TestEntity();
         entity.setName("Hi!");
+        entity = repo.save(entity);
+        entity.setName("Hello");
+        entity = repo.save(entity);
+        entity.setName("Hello world!");
+        entity.setName("Hello again!");
         repo.save(entity);
         
         return sb.toString();

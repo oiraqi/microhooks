@@ -1,6 +1,8 @@
 package io.microhooks;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,17 +13,18 @@ import javax.persistence.Id;
 
 import io.microhooks.ddd.Source;
 import io.microhooks.ddd.Track;
+import io.microhooks.ddd.internal.Trackable;
 import io.microhooks.ddd.OnCreate;
 import io.microhooks.ddd.OnUpdate;
 import io.microhooks.eda.Event;
 import io.microhooks.eda.MappedEvent;
-
+import io.microhooks.util.Reflector;
 import lombok.Data;
 
 @Entity
 @Data
 @Source
-public class TestEntity {
+public class TestEntity implements Trackable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +33,11 @@ public class TestEntity {
     @Track
     private String name;
 
+    private transient Map<String, Object> trackedFields = new HashMap<>();
+
     @OnCreate
-    public List<MappedEvent<Object, Object>> onCreate() {
-        ArrayList<MappedEvent<Object, Object>> mappedEvents = new ArrayList<>();
+    public List<MappedEvent<Long, Object>> onCreate() {
+        ArrayList<MappedEvent<Long, Object>> mappedEvents = new ArrayList<>();
         mappedEvents
                 .add(new MappedEvent<>(new Event<>(1L, new TestDTO(1, "Omar"), "Label"),
                         new String[] { "test" }));
@@ -40,8 +45,18 @@ public class TestEntity {
     }
 
     @OnUpdate
-    public List<MappedEvent<Long, TestDTO>> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
-        return new ArrayList<>();
+    public List<MappedEvent<String, String>> onUpdate(Map<String, String> changedTrackedFieldsPreviousValues)
+            throws Exception {
+        ArrayList<MappedEvent<String, String>> mappedEvents = new ArrayList<>();
+        Iterator<String> keys = changedTrackedFieldsPreviousValues.keySet().iterator();
+        while (keys.hasNext()) {
+            String fieldName = keys.next();
+            Object oldValue = changedTrackedFieldsPreviousValues.get(fieldName);
+            mappedEvents.add(new MappedEvent<>(new Event<>(fieldName,
+                    oldValue.toString() + " --> " + Reflector.getFieldValue(this, fieldName).toString(), "Update"),
+                    new String[] { "test" }));
+        }
+        return mappedEvents;
     }
 
 }

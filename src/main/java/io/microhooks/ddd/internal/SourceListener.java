@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import io.microhooks.ddd.EntityEvent;
 import io.microhooks.eda.EventProducer;
+import io.microhooks.util.logging.Logged;
 
 public class SourceListener {
 
@@ -17,6 +18,7 @@ public class SourceListener {
     private EventProducer<Object, Object> eventProducer;
     
     @PostPersist
+    @Logged
     public void onPostPersist(Object entity) throws Exception {
         Field[] fields = entity.getClass().getDeclaredFields();
         Object key = null;
