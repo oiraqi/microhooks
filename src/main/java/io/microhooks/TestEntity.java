@@ -36,7 +36,7 @@ public class TestEntity implements Trackable {
     @OnCreate(streams = "CustomStream")
     public List<Event<Long, Object>> onCreate() {
         ArrayList<Event<Long, Object>> events = new ArrayList<>();
-        events.add(new Event<>(id, new TestDTO(1, "Omar"), "CustomCreate"));
+        events.add(new Event<>(id, new TestDTO(1, name), "CustomCreate"));
         return events;
     }
 
