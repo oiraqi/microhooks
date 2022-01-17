@@ -24,20 +24,7 @@ public class Test {
     }
 
     @GetMapping("/hello")
-    public String sayHello() throws Exception {
-        StringBuilder sb = new StringBuilder();
-        Annotation[] annotations = TestEntity.class.getAnnotations();
-        for (Annotation annotation : annotations) {
-            Class<? extends Annotation> type = annotation.annotationType();
-            sb.append(type.getName() + " ");
-            for (Method method : type.getDeclaredMethods()) {
-                Object value = method.invoke(annotation, (Object[])null);
-                if (value instanceof Class<?>) {
-                    System.out.println(" " + method.getName() + ": " + ((Class<?>)value).getName());
-                }
-            }
-        }
-
+    public String sayHello() {
         TestEntity entity = new TestEntity();
         entity.setName("Hi!");
         entity = repo.save(entity);
@@ -46,8 +33,7 @@ public class Test {
         entity.setName("Hello world!");
         entity.setName("Hello again!");
         repo.save(entity);
-        
-        return sb.toString();
+        return "Hello!";
     }
     
 }
