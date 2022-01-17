@@ -1,6 +1,5 @@
 package io.microhooks.util;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 public class Reflector {

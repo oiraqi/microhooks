@@ -1,5 +1,6 @@
 package io.microhooks.ddd.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -18,8 +19,8 @@ import io.microhooks.ddd.OnCreate;
 import io.microhooks.ddd.OnDelete;
 import io.microhooks.ddd.OnUpdate;
 import io.microhooks.ddd.Track;
+import io.microhooks.eda.Event;
 import io.microhooks.eda.EventProducer;
-import io.microhooks.eda.MappedEvent;
 import io.microhooks.util.Reflector;
 import io.microhooks.util.logging.Logged;
 
@@ -33,10 +34,10 @@ public class CustomListener {
     public void onPostPersist(Object entity) throws Exception {
         setTrackedFields(entity);
         for (Method method : entity.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(OnCreate.class)) {
-                List<MappedEvent<Object, Object>> mappedEvents = (List<MappedEvent<Object, Object>>) method.invoke(entity);
-                publish(mappedEvents);
-                return;
+            if (method.isAnnotationPresent(OnCreate.class)) {                
+                List<Event<Object, Object>> events = (List<Event<Object, Object>>) method.invoke(entity);
+                publish(events, method.getAnnotation(OnCreate.class).streams());
+                // Don't return here as we allow several methods to be annotated with OnCreate
             }
         }
     }
@@ -63,10 +64,10 @@ public class CustomListener {
                         trackedFields.put(fieldName, newValue);
                     }
                 }
-                List<MappedEvent<Object, Object>> mappedEvents = (List<MappedEvent<Object, Object>>) method.invoke(entity,
+                List<Event<Object, Object>> events = (List<Event<Object, Object>>) method.invoke(entity,
                         changedTrackedFields);
-                publish(mappedEvents);
-                return;
+                publish(events, method.getAnnotation(OnDelete.class).streams());
+                // Don't return here as we allow several methods to be annotated with OnUpdate
             }
         }
     }
@@ -80,19 +81,19 @@ public class CustomListener {
     @PostRemove
     @Logged
     @SuppressWarnings("unchecked")
-    public void onPostRemove(Object o) throws Exception {
-        for (Method method : o.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(OnDelete.class)) {
-                List<MappedEvent<Object, Object>> mappedEvents = (List<MappedEvent<Object, Object>>) method.invoke(o);
-                publish(mappedEvents);
-                return;
+    public void onPostRemove(Object entity) throws Exception {
+        for (Method method : entity.getClass().getDeclaredMethods()) {
+            if (method.isAnnotationPresent(OnDelete.class)) {                
+                List<Event<Object, Object>> events = (List<Event<Object, Object>>) method.invoke(entity);
+                publish(events, method.getAnnotation(OnDelete.class).streams());
+                // Don't return here as we allow several methods to be annotated with OnDelete
             }
         }
     }
 
-    private void publish(List<MappedEvent<Object, Object>> mappedEvents) {
-        mappedEvents.forEach(mappedEvent -> eventProducer.publish(mappedEvent.getKey(),
-                mappedEvent.getPayload(), mappedEvent.getLabel(), mappedEvent.getStreams()));
+    private void publish(List<Event<Object, Object>> events, String[] streams) {
+        events.forEach(mappedEvent -> eventProducer.publish(mappedEvent.getKey(),
+                mappedEvent.getPayload(), mappedEvent.getLabel(), streams));
     }
 
     private void setTrackedFields(Object entity) throws Exception {

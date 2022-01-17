@@ -17,8 +17,6 @@ import io.microhooks.ddd.internal.Trackable;
 import io.microhooks.ddd.OnCreate;
 import io.microhooks.ddd.OnUpdate;
 import io.microhooks.eda.Event;
-import io.microhooks.eda.MappedEvent;
-import io.microhooks.util.Reflector;
 import lombok.Data;
 
 @Entity
@@ -35,28 +33,19 @@ public class TestEntity implements Trackable {
 
     private transient Map<String, Object> trackedFields = new HashMap<>();
 
-    @OnCreate
-    public List<MappedEvent<Long, Object>> onCreate() {
-        ArrayList<MappedEvent<Long, Object>> mappedEvents = new ArrayList<>();
-        mappedEvents
-                .add(new MappedEvent<>(new Event<>(1L, new TestDTO(1, "Omar"), "Label"),
-                        new String[] { "test" }));
-        return mappedEvents;
+    @OnCreate(streams = "CustomStream")
+    public List<Event<Long, Object>> onCreate() {
+        ArrayList<Event<Long, Object>> events = new ArrayList<>();
+        events.add(new Event<>(id, new TestDTO(1, "Omar"), "CustomCreate"));
+        return events;
     }
 
-    @OnUpdate
-    public List<MappedEvent<String, String>> onUpdate(Map<String, String> changedTrackedFieldsPreviousValues)
-            throws Exception {
-        ArrayList<MappedEvent<String, String>> mappedEvents = new ArrayList<>();
-        Iterator<String> keys = changedTrackedFieldsPreviousValues.keySet().iterator();
-        while (keys.hasNext()) {
-            String fieldName = keys.next();
-            Object oldValue = changedTrackedFieldsPreviousValues.get(fieldName);
-            mappedEvents.add(new MappedEvent<>(new Event<>(fieldName,
-                    oldValue.toString() + " --> " + Reflector.getFieldValue(this, fieldName).toString(), "Update"),
-                    new String[] { "test" }));
-        }
-        return mappedEvents;
+    @OnUpdate(streams = "CustomStream")
+    public List<Event<Long, String>> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
+        ArrayList<Event<Long, String>> events = new ArrayList<>();
+        String oldName = (String) changedTrackedFieldsPreviousValues.get("name");
+        events.add(new Event<>(id, oldName + " --> " + name, "NameChanged"));
+        return events;
     }
 
 }
