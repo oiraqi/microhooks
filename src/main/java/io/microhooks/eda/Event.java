@@ -12,8 +12,8 @@ public class Event<T, U> {
 	private final String username;
 	private final long timestamp;
 	private final T key;
-	private U payload;
-	private String label;
+	private final U payload;
+	private final String label;
 
 	public Event(T key, U payload, String label) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
