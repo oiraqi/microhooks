@@ -6,11 +6,10 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import io.microhooks.eda.Event;
 import io.microhooks.eda.EventProducer;
-import io.microhooks.eda.LabeledPayload;
 
 public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
-    private KafkaProducer<T, LabeledPayload<U>> producer;
+    private KafkaProducer<T, Event<T, U>> producer;
 
     public KafkaEventProducer(String brokers) {
         Properties props = new Properties();
@@ -24,7 +23,7 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
     @Override
     public void publish(Event<T, U> event, String stream) {
-        producer.send(new ProducerRecord<>(stream, event.getKey(), event.getLabeledPayload()));
+        producer.send(new ProducerRecord<>(stream, event.getKey(), event));
     }
     
 }

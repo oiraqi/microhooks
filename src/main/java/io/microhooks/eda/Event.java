@@ -12,7 +12,8 @@ public class Event<T, U> {
 	private final String username;
 	private final long timestamp;
 	private final T key;
-	private final LabeledPayload<U> labeledPayload;
+	private U payload;
+	private String label;
 
 	public Event(T key, U payload, String label) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -23,14 +24,7 @@ public class Event<T, U> {
 		}
 		this.timestamp = new Date().getTime();
 		this.key = key;
-		this.labeledPayload = new LabeledPayload<>(payload, label);
-	}
-
-	public U getPayload() {
-		return labeledPayload.getPayload();
-	}
-
-	public String getLabel() {
-		return labeledPayload.getLabel();
+		this.payload = payload;
+		this.label = label;
 	}
 }
