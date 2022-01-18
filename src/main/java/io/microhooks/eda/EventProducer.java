@@ -35,16 +35,7 @@ public abstract class EventProducer<T, U> {
     }
 
     public void publish(T key, U payload, String label, String stream) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key can't be null");
-        }
-
-        if (stream == null || stream.isEmpty()) {
-            throw new IllegalArgumentException("Stream can't be null or empty");
-        }
-        
-        Event<T, U> event = new Event<>(key, payload, label);
-        publish(event, appName + "#" + stream);
+        publish(key, payload, label, new String[] {stream});
     }
 
     public void publish(T key, U payload, String stream) {
