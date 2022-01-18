@@ -1,9 +1,13 @@
 package io.microhooks.eda;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public abstract class EventProducer<T, U> {
+
+    @Value("${appName}")
+    private String appName;
 
     public void publish(T key, U payload, String label, String[] streams) {
         if (key == null) {
@@ -22,7 +26,7 @@ public abstract class EventProducer<T, U> {
         
         Event<T, U> event = new Event<>(key, payload, label);
         for (int i = 0; i < streams.length; i++) {
-            publish(event, "${appName}#" + streams[i]);
+            publish(event, appName + "#" + streams[i]);
         }
     }
 
@@ -40,7 +44,7 @@ public abstract class EventProducer<T, U> {
         }
         
         Event<T, U> event = new Event<>(key, payload, label);
-        publish(event, "${appName}#" + stream);
+        publish(event, appName + "#" + stream);
     }
 
     public void publish(T key, U payload, String stream) {
