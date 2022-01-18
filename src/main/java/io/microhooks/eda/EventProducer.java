@@ -16,7 +16,7 @@ public abstract class EventProducer<T, U> {
 
         for (String stream: streams) {
             if (stream == null || stream.isEmpty()) {
-                throw new IllegalArgumentException("Streams can't be null or empty");
+                throw new IllegalArgumentException("No stream may be null or empty");
             }
         }
         
