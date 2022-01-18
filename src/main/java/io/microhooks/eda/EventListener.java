@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface EventListener {
     String[] streams();
-    String pipe();
+    String label() default "";
 }

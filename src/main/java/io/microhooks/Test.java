@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.microhooks.eda.Event;
+import io.microhooks.eda.EventListener;
+
 @SpringBootApplication
 @RestController
 public class Test {
@@ -37,6 +40,13 @@ public class Test {
         repo.save(entity);
         
         return "Hello!";
+    }
+
+    @EventListener(streams="CustomStream", label="NameChanged")
+    public void processEvent(Event<Long, String> event) {
+        System.out.println("Received Event Key: " + event.getKey());
+        System.out.println("Received Event Timestamp: " + event.getTimestamp());
+        System.out.println("Received Event Payload: " + event.getPayload());
     }
     
 }
