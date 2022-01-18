@@ -40,8 +40,8 @@ public class Test {
     }
 
     @EventListener(streams="CustomStream", label="NameChanged")
-    public void processEvent(Event<Long, String> event) {
-        System.out.println("Received Event Key: " + event.getKey());
+    public void processEvent(long key, Event<String> event) {
+        System.out.println("Received Event Key: " + key);
         System.out.println("Received Event Timestamp: " + event.getTimestamp());
         System.out.println("Received Event Payload: " + event.getPayload());
     }

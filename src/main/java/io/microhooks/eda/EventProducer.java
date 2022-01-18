@@ -24,9 +24,9 @@ public abstract class EventProducer<T, U> {
             }
         }
         
-        Event<T, U> event = new Event<>(key, payload, label);
+        Event<U> event = new Event<>(payload, label);
         for (int i = 0; i < streams.length; i++) {
-            publish(event, appName + "#" + streams[i]);
+            publish(key, event, appName + "#" + streams[i]);
         }
     }
 
@@ -42,6 +42,6 @@ public abstract class EventProducer<T, U> {
         publish(key, payload, null, stream);
     }
 
-    protected abstract void publish(Event<T, U> event, String stream);
+    protected abstract void publish(T key, Event<U> event, String stream);
 
 }

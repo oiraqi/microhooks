@@ -9,9 +9,9 @@ import io.microhooks.util.JsonSerdes;
 public class NullEventProducer<T, U> extends EventProducer<T, U> {
 
     @Override
-    public void publish(Event<T, U> event, String stream) {
+    public void publish(T key, Event<U> event, String stream) {
         try {
-            System.out.println(new String(JsonSerdes.getSingleton().serialize(event.getKey())) + " " + new String(JsonSerdes.getSingleton().serialize(event)) + " " + stream);
+            System.out.println(JsonSerdes.getSingleton().serialize(key) + " " + new String(JsonSerdes.getSingleton().serialize(event)) + " " + stream);
         } catch (IOException e) {
             e.printStackTrace();
         }

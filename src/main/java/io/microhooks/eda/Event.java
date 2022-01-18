@@ -8,14 +8,13 @@ import java.util.Date;
 import lombok.Getter;
 
 @Getter
-public class Event<T, U> {
+public class Event<U> {
 	private final String username;
 	private final long timestamp;
-	private final T key;
 	private final U payload;
 	private final String label;
 
-	public Event(T key, U payload, String label) {
+	public Event(U payload, String label) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (!(authentication instanceof AnonymousAuthenticationToken)) {
 			this.username = authentication.getName();
@@ -23,7 +22,6 @@ public class Event<T, U> {
 			this.username = null;
 		}
 		this.timestamp = new Date().getTime();
-		this.key = key;
 		this.payload = payload;
 		this.label = label;
 	}

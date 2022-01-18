@@ -34,17 +34,17 @@ public class TestEntity implements Trackable {
     private transient Map<String, Object> trackedFields = new HashMap<>();
 
     @OnCreate(streams = "CustomStream")
-    public List<Event<Long, Object>> onCreate() {
-        ArrayList<Event<Long, Object>> events = new ArrayList<>();
-        events.add(new Event<>(id, new TestDTO(1, name), "CustomCreate"));
+    public List<Event<TestDTO>> onCreate() {
+        List<Event<TestDTO>> events = new ArrayList<>();
+        events.add(new Event<>(new TestDTO(1, name), "CustomCreate"));
         return events;
     }
 
     @OnUpdate(streams = "CustomStream")
-    public List<Event<Long, String>> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
-        ArrayList<Event<Long, String>> events = new ArrayList<>();
+    public List<Event<String>> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
+        ArrayList<Event<String>> events = new ArrayList<>();
         String oldName = (String) changedTrackedFieldsPreviousValues.get("name");
-        events.add(new Event<>(id, oldName + " --> " + name, "NameChanged"));
+        events.add(new Event<>(oldName + " --> " + name, "NameChanged"));
         return events;
     }
 

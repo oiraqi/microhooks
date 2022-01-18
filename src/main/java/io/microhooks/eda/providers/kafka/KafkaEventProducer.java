@@ -9,7 +9,7 @@ import io.microhooks.eda.EventProducer;
 
 public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
 
-    private KafkaProducer<T, Event<T, U>> producer;
+    private KafkaProducer<T, Event<U>> producer;
 
     public KafkaEventProducer(String brokers) {
         Properties props = new Properties();
@@ -22,8 +22,8 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
     }
 
     @Override
-    protected void publish(Event<T, U> event, String stream) {
-        producer.send(new ProducerRecord<>(stream, event.getKey(), event));
+    protected void publish(T key, Event<U> event, String stream) {
+        producer.send(new ProducerRecord<>(stream, key, event));
     }
     
 }
