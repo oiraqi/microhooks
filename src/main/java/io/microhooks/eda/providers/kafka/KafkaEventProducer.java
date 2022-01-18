@@ -22,7 +22,7 @@ public class KafkaEventProducer<T, U> extends EventProducer<T, U> {
     }
 
     @Override
-    public void publish(Event<T, U> event, String stream) {
+    protected void publish(Event<T, U> event, String stream) {
         producer.send(new ProducerRecord<>(stream, event.getKey(), event));
     }
     

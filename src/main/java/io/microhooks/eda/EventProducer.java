@@ -42,6 +42,6 @@ public abstract class EventProducer<T, U> {
         publish(key, payload, null, stream);
     }
 
-    public abstract void publish(Event<T, U> event, String stream);
+    protected abstract void publish(Event<T, U> event, String stream);
 
 }

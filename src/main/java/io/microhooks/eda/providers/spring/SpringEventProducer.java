@@ -14,7 +14,7 @@ public class SpringEventProducer<T, U> extends EventProducer<T, U> {
 
     @Override
     @Logged
-    public void publish(Event<T, U> event, String stream) {
+    protected void publish(Event<T, U> event, String stream) {
         applicationEventPublisher.publishEvent(event);
     }
     

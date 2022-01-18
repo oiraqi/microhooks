@@ -9,7 +9,6 @@ import javax.persistence.PostUpdate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import io.microhooks.ddd.EntityEvent;
 import io.microhooks.ddd.Source;
 import io.microhooks.eda.EventProducer;
 import io.microhooks.util.Reflector;
@@ -19,29 +18,30 @@ public class SourceListener {
 
     @Autowired
     private EventProducer<Object, Object> eventProducer;
+
+    private static final String CREATED = "C";
+    private static final String UPDATED = "U";
+    private static final String DELETED = "D";
     
     @PostPersist
     @Logged
     public void onPostPersist(Object entity) throws Exception {
         Object key = getKey(entity);
-        EntityEvent<Object, Object> entityEvent = new EntityEvent<>(key, entity, EntityEvent.CREATED);
-        eventProducer.publish(entityEvent, getSourceName(entity));
+        eventProducer.publish(key, entity, CREATED, getSourceName(entity));
     }
 
     @PostUpdate
     @Logged
     public void onPostUpdate(Object entity) throws Exception {
         Object key = getKey(entity);
-        EntityEvent<Object, Object> entityEvent = new EntityEvent<>(key, entity, EntityEvent.UPDATED);
-        eventProducer.publish(entityEvent, getSourceName(entity));
+        eventProducer.publish(key, entity, UPDATED, getSourceName(entity));
     }
 
     @PostRemove
     @Logged
     public void onPostRemove(Object entity) throws Exception {
         Object key = getKey(entity);
-        EntityEvent<Object, Object> entityEvent = new EntityEvent<>(key, null, EntityEvent.DELETED);
-        eventProducer.publish(entityEvent, getSourceName(entity));
+        eventProducer.publish(key, null, DELETED, getSourceName(entity));
     }
 
     private Object getKey(Object entity) throws Exception {
