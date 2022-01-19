@@ -26,25 +26,25 @@ public class SourceListener {
     @PostPersist
     @Logged
     public void onPostPersist(Object entity) throws Exception {
-        Object key = getKey(entity);
+        Object key = getId(entity);
         eventProducer.publish(key, entity, CREATED, getSourceName(entity));
     }
 
     @PostUpdate
     @Logged
     public void onPostUpdate(Object entity) throws Exception {
-        Object key = getKey(entity);
+        Object key = getId(entity);
         eventProducer.publish(key, entity, UPDATED, getSourceName(entity));
     }
 
     @PostRemove
     @Logged
     public void onPostRemove(Object entity) throws Exception {
-        Object key = getKey(entity);
+        Object key = getId(entity);
         eventProducer.publish(key, null, DELETED, getSourceName(entity));
     }
 
-    private Object getKey(Object entity) throws Exception {
+    private Object getId(Object entity) throws Exception {
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(Id.class)) {

@@ -1,6 +1,5 @@
 package io.microhooks.ddd.internal;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class CustomListener {
         for (Method method : entity.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(OnCreate.class)) {                
                 List<Event<Object>> events = (List<Event<Object>>) method.invoke(entity);
-                Object key = getKey(entity);
+                Object key = getId(entity);
                 publish(key, events, method.getAnnotation(OnCreate.class).streams());
                 // Don't return here as we allow several methods to be annotated with OnCreate
             }
@@ -68,7 +67,7 @@ public class CustomListener {
                 }
                 List<Event<Object>> events = (List<Event<Object>>) method.invoke(entity,
                         changedTrackedFields);
-                Object key = getKey(entity);
+                Object key = getId(entity);
                 publish(key, events, method.getAnnotation(OnDelete.class).streams());
                 // Don't return here as we allow several methods to be annotated with OnUpdate
             }
@@ -88,7 +87,7 @@ public class CustomListener {
         for (Method method : entity.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(OnDelete.class)) {                
                 List<Event<Object>> events = (List<Event<Object>>) method.invoke(entity);
-                Object key = getKey(entity);
+                Object key = getId(entity);
                 publish(key, events, method.getAnnotation(OnDelete.class).streams());
                 // Don't return here as we allow several methods to be annotated with OnDelete
             }
@@ -112,7 +111,7 @@ public class CustomListener {
         }
     }
 
-    private Object getKey(Object entity) throws Exception {
+    private Object getId(Object entity) throws Exception {
         Field[] fields = entity.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(Id.class)) {
