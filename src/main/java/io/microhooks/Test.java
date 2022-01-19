@@ -43,7 +43,8 @@ public class Test {
     public void processEvent(long key, Event<String> event) {
         System.out.println("Received Event Key: " + key);
         System.out.println("Received Event Timestamp: " + event.getTimestamp());
-        System.out.println("Received Event Payload: " + event.getPayload());
+        System.out.println("Received Event Username: " + event.getUsername());
+        System.out.println("Received Event Payload: " + event.getPayload());        
     }
     
 }
