@@ -39,7 +39,7 @@ public class TestEntity {
 
     @OnUpdate(streams = "CustomStream")
     public List<Event<String>> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
-        ArrayList<Event<String>> events = new ArrayList<>();
+        List<Event<String>> events = new ArrayList<>();
         String oldName = (String) changedTrackedFieldsPreviousValues.get("name");
         System.out.println(oldName + " --> " + name);
         events.add(new Event<>(oldName + " --> " + name, "NameChanged"));
