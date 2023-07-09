@@ -11,6 +11,8 @@ plugins {
     id 'java-library'
     id 'org.springframework.boot' version '2.5.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'io.freefair.aspectj' version '8.1.0'
+    id 'net.bytebuddy.byte-buddy-gradle-plugin' version '1.14.5'
 }
 
 repositories {
@@ -33,13 +35,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-aop:2.6.2'
+    implementation 'org.aspectj:aspectjrt:1.9.19'
 
-    // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy
-    implementation 'net.bytebuddy:byte-buddy:1.12.6'
-    // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-agent
-    implementation 'net.bytebuddy:byte-buddy-agent:1.12.6'
+    implementation 'net.bytebuddy:byte-buddy:1.14.5'    
+    implementation 'net.bytebuddy:byte-buddy-agent:1.14.5'
 
-    // https://mvnrepository.com/artifact/com.h2database/h2
+    implementation 'org.atteo.classindex:classindex:3.4'
+    annotationProcessor 'org.atteo.classindex:classindex:3.4'
+
     runtimeOnly 'com.h2database:h2'
 
 
@@ -53,4 +56,10 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+}
+
+byteBuddy {
+  transformation {
+    plugin = io.microhooks.internal.instrumentation.ByteBuddyGradlePlugin.class
+  }
 }
