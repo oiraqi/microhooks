@@ -9,16 +9,13 @@
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
-    id 'org.springframework.boot' version '2.5.2'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'io.freefair.aspectj' version '8.1.0'
-    id 'net.bytebuddy.byte-buddy-gradle-plugin' version '1.14.5'
 }
 
 repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -27,14 +24,13 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:28.0-jre'
-    implementation 'org.apache.kafka:kafka-clients:2.4.0'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    // implementation 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.springframework.boot:spring-boot-starter-aop:2.6.2'
+
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+    
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
+    
     implementation 'org.aspectj:aspectjrt:1.9.19'
 
     implementation 'net.bytebuddy:byte-buddy:1.14.5'    
@@ -42,9 +38,6 @@ dependencies {
 
     implementation 'org.atteo.classindex:classindex:3.4'
     annotationProcessor 'org.atteo.classindex:classindex:3.4'
-
-    runtimeOnly 'com.h2database:h2'
-
 
     compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
@@ -58,8 +51,3 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-byteBuddy {
-  transformation {
-    plugin = io.microhooks.internal.instrumentation.ByteBuddyGradlePlugin.class
-  }
-}
