@@ -1,4 +1,4 @@
-package io.microhooks.test.spring;
+package io.microhooks.tests.spring.kafka;
 
 import lombok.Value;
 

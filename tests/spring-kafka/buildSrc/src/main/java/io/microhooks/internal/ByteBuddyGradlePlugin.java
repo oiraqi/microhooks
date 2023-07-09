@@ -51,7 +51,7 @@ public class ByteBuddyGradlePlugin implements net.bytebuddy.build.Plugin {
             Class entityListeners = loader.findClass("javax.persistence.EntityListeners", classFileLocator);
             loader.findClass("io.microhooks.internal.Listener", classFileLocator);
 
-            if (isCustomSource) {                
+            if (isCustomSource) {
                 Class trackable = loader.findClass("io.microhooks.internal.Trackable", classFileLocator);
                 Generic map = TypeDescription.Generic.Builder.parameterizedType(Map.class, String.class, Object.class)
                         .build();
