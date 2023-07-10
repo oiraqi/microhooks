@@ -1,4 +1,4 @@
-package io.microhooks.extensions.brokers.kafka;
+package io.microhooks.broker.kafka;
 
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -16,8 +16,8 @@ public class KafkaEventProducer extends EventProducer {
         System.out.println(brokers);
         props.put("bootstrap.servers", brokers);
         props.put("acks", "all");
-        props.put("key.serializer", "io.microhooks.eda.providers.kafka.GenericKafkaSerializer");
-        props.put("value.serializer", "io.microhooks.eda.providers.kafka.GenericKafkaSerializer");
+        props.put("key.serializer", "io.microhooks.broker.kafka.GenericKafkaSerializer");
+        props.put("value.serializer", "io.microhooks.broker.kafka.GenericKafkaSerializer");
         producer = new KafkaProducer<>(props);
     }
 

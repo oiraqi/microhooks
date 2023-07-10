@@ -1,4 +1,4 @@
-package io.microhooks.extensions.brokers.kafka;
+package io.microhooks.broker.kafka;
 
 import java.io.IOException;
 import org.apache.kafka.common.serialization.Serializer;

@@ -1,4 +1,4 @@
-package io.microhooks.extensions.environments.spring;
+package io.microhooks.env.spring;
 
 import java.lang.reflect.Method;
 

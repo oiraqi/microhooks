@@ -25,11 +25,11 @@ public class Config {
         Class<?> clazz = null;
 
         if (brokerType.trim().equals("kafka")) {
-            clazz = Class.forName("io.microhooks.extensions.brokers.KafkaEventProducer");
+            clazz = Class.forName("io.microhooks.broker.KafkaEventProducer");
         } else if (brokerType.trim().equals("rabbitmq")) {
-            clazz = Class.forName("io.microhooks.extensions.brokers.RabbitMQEventProducer");
+            clazz = Class.forName("io.microhooks.broker.RabbitMQEventProducer");
         } else if (brokerType.trim().equals("rocketmq")) {
-            clazz = Class.forName("io.microhooks.extensions.brokers.RocketMQEventProducer");
+            clazz = Class.forName("io.microhooks.broker.RocketMQEventProducer");
         } else {
             throw new BrokerNotSupportedException(brokerType);
         }
