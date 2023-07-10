@@ -22,7 +22,7 @@ import lombok.Data;
 @Data
 @Source(mappings = {"Test:io.microhooks.test.spring.TestDTO"})
 @CustomSource
-@Sink(source = "Hi")
+@Sink(stream = "Hi")
 public class TestEntity {
 
     @Id
@@ -32,20 +32,16 @@ public class TestEntity {
     @Track
     private String name;
 
-    @OnCreate(streams = "CustomStream")
-    public List<Event<String>> onCreate() {
-        List<Event<String>> events = new ArrayList<>();
-        events.add(new Event<>(name, "CustomCreate"));
-        return events;
+    @OnCreate(stream = "CustomStream")
+    public Event<String> onCreate() {
+        return new Event<>(name, "CustomCreate");
     }
 
-    @OnUpdate(streams = "CustomStream")
-    public List<Event<String>> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
-        List<Event<String>> events = new ArrayList<>();
+    @OnUpdate(stream = "CustomStream")
+    public Event<String> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
         String oldName = (String) changedTrackedFieldsPreviousValues.get("name");
         System.out.println(oldName + " --> " + name);
-        events.add(new Event<>(oldName + " --> " + name, "NameChanged"));
-        return events;
+        return new Event<>(oldName + " --> " + name, "NameChanged");
     }
 
 }

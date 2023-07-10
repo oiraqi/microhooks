@@ -1,4 +1,4 @@
-package io.microhooks.internal.instrumentation;
+package io.microhooks.instrumentation;
 
 import java.io.IOException;
 import java.util.Map;
@@ -12,7 +12,7 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.modifier.FieldPersistence;
 
-public class ByteBuddyGradlePlugin implements net.bytebuddy.build.Plugin {
+public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
     private static class Loader extends ClassLoader {
         public Class findClass(String name, ClassFileLocator classFileLocator) {

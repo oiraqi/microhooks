@@ -54,6 +54,6 @@ application {
 
 byteBuddy {
   transformation {
-    plugin = io.microhooks.internal.instrumentation.ByteBuddyGradlePlugin.class
+    plugin = io.microhooks.instrumentation.GradlePlugin.class
   }
 }

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Id;
@@ -30,9 +29,9 @@ public class CustomListener extends Listener {
         setTrackedFields(entity);
         for (Method method : entity.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(OnCreate.class)) {                
-                List<Event<Object>> events = (List<Event<Object>>) method.invoke(entity);
+                Event<Object> event = (Event<Object>) method.invoke(entity);
                 String key = getId(entity).toString();
-                publish(key, events, method.getAnnotation(OnCreate.class).streams());
+                getEventProducer().publish(key, event, method.getAnnotation(OnCreate.class).stream());
                 // Don't return here as we allow several methods to be annotated with OnCreate
             }
         }
@@ -60,10 +59,10 @@ public class CustomListener extends Listener {
                         trackedFields.put(fieldName, newValue);
                     }
                 }
-                List<Event<Object>> events = (List<Event<Object>>) method.invoke(entity,
+                Event<Object> event = (Event<Object>) method.invoke(entity,
                         changedTrackedFields);
                 String key = getId(entity).toString();
-                publish(key, events, method.getAnnotation(OnUpdate.class).streams());
+                getEventProducer().publish(key, event, method.getAnnotation(OnUpdate.class).stream());
                 // Don't return here as we allow several methods to be annotated with OnUpdate
             }
         }
@@ -81,17 +80,12 @@ public class CustomListener extends Listener {
     public void onPostRemove(Object entity) throws Exception {
         for (Method method : entity.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(OnDelete.class)) {                
-                List<Event<Object>> events = (List<Event<Object>>) method.invoke(entity);
+                Event<Object> event = (Event<Object>) method.invoke(entity);
                 String key = getId(entity).toString();
-                publish(key, events, method.getAnnotation(OnDelete.class).streams());
+                getEventProducer().publish(key, event, method.getAnnotation(OnDelete.class).stream());
                 // Don't return here as we allow several methods to be annotated with OnDelete
             }
         }
-    }
-
-    private void publish(String key, List<Event<Object>> events, String[] streams) {
-        events.forEach(event -> getEventProducer().publish(key,
-                event.getPayload(), event.getLabel(), streams));
     }
 
     private void setTrackedFields(Object entity) throws Exception {

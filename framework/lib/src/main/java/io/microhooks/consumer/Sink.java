@@ -11,5 +11,5 @@ import org.atteo.classindex.IndexAnnotated;
 @Target(ElementType.TYPE)
 @IndexAnnotated
 public @interface Sink {
-    String source();
+    String stream();
 }
