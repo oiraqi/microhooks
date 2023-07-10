@@ -30,7 +30,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     implementation files('../../../framework/lib/build/libs/lib.jar')
-    implementation files('../../../extensions/environments/spring/lib/build/libs/lib1.jar')
+    implementation files('../../../env/spring/lib/build/libs/lib1.jar')
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'

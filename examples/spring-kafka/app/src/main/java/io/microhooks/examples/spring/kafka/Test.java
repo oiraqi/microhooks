@@ -19,7 +19,7 @@ import io.microhooks.core.Event;
 @RestController
 @CustomSink
 @Configuration
-@Import(io.microhooks.extensions.environments.spring.Config.class)
+@Import(io.microhooks.env.spring.Config.class)
 public class Test {
 
     @Autowired
