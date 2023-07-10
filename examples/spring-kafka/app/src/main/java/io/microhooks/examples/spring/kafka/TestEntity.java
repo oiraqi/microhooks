@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import io.microhooks.consumer.Sink;
 import io.microhooks.core.Event;
 import io.microhooks.producer.CustomSource;
 import io.microhooks.producer.OnCreate;
@@ -21,6 +22,7 @@ import lombok.Data;
 @Data
 @Source(mappings = {"Test:io.microhooks.test.spring.TestDTO"})
 @CustomSource
+@Sink(source = "Hi")
 public class TestEntity {
 
     @Id

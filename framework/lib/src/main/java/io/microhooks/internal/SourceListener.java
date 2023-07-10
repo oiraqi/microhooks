@@ -33,6 +33,7 @@ public class SourceListener extends Listener {
     @Logged
     public void onPostPersist(Object entity) throws Exception {
         publish(entity, CREATED);
+        System.out.println(entity);
     }
 
     @PostUpdate

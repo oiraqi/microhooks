@@ -6,6 +6,8 @@ package io.microhooks.examples.spring.kafka;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +18,8 @@ import io.microhooks.core.Event;
 @SpringBootApplication
 @RestController
 @CustomSink
+@Configuration
+@Import(io.microhooks.extensions.environments.spring.Config.class)
 public class Test {
 
     @Autowired

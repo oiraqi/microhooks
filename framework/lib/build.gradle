@@ -37,7 +37,6 @@ dependencies {
     implementation 'net.bytebuddy:byte-buddy-agent:1.14.5'
 
     implementation 'org.atteo.classindex:classindex:3.4'
-    annotationProcessor 'org.atteo.classindex:classindex:3.4'
 
     compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
