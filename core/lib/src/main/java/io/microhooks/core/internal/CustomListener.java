@@ -3,8 +3,10 @@ package io.microhooks.core.internal;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.persistence.Id;
 import javax.persistence.PostLoad;
@@ -56,6 +58,7 @@ public class CustomListener extends Listener {
 
                     if (oldValue == null || !oldValue.equals(newValue)) {
                         changedTrackedFields.put(fieldName, trackedFields.get(fieldName));
+                        //Highly-concurrent thread safe
                         trackedFields.put(fieldName, newValue);
                     }
                 }
@@ -89,19 +92,28 @@ public class CustomListener extends Listener {
     }
 
     private void setTrackedFields(Object entity) throws Exception {
+        Class<?> cl = (Class<?>)entity.getClass();
+        Field f = cl.getField("MICROHOOKS_TRACKED_FIELDS_NAMES");
+        Vector<String> MICROHOOKS_TRACKED_FIELDS_NAMES = (Vector<String>)f.get(null);
         Field[] fields = entity.getClass().getDeclaredFields();
-        Trackable trackableEntity = (Trackable)entity;
-        Map<String, Object> trackedFields = trackableEntity.getMicrohooksTrackedFields();
-        if (trackedFields == null) {
-            trackableEntity.setMicrohooksTrackedFields(new HashMap<>());
-            trackedFields = trackableEntity.getMicrohooksTrackedFields();
-        }
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(Track.class)) {
-                Object fieldValue = Reflector.getFieldValue(entity, field.getName());
-                trackedFields.put(field.getName(), fieldValue);
+        if (MICROHOOKS_TRACKED_FIELDS_NAMES.isEmpty()) {
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(Track.class)) {
+                    MICROHOOKS_TRACKED_FIELDS_NAMES.add(field.getName());
+                }
             }
+        }        
+        Trackable trackableEntity = (Trackable)entity;
+        // Highly-concurrent thread-safe
+        Map<String, Object> trackedFields = new ConcurrentHashMap<>();
+        
+        for (int i = 0; i < MICROHOOKS_TRACKED_FIELDS_NAMES.size(); i++) {            
+            String filedName = MICROHOOKS_TRACKED_FIELDS_NAMES.get(i);
+            Object fieldValue = Reflector.getFieldValue(entity, filedName);
+            //Highly-concurrent thread safe
+            trackedFields.put(filedName, fieldValue);
         }
+        trackableEntity.setMicrohooksTrackedFields(trackedFields);
     }
 
     private Object getId(Object entity) throws Exception {
