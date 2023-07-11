@@ -1,8 +1,8 @@
-package io.microhooks.internal.util;
+package io.microhooks.core.internal.util;
 
-import io.microhooks.internal.BrokerNotSupportedException;
-import io.microhooks.internal.EventProducer;
-import io.microhooks.internal.NullEventProducer;
+import io.microhooks.core.internal.BrokerNotSupportedException;
+import io.microhooks.core.internal.EventProducer;
+import io.microhooks.core.internal.NullEventProducer;
 
 public class Config {
 
@@ -25,11 +25,11 @@ public class Config {
         Class<?> clazz = null;
 
         if (brokerType.trim().equals("kafka")) {
-            clazz = Class.forName("io.microhooks.broker.KafkaEventProducer");
+            clazz = Class.forName("io.microhooks.brokers.KafkaEventProducer");
         } else if (brokerType.trim().equals("rabbitmq")) {
-            clazz = Class.forName("io.microhooks.broker.RabbitMQEventProducer");
+            clazz = Class.forName("io.microhooks.brokers.RabbitMQEventProducer");
         } else if (brokerType.trim().equals("rocketmq")) {
-            clazz = Class.forName("io.microhooks.broker.RocketMQEventProducer");
+            clazz = Class.forName("io.microhooks.brokers.RocketMQEventProducer");
         } else {
             throw new BrokerNotSupportedException(brokerType);
         }

@@ -1,4 +1,4 @@
-package io.microhooks.internal.util;
+package io.microhooks.core.internal.util;
 
 import java.lang.reflect.Method;
 

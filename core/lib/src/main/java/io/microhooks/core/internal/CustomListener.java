@@ -1,4 +1,4 @@
-package io.microhooks.internal;
+package io.microhooks.core.internal;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -13,8 +13,8 @@ import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
 import io.microhooks.core.Event;
-import io.microhooks.internal.util.Reflector;
-import io.microhooks.internal.util.logging.Logged;
+import io.microhooks.core.internal.util.Reflector;
+import io.microhooks.core.internal.util.logging.Logged;
 import io.microhooks.producer.OnCreate;
 import io.microhooks.producer.OnDelete;
 import io.microhooks.producer.OnUpdate;

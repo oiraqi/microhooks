@@ -1,6 +1,6 @@
-package io.microhooks.internal;
+package io.microhooks.core.internal;
 
-import io.microhooks.internal.util.Config;
+import io.microhooks.core.internal.util.Config;
 
 public abstract class Listener {
     

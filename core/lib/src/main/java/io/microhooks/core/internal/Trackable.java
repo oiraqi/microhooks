@@ -1,4 +1,4 @@
-package io.microhooks.internal;
+package io.microhooks.core.internal;
 
 import java.util.Map;
 

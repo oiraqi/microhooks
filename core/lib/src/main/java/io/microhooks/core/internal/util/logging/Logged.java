@@ -1,4 +1,4 @@
-package io.microhooks.internal.util.logging;
+package io.microhooks.core.internal.util.logging;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

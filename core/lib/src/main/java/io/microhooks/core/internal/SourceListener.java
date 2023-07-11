@@ -1,4 +1,4 @@
-package io.microhooks.internal;
+package io.microhooks.core.internal;
 
 import java.lang.reflect.Field;
 
@@ -7,8 +7,8 @@ import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
-import io.microhooks.internal.util.Reflector;
-import io.microhooks.internal.util.logging.Logged;
+import io.microhooks.core.internal.util.Reflector;
+import io.microhooks.core.internal.util.logging.Logged;
 import io.microhooks.producer.Source;
 
 import java.util.HashMap;

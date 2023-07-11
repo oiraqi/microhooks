@@ -1,4 +1,4 @@
-package io.microhooks.internal.util.logging;
+package io.microhooks.core.internal.util.logging;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

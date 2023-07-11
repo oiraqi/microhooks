@@ -1,4 +1,4 @@
-package io.microhooks.internal.util;
+package io.microhooks.core.internal.util;
 
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;

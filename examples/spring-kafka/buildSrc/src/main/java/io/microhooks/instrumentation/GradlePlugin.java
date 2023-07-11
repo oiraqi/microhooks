@@ -49,10 +49,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         if (isSource || isCustomSource) {
             Class[] listeners = null;
             Class entityListeners = loader.findClass("javax.persistence.EntityListeners", classFileLocator);
-            loader.findClass("io.microhooks.internal.Listener", classFileLocator);
+            loader.findClass("io.microhooks.core.internal.Listener", classFileLocator);
 
             if (isCustomSource) {
-                Class trackable = loader.findClass("io.microhooks.internal.Trackable", classFileLocator);
+                Class trackable = loader.findClass("io.microhooks.core.internal.Trackable", classFileLocator);
                 Generic map = TypeDescription.Generic.Builder.parameterizedType(Map.class, String.class, Object.class)
                         .build();
                 builder = builder.implement(trackable)
@@ -63,10 +63,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                         .withParameters(map)
                         .intercept(FieldAccessor.ofField("microhooksTrackedFields"));
                 
-                Class customListener = loader.findClass("io.microhooks.internal.CustomListener", classFileLocator);
+                Class customListener = loader.findClass("io.microhooks.core.internal.CustomListener", classFileLocator);
                 
                 if (isSource) {
-                    Class sourceListener = loader.findClass("io.microhooks.internal.SourceListener", classFileLocator);
+                    Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener", classFileLocator);
                     listeners = new Class[2];
                     listeners[0] = sourceListener;
                     listeners[1] = customListener;
@@ -75,7 +75,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     listeners[0] = customListener;
                 }
             } else {
-                Class sourceListener = loader.findClass("io.microhooks.internal.SourceListener", classFileLocator);
+                Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener", classFileLocator);
                 listeners = new Class[1];
                 listeners[0] = sourceListener;
             }

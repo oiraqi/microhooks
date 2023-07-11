@@ -1,4 +1,4 @@
-package io.microhooks.internal;
+package io.microhooks.core.internal;
 
 
 public class BrokerNotSupportedException extends RuntimeException {

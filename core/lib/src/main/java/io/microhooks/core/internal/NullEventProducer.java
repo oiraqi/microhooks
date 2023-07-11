@@ -1,9 +1,9 @@
-package io.microhooks.internal;
+package io.microhooks.core.internal;
 
 import java.io.IOException;
 
 import io.microhooks.core.Event;
-import io.microhooks.internal.util.JsonSerdes;
+import io.microhooks.core.internal.util.JsonSerdes;
 
 public class NullEventProducer extends EventProducer {
 

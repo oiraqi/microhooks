@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import io.microhooks.internal.util.ClassScanner;
+import io.microhooks.core.internal.util.ClassScanner;
 
 import org.springframework.transaction.annotation.Transactional;
 
