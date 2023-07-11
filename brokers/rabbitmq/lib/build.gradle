@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation files('../../../../framework/lib/build/libs/lib.jar')
+    implementation files('../../../core/lib/build/libs/lib.jar')
     
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13.2'

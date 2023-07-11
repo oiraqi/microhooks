@@ -1,4 +1,4 @@
-package io.microhooks.env.spring;
+package io.microhooks.containers.spring;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

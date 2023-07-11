@@ -1,4 +1,4 @@
-package io.microhooks.broker.rabbitmq;
+package io.microhooks.brokers.rabbitmq;
 
 import java.io.IOException;
 
