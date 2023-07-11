@@ -16,8 +16,12 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    baseName 'microhooks-spring'
+}
+
 dependencies {
-    implementation files('../../../core/lib/build/libs/lib.jar')
+    implementation files('../../../core/lib/build/libs/microhooks.jar')
     
     implementation 'javax.persistence:javax.persistence-api:2.2'
     implementation 'org.springframework.boot:spring-boot-starter-aop:2.6.2'    

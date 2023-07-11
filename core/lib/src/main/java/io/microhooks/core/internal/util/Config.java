@@ -6,8 +6,8 @@ import io.microhooks.core.internal.NullEventProducer;
 
 public class Config {
 
-    public static String getAppName() {
-        return System.getProperty("appName");
+    public static String getServiceName() {
+        return System.getProperty("serviceName");
     }
 
     public static EventProducer getEventProducer() throws Exception {

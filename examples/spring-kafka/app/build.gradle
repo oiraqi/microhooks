@@ -29,8 +29,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-    implementation files('../../../core/lib/build/libs/lib.jar')
-    implementation files('../../../containers/spring/lib/build/libs/lib1.jar')
+    implementation files('../../../core/lib/build/libs/microhooks.jar')
+    implementation files('../../../containers/spring/lib/build/libs/microhooks-spring.jar')
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'

@@ -17,7 +17,7 @@ import io.microhooks.core.Event;
 @SpringBootApplication
 @RestController
 @CustomSink
-@Import(io.microhooks.env.spring.Config.class)
+@Import(io.microhooks.containers.spring.Config.class)
 public class Test {
 
     @Autowired

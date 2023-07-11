@@ -5,7 +5,7 @@ import io.microhooks.core.internal.util.Config;
 
 public abstract class EventProducer {
 
-    private final String appName = Config.getAppName();
+    private final String serviceName = Config.getServiceName();
 
     public void publish(String key, Object payload, String label, String[] streams) {
         if (key == null) {
@@ -24,7 +24,7 @@ public abstract class EventProducer {
         
         Event<Object> event = new Event<Object>(payload, label);
         for (int i = 0; i < streams.length; i++) {
-            publish(key, event, appName + "#" + streams[i]);
+            publish(key, event, serviceName + "#" + streams[i]);
         }
     }
 
