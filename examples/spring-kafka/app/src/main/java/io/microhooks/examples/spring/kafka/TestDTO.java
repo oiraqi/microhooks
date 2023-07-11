@@ -1,8 +1,11 @@
 package io.microhooks.examples.spring.kafka;
 
-import lombok.Value;
+import io.microhooks.core.Dto;
 
-@Value
+import lombok.Data;
+
+@Data
+@Dto
 public class TestDTO {
-    private final String name;
+    private String name;
 }

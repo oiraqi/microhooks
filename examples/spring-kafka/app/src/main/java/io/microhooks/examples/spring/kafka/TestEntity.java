@@ -1,7 +1,5 @@
 package io.microhooks.examples.spring.kafka;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
@@ -20,7 +18,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Source(mappings = {"Test:io.microhooks.test.spring.TestDTO"})
+@Source(mappings = {"Test:io.microhooks.examples.spring.kafka.TestDTO"})
 @CustomSource
 @Sink(stream = "Hi")
 public class TestEntity {

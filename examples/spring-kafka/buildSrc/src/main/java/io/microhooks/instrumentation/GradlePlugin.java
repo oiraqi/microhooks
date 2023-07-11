@@ -32,7 +32,8 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         String annotations = target.getInheritedAnnotations().toString();
         return annotations.contains("@io.microhooks.producer.Source") ||
                 annotations.contains("@io.microhooks.producer.CustomProducer") ||
-                annotations.contains("@io.microhooks.consumer.CustomConsumer");
+                annotations.contains("@io.microhooks.consumer.CustomConsumer") ||
+                annotations.contains("@io.microhooks.core.Dto");
     }
 
     @Override
@@ -43,6 +44,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         boolean isSource = annotations.contains("@io.microhooks.producer.Source");
         boolean isCustomSource = annotations.contains("@io.microhooks.producer.CustomSource");
         boolean isCustomSink = annotations.contains("@io.microhooks.consumer.CustomSink");
+
 
         Loader loader = new Loader();       
 
@@ -80,7 +82,12 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                 listeners[0] = sourceListener;
             }
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
-                            .defineTypeArray("value",listeners).build());
+                            .defineTypeArray("value", listeners).build());
+        } else if (annotations.contains("@io.microhooks.core.Dto")) {
+            Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties",
+                                                        classFileLocator);
+            builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
+                            .define("ignoreUnknown", true).build());
         }
 
         return builder;

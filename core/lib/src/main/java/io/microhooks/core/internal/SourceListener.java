@@ -78,13 +78,13 @@ public class SourceListener extends Listener {
                 for (String mapping : source.mappings()) {
                     StringTokenizer strTok = new StringTokenizer(mapping, ":");
                     String stream = strTok.nextToken();
-                    String dto = strTok.nextToken();
-                    Class<?> dtoClass = Class.forName(dto);
+                    String dtoClassName = strTok.nextToken();
+                    Class<?> dtoClass = Class.forName(dtoClassName);
                     mappings.put(stream, objectMapper.convertValue(entity, dtoClass));
                 }
 
             } catch (Exception ex) {
-
+                ex.printStackTrace();
             }
         }
         return mappings;
