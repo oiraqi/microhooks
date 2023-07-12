@@ -15,7 +15,7 @@ import io.microhooks.core.internal.util.ClassScanner;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class EventSubscriptionSetup {
+public class EventSubscriptionSetup extends io.microhooks.core.internal.EventSubscriptionSetup {
 
     @PersistenceContext
     EntityManager em;
@@ -23,7 +23,7 @@ public class EventSubscriptionSetup {
     @Transactional
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationEvent() {
-        System.out.println("xxxxxxxxxxxx HELLO xxxxxxxxxxxxxxx");
-        ClassScanner.test(em);
+        getEventConsumer().subscribe(em, getSinkMap(), getCustomSinkMap());
     }
+
 }

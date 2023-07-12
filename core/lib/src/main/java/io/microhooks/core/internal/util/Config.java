@@ -3,6 +3,7 @@ package io.microhooks.core.internal.util;
 import io.microhooks.core.internal.BrokerNotSupportedException;
 import io.microhooks.core.internal.EventProducer;
 import io.microhooks.core.internal.NullEventProducer;
+import io.microhooks.core.internal.EventConsumer;
 
 public class Config {
 
@@ -35,7 +36,34 @@ public class Config {
         }
         
         return (EventProducer)clazz.getDeclaredConstructor(String.class).newInstance(brokerCluster);
+                
+    }
+
+    public static EventConsumer getEventConsumer() throws Exception {
+        String brokerType = System.getProperty("brokerType");
+
+        if (brokerType == null) {
+            brokerType = "kafka";
+        }
+
+        String brokerCluster = System.getProperty("brokerCluster");
+        if (brokerCluster == null) {
+            brokerCluster = "localhost:9092";
+        }
+
+        Class<?> clazz = null;
+
+        if (brokerType.trim().equals("kafka")) {
+            clazz = Class.forName("io.microhooks.brokers.KafkaEventConsumer");
+        } else if (brokerType.trim().equals("rabbitmq")) {
+            clazz = Class.forName("io.microhooks.brokers.RabbitMQEventConsumer");
+        } else if (brokerType.trim().equals("rocketmq")) {
+            clazz = Class.forName("io.microhooks.brokers.RocketMQEventConsumer");
+        } else {
+            throw new BrokerNotSupportedException(brokerType);
+        }
         
-        
+        return (EventConsumer)clazz.getDeclaredConstructor(String.class).newInstance(brokerCluster);
+                
     }
 }
