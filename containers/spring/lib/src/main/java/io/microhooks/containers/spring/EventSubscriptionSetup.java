@@ -22,7 +22,7 @@ public class EventSubscriptionSetup extends io.microhooks.core.internal.EventSub
 
     @Transactional
     @EventListener(ApplicationReadyEvent.class)
-    public void onApplicationEvent() {
+    public void subscribe() {
         getEventConsumer().subscribe(em, getSinkMap(), getCustomSinkMap());
     }
 

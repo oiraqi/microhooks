@@ -15,6 +15,8 @@ public abstract class EventSubscriptionSetup {
     private Map<String, ArrayList<Class<?>>> customSinkMap;
     private EventConsumer eventConsumer;
 
+    public abstract void subscribe();
+
     protected Map<String, ArrayList<Class<?>>> getSinkMap() {
         if (sinkMap == null) {
             buildSinkMap();
