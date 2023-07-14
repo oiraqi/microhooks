@@ -56,7 +56,7 @@ public abstract class EventSubscriptionSetup {
             if (sinkMap.containsKey(stream)) {
                 sinkMap.get(stream).add(sink);
             } else {
-                ArrayList list = new ArrayList();
+                ArrayList<Class<?>> list = new ArrayList<>();
                 list.add(sink);
                 sinkMap.put(stream, list);
             }

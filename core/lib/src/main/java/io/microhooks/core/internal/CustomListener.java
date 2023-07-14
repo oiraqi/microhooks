@@ -39,7 +39,6 @@ public class CustomListener extends Listener {
     @SuppressWarnings("unchecked")
     public void onPostUpdate(Object entity) throws Exception {
         for (Method method : CachingReflector.getOnUpdateMethods(entity)) {
-
             Map<String, Object> trackedFields = ((Trackable) entity).getMicrohooksTrackedFields();
             Iterator<String> keys = trackedFields.keySet().iterator();
             Map<String, Object> changedTrackedFields = new HashMap<>();

@@ -30,10 +30,11 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
     @Override
     public boolean matches(TypeDescription target) {
         String annotations = target.getDeclaredAnnotations().toString();
-        return annotations.contains("@io.microhooks.core.Microhooks") ||
+        return annotations.contains("@io.microhooks.core.MicrohooksApplication") ||
                 annotations.contains("@io.microhooks.producer.Source") ||
-                annotations.contains("@io.microhooks.producer.CustomProducer") ||
-                annotations.contains("@io.microhooks.consumer.CustomConsumer") ||
+                annotations.contains("@io.microhooks.producer.CustomSource") ||
+                annotations.contains("@io.microhooks.consumer.Sink") ||
+                annotations.contains("@io.microhooks.consumer.CustomSink") ||
                 annotations.contains("@io.microhooks.core.Dto");
     }
 
@@ -44,8 +45,8 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         String annotations = target.getDeclaredAnnotations().toString();
         boolean isSource = annotations.contains("@io.microhooks.producer.Source");
         boolean isCustomSource = annotations.contains("@io.microhooks.producer.CustomSource");
+        boolean isSink = annotations.contains("@io.microhooks.consumer.Sink");
         boolean isCustomSink = annotations.contains("@io.microhooks.consumer.CustomSink");
-
 
         Loader loader = new Loader();       
 
@@ -84,13 +85,21 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
             }
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
                             .defineTypeArray("value", listeners).build());
+        } else if(isSink) {
+            Class sinkable = loader.findClass("io.microhooks.core.internal.Sinkable", classFileLocator);
+            builder = builder.implement(sinkable)
+                    .defineField("microhooksSourceId", long.class, Visibility.PRIVATE)
+                    .defineMethod("getMicrohooksSourceId", long.class, Visibility.PUBLIC)
+                    .intercept(FieldAccessor.ofField("microhooksSourceId"))
+                    .defineMethod("setMicrohooksSourceId", void.class, Visibility.PUBLIC)
+                    .withParameters(long.class)
+                    .intercept(FieldAccessor.ofField("microhooksSourceId"));
         } else if (annotations.contains("@io.microhooks.core.Dto")) {
             Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties",
                                                         classFileLocator);
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
                             .define("ignoreUnknown", true).build());
-        } else if (annotations.contains("@io.microhooks.core.MicrohooksApplication")) {      
-            System.out.println("Hi!");  
+        } else if (annotations.contains("@io.microhooks.core.MicrohooksApplication")) {                  
             try {
                 Class microhooksApp = loader.findClass("io.microhooks.core.MicrohooksApplication", classFileLocator);
                 String container = (String)microhooksApp.getMethod("container").invoke(target.getDeclaredAnnotations().ofType(microhooksApp).load());
