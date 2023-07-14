@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring.kafka;
+package io.microhooks.examples.spring;
 
 import java.util.Map;
 
@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import io.microhooks.consumer.Sink;
 import io.microhooks.core.Event;
 import io.microhooks.producer.CustomSource;
 import io.microhooks.producer.OnCreate;
@@ -18,10 +17,9 @@ import lombok.Data;
 
 @Entity
 @Data
-@Source(mappings = {"Test:io.microhooks.examples.spring.kafka.TestDTO"})
+@Source(mappings = {"Stream1:io.microhooks.examples.spring.kafka.Dto1", "Stream2:io.microhooks.examples.spring.kafka.Dto2"})
 @CustomSource
-@Sink(stream = "Hi")
-public class TestEntity {
+public class SourceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

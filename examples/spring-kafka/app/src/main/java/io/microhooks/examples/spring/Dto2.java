@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring.kafka;
+package io.microhooks.examples.basic;
 
 import io.microhooks.core.Dto;
 
@@ -6,6 +6,6 @@ import lombok.Data;
 
 @Data
 @Dto
-public class TestDTO {
+public class Dto2 {
     private String name;
 }

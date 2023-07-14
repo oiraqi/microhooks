@@ -49,7 +49,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'io.microhooks.examples.spring.kafka.Test'
+    mainClass = 'io.microhooks.examples.spring.SourceMicroservice'
 }
 
 byteBuddy {
