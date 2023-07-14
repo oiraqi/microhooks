@@ -11,7 +11,7 @@ import org.atteo.classindex.IndexAnnotated;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @IndexAnnotated
-public @interface Config {
+public @interface Microhooks {
     String container() default "spring";
     String broker() default "kafka";
     String brokerCluster() default "localhost:9092";

@@ -30,11 +30,11 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
     @Override
     public boolean matches(TypeDescription target) {
         String annotations = target.getDeclaredAnnotations().toString();
-        return annotations.contains("@io.microhooks.producer.Source") ||
+        return annotations.contains("@io.microhooks.core.Microhooks") ||
+                annotations.contains("@io.microhooks.producer.Source") ||
                 annotations.contains("@io.microhooks.producer.CustomProducer") ||
                 annotations.contains("@io.microhooks.consumer.CustomConsumer") ||
-                annotations.contains("@io.microhooks.core.Dto") ||
-                annotations.contains("@io.microhooks.core.Config");
+                annotations.contains("@io.microhooks.core.Dto");
     }
 
     @Override
@@ -89,17 +89,12 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                                                         classFileLocator);
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
                             .define("ignoreUnknown", true).build());
-        } else if (annotations.contains("@io.microhooks.core.Config")) {      
+        } else if (annotations.contains("@io.microhooks.core.Microhooks")) {      
             System.out.println("Hi!");  
             try {
-                Class config = loader.findClass("io.microhooks.core.Config", classFileLocator);
-                String container = (String)config.getMethod("container").invoke(target.getDeclaredAnnotations().ofType(config).load());
-                System.out.println(1);
-                System.out.println(target);
-                System.out.println(container);
+                Class microhooks = loader.findClass("io.microhooks.core.Microhooks", classFileLocator);
+                String container = (String)microhooks.getMethod("container").invoke(target.getDeclaredAnnotations().ofType(microhooks).load());
                 if (container.equals("spring")) {
-                    System.out.println(2);
-                    System.out.println(target);
                     Class importt = loader.findClass("org.springframework.context.annotation.Import", classFileLocator);
                     Class springConfig = loader.findClass("io.microhooks.containers.spring.Config", classFileLocator);
                     builder = builder.annotateType(AnnotationDescription.Builder.ofType(importt)
