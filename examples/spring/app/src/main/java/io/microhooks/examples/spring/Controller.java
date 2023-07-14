@@ -14,6 +14,7 @@ public class Controller {
     public String sayHello() {
         SourceEntity entity = new SourceEntity();
         entity.setName("Hi!");
+        entity.setAmount(10);
         entity = sourceRepo.save(entity);
 
         entity.setName("Hello");

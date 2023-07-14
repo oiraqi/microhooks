@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import io.microhooks.core.internal.util.ClassScanner;
+import io.microhooks.core.internal.util.Config;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +22,8 @@ public class EventSubscriptionSetup extends io.microhooks.core.internal.EventSub
 
     @Transactional
     @EventListener(ApplicationReadyEvent.class)
-    public void subscribe() {
-        getEventConsumer().subscribe(em, getSinkMap(), getCustomSinkMap());
+    public void subscribe() throws Exception {
+        Config.getEventConsumer().subscribe(em, getSinkMap(), getCustomSinkMap());
     }
 
 }

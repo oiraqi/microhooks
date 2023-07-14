@@ -31,6 +31,7 @@ dependencies {
 
     implementation files('../../../core/lib/build/libs/microhooks.jar')
     implementation files('../../../containers/spring/lib/build/libs/microhooks-spring.jar')
+    implementation files('../../../brokers/kafka/lib/build/libs/microhooks-kafka.jar')
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'

@@ -16,10 +16,16 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation files('../../../core/lib/build/libs/lib.jar')
+jar {
+    baseName 'microhooks-kafka'
+}
 
+dependencies {
+    implementation files('../../../core/lib/build/libs/microhooks.jar')
     implementation 'org.apache.kafka:kafka-clients:2.4.0'
+
+    implementation 'org.apache.kafka:kafka-streams:3.5.0'
+
     
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13.2'

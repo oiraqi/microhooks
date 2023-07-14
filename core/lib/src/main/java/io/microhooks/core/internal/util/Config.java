@@ -2,7 +2,6 @@ package io.microhooks.core.internal.util;
 
 import org.atteo.classindex.ClassIndex;
 
-import io.microhooks.consumer.Sink;
 import io.microhooks.core.MicrohooksApplication;
 import io.microhooks.core.internal.BrokerNotSupportedException;
 import io.microhooks.core.internal.EventProducer;
@@ -15,24 +14,29 @@ public class Config {
     private static EventProducer eventProducer = null;
     private static EventConsumer eventConsumer = null;
     private static String brokerType = null;
+    private static String brokerCluster = null;
 
-    public static void initBrokerType() {
-        if (brokerType == null) {
+    public static void initBroker() {
+        if (brokerType == null || brokerCluster == null) {
             Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
             MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
-            brokerType = annotation.broker();
-        }
+            if (brokerType == null) {
+                brokerType = annotation.broker();
+            }
+            if (brokerCluster == null) {
+                brokerCluster = annotation.brokerCluster();
+            }
+        }        
     }
 
     public static EventProducer getEventProducer() throws Exception {
         if (eventProducer == null) {            
-            initBrokerType();
+            initBroker();
 
             if (brokerType == null) {
                 return new NullEventProducer();
             }
 
-            String brokerCluster = System.getProperty("brokerCluster");
             if (brokerCluster == null) {
                 brokerCluster = "localhost:9092";
             }
@@ -40,11 +44,11 @@ public class Config {
             Class<?> clazz = null;
 
             if (brokerType.trim().equals("kafka")) {
-                clazz = Class.forName("io.microhooks.brokers.KafkaEventProducer");
+                clazz = Class.forName("io.microhooks.brokers.kafka.KafkaEventProducer");
             } else if (brokerType.trim().equals("rabbitmq")) {
-                clazz = Class.forName("io.microhooks.brokers.RabbitMQEventProducer");
+                clazz = Class.forName("io.microhooks.brokers.rabbitmq.RabbitMQEventProducer");
             } else if (brokerType.trim().equals("rocketmq")) {
-                clazz = Class.forName("io.microhooks.brokers.RocketMQEventProducer");
+                clazz = Class.forName("io.microhooks.brokers.rocketmq.RocketMQEventProducer");
             } else {
                 throw new BrokerNotSupportedException(brokerType);
             }
@@ -56,7 +60,7 @@ public class Config {
 
     public static EventConsumer getEventConsumer() throws Exception {
         if (eventConsumer == null) {
-            initBrokerType();
+            initBroker();
 
             if (brokerType == null) {
                 brokerType = "kafka";
@@ -70,11 +74,11 @@ public class Config {
             Class<?> clazz = null;
 
             if (brokerType.trim().equals("kafka")) {
-                clazz = Class.forName("io.microhooks.brokers.KafkaEventConsumer");
+                clazz = Class.forName("io.microhooks.brokers.kafka.KafkaEventConsumer");
             } else if (brokerType.trim().equals("rabbitmq")) {
-                clazz = Class.forName("io.microhooks.brokers.RabbitMQEventConsumer");
+                clazz = Class.forName("io.microhooks.brokers.rabbitmq.RabbitMQEventConsumer");
             } else if (brokerType.trim().equals("rocketmq")) {
-                clazz = Class.forName("io.microhooks.brokers.RocketMQEventConsumer");
+                clazz = Class.forName("io.microhooks.brokers.rocketmq.RocketMQEventConsumer");
             } else {
                 throw new BrokerNotSupportedException(brokerType);
             }

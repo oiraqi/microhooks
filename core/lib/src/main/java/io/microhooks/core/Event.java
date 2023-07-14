@@ -8,6 +8,10 @@ import lombok.Getter;
 
 @Getter
 public class Event<U> {
+	public static final String RECORD_CREATED = "_R_C_";
+    public static final String RECORD_UPDATED = "_R_U_";
+    public static final String RECORD_DELETED = "_R_D_";
+
 	@Getter
 	private final U payload;
 	private final String label;
@@ -18,7 +22,7 @@ public class Event<U> {
 		this.payload = payload;
 		this.label = label;
 		timestamp = new Date().getTime();
-		owner = Config.getSecurityContext().getUsername();
+		owner = "iraqi"; //Config.getSecurityContext().getUsername();
 	}
 
 }

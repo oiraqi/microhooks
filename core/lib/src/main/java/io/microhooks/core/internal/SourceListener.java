@@ -5,6 +5,7 @@ import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
+import io.microhooks.core.Event;
 import io.microhooks.core.internal.util.CachingReflector;
 import io.microhooks.core.internal.util.logging.Logged;
 
@@ -15,29 +16,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SourceListener extends Listener {
 
-    private static final String CREATED = "C";
-    private static final String UPDATED = "U";
-    private static final String DELETED = "D";
-
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @PostPersist
     @Logged
     public void onPostPersist(Object entity) throws Exception {
-        publish(entity, CREATED);
+        publish(entity, Event.RECORD_CREATED);
         System.out.println(entity);
     }
 
     @PostUpdate
     @Logged
     public void onPostUpdate(Object entity) throws Exception {
-        publish(entity, UPDATED);
+        publish(entity, Event.RECORD_UPDATED);
     }
 
     @PostRemove
     @Logged
     public void onPostRemove(Object entity) throws Exception {
-        publish(entity, DELETED);
+        publish(entity, Event.RECORD_DELETED);
     }
 
     private void publish(Object entity, String operation) throws Exception {

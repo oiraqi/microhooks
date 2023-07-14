@@ -5,17 +5,15 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import org.atteo.classindex.ClassIndex;
 
-import io.microhooks.core.internal.util.Config;
 import io.microhooks.consumer.Sink;
 
 public abstract class EventSubscriptionSetup {
 
     private Map<String, ArrayList<Class<?>>> sinkMap;
     private Map<String, ArrayList<Class<?>>> customSinkMap;
-    private EventConsumer eventConsumer;
 
     //Callback exposed to the underlying container
-    public abstract void subscribe();
+    public abstract void subscribe() throws Exception;
 
     protected Map<String, ArrayList<Class<?>>> getSinkMap() {
         if (sinkMap == null) {
@@ -29,18 +27,6 @@ public abstract class EventSubscriptionSetup {
             buildCustomSinkMap();
         }
         return customSinkMap;
-    }
-
-    protected EventConsumer getEventConsumer() {
-        if (eventConsumer == null) {
-            try {
-                eventConsumer = Config.getEventConsumer();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                return null;
-            }
-        }
-        return eventConsumer;
     }
 
     private void buildSinkMap() {
