@@ -5,9 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.atteo.classindex.IndexAnnotated;
+
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ProcessEvent {
-    String stream();
-    String label() default "*";
+@Target(ElementType.FIELD)
+public @interface SourceId {
+    
 }

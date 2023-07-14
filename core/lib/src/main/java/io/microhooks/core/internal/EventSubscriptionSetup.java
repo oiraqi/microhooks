@@ -7,7 +7,6 @@ import org.atteo.classindex.ClassIndex;
 
 import io.microhooks.core.internal.util.Config;
 import io.microhooks.consumer.Sink;
-import io.microhooks.consumer.CustomSink;
 
 public abstract class EventSubscriptionSetup {
 
@@ -15,6 +14,7 @@ public abstract class EventSubscriptionSetup {
     private Map<String, ArrayList<Class<?>>> customSinkMap;
     private EventConsumer eventConsumer;
 
+    //Callback exposed to the underlying container
     public abstract void subscribe();
 
     protected Map<String, ArrayList<Class<?>>> getSinkMap() {
@@ -44,14 +44,43 @@ public abstract class EventSubscriptionSetup {
     }
 
     private void buildSinkMap() {
+        if (sinkMap != null) {
+            return;
+        }
+
         sinkMap = new HashMap<>();
         Iterable<Class<?>> sinks = ClassIndex.getAnnotated(Sink.class);
         for (Class<?> sink : sinks) {
+            Sink sinkAnnotation = sink.<Sink>getAnnotation(Sink.class);
+            String stream = sinkAnnotation.stream();
+            if (sinkMap.containsKey(stream)) {
+                sinkMap.get(stream).add(sink);
+            } else {
+                ArrayList list = new ArrayList();
+                list.add(sink);
+                sinkMap.put(stream, list);
+            }
         }
     }
 
     private void buildCustomSinkMap() {
-        
+        if (customSinkMap != null) {
+            return;
+        }
+
+        /*customSinkMap = new HashMap<>();
+        Iterable<Class<?>> customSinks = ClassIndex.getAnnotated(CustomSink.class);
+        for (Class<?> customSink : customSinks) {
+            CustomSink customSinkAnnotation = customSink.<CustomSink>getAnnotation(CustomSink.class);
+            String stream = customSinkAnnotation.stream();
+            if (customSinkMap.containsKey(stream)) {
+                customSinkMap.get(stream).add(customSink);
+            } else {
+                ArrayList list = new ArrayList();
+                list.add(customSink);
+                customSinkMap.put(stream, list);
+            }
+        }*/
     }
     
 }

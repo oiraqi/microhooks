@@ -7,10 +7,7 @@ public abstract class EventProducer {
 
     private final String serviceName = Config.getServiceName();
 
-    public void publish(String key, Object payload, String label, String[] streams) {
-        if (key == null) {
-            throw new IllegalArgumentException("Key can't be null");
-        }
+    public void publish(long id, Object payload, String label, String[] streams) {
 
         if (streams == null || streams.length == 0) {
             throw new IllegalArgumentException("Streams can't be null or empty");
@@ -24,22 +21,22 @@ public abstract class EventProducer {
         
         Event<Object> event = new Event<Object>(payload, label);
         for (int i = 0; i < streams.length; i++) {
-            publish(key, event, serviceName + "#" + streams[i]);
+            publish(id, event, serviceName + "#" + streams[i]);
         }
     }
 
-    public void publish(String key, Object payload, String[] streams) {
-        publish(key, payload, null, streams);
+    public void publish(long id, Object payload, String[] streams) {
+        publish(id, payload, null, streams);
     }
 
-    public void publish(String key, Object payload, String label, String stream) {
-        publish(key, payload, label, new String[] {stream});
+    public void publish(long id, Object payload, String label, String stream) {
+        publish(id, payload, label, new String[] {stream});
     }
 
-    public void publish(String key, Object payload, String stream) {
-        publish(key, payload, null, stream);
+    public void publish(long id, Object payload, String stream) {
+        publish(id, payload, null, stream);
     }
 
-    protected abstract void publish(String key, Event<Object> event, String stream);
+    protected abstract void publish(long id, Event<Object> event, String stream);
 
 }

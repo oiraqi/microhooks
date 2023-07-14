@@ -4,6 +4,7 @@ import io.microhooks.core.internal.BrokerNotSupportedException;
 import io.microhooks.core.internal.EventProducer;
 import io.microhooks.core.internal.NullEventProducer;
 import io.microhooks.core.internal.EventConsumer;
+import io.microhooks.core.internal.SecurityContext;
 
 public class Config {
 
@@ -65,5 +66,9 @@ public class Config {
         
         return (EventConsumer)clazz.getDeclaredConstructor(String.class).newInstance(brokerCluster);
                 
+    }
+
+    public static SecurityContext getSecurityContext() {
+        return null;
     }
 }

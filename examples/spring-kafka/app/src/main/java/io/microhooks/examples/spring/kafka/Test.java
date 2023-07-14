@@ -6,18 +6,18 @@ package io.microhooks.examples.spring.kafka;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.microhooks.consumer.CustomSink;
 import io.microhooks.consumer.ProcessEvent;
 import io.microhooks.core.Event;
+import io.microhooks.core.Config;
 
 @SpringBootApplication
 @RestController
 @CustomSink
-@Import(io.microhooks.containers.spring.Config.class)
+@Config
 public class Test {
 
     @Autowired
@@ -43,7 +43,7 @@ public class Test {
         return "Hello!";
     }
 
-    @ProcessEvent(streams="CustomStream", label="NameChanged")
+    @ProcessEvent(stream="CustomStream", label="NameChanged")
     public void processEvent(long key, Event<String> event) {
         System.out.println("Received Event Key: " + key);
         System.out.println("Received Event Timestamp: " + event.getTimestamp());
