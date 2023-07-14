@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring;
+package io.microhooks.examples.quarkus;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -6,7 +6,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import io.microhooks.consumer.Sink;
-import io.microhooks.core.Event;
 
 import lombok.Data;
 

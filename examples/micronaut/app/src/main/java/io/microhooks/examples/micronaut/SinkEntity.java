@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring;
+package io.microhooks.examples.micronaut;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,13 +11,13 @@ import lombok.Data;
 
 @Entity
 @Data
-@Sink(stream = "Stream2")
+@Sink(stream = "Stream1")
 public class SinkEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private int amount;
+    private String name;
 
 }

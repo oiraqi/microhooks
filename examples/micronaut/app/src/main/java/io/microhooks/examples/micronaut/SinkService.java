@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring;
+package io.microhooks.examples.micronaut;
 
 
 import io.microhooks.consumer.CustomSink;
