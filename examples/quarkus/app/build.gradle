@@ -17,14 +17,15 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit test framework.
-    testImplementation 'junit:junit:4.13.2'
-
-    // This dependency is used by the application.
+    implementation files('../../../core/lib/build/libs/microhooks.jar')
     implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
 }
 
 application {
     // Define the main class for the application.
-    mainClass = 'io.microhooks.tests.quarkus.rabbitmq.App'
+    mainClass = 'io.microhooks.examples.quarkus.SinkMicroservice'
 }
