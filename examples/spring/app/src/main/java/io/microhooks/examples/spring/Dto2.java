@@ -1,4 +1,4 @@
-package io.microhooks.examples.basic;
+package io.microhooks.examples.spring;
 
 import io.microhooks.core.Dto;
 
@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 @Dto
 public class Dto2 {
-    private String name;
+    private int amount;
 }

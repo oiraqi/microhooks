@@ -17,7 +17,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Source(mappings = {"Stream1:io.microhooks.examples.spring.kafka.Dto1", "Stream2:io.microhooks.examples.spring.kafka.Dto2"})
+@Source(mappings = {"Stream1:io.microhooks.examples.spring.Dto1", "Stream2:io.microhooks.examples.spring.Dto2"})
 @CustomSource
 public class SourceEntity {
 
@@ -27,6 +27,8 @@ public class SourceEntity {
 
     @Track
     private String name;
+
+    private int amount;
 
     @OnCreate(stream = "CustomStream")
     public Event<String> onCreate() {
