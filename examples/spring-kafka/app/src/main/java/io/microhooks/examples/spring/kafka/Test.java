@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import io.microhooks.consumer.CustomSink;
 import io.microhooks.consumer.ProcessEvent;
 import io.microhooks.core.Event;
-import io.microhooks.core.Microhooks;
+import io.microhooks.core.MicrohooksApplication;
 
 @SpringBootApplication
 @RestController
 @CustomSink
-@Microhooks
+@MicrohooksApplication
 public class Test {
 
     @Autowired
