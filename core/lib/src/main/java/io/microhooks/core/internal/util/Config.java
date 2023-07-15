@@ -17,6 +17,9 @@ public class Config {
     private static BrokerType brokerType = null;
     private static String brokerCluster = null;
     private static String serviceName = null;
+    private static int authenticate = -1;
+    private static String authenticationKey = null;
+    private static int sign = -1;
 
     public static String getServiceName() {
         if (serviceName == null) {
@@ -25,6 +28,33 @@ public class Config {
             serviceName = annotation.name();
         }
         return serviceName;
+    }
+
+    public static boolean getAuthenticate() {
+        if (authenticate == -1) {
+            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
+            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
+            authenticate = annotation.authenticate() ? 1:0;
+        }
+        return authenticate == 1;
+    }
+
+    public static String getAuthenticationKey() {
+        if (authenticationKey == null) {
+            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
+            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
+            authenticationKey = annotation.authenticationKey();
+        }
+        return authenticationKey;
+    }
+
+    public static boolean getSign() {
+        if (sign == -1) {
+            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
+            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
+            sign = annotation.sign() ? 1:0;
+        }
+        return sign == 1;
     }
 
     public static void init() {
