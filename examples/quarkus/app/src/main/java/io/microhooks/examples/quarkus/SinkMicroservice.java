@@ -4,8 +4,9 @@
 package io.microhooks.examples.quarkus;
 
 import io.microhooks.core.MicrohooksApplication;
+import io.microhooks.core.ContainerType;
 
-@MicrohooksApplication(container="quarkus")
+@MicrohooksApplication(name="SinkMicroservice2", container=ContainerType.QUARKUS)
 public class SinkMicroservice {
 
     public static void main(String[] args) {

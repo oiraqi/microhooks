@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Sink(stream = "Stream2")
+@Sink(stream = "SourceMicroservice-Stream2")
 public class SinkEntity {
 
     @Id

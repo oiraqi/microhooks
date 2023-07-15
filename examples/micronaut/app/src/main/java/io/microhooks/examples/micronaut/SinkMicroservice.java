@@ -4,8 +4,9 @@
 package io.microhooks.examples.micronaut;
 
 import io.microhooks.core.MicrohooksApplication;
+import io.microhooks.core.ContainerType;
 
-@MicrohooksApplication(container="micronaut")
+@MicrohooksApplication(name="SinkMicroservice1", container=ContainerType.MICRONAUT)
 public class SinkMicroservice {
     
     public static void main(String[] args) {
