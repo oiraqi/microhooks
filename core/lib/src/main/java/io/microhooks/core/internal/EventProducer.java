@@ -21,7 +21,7 @@ public abstract class EventProducer {
         
         Event<Object> event = new Event<Object>(payload, label);
         for (int i = 0; i < streams.length; i++) {
-            publish(id, event, serviceName + "/" + streams[i]);
+            publish(id, event, serviceName + "_" + streams[i]);
         }
     }
 

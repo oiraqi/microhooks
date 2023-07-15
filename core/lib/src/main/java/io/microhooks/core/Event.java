@@ -2,8 +2,6 @@ package io.microhooks.core;
 
 import java.util.Date;
 
-import io.microhooks.core.internal.util.Config;
-
 import lombok.Getter;
 
 @Getter

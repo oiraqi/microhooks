@@ -28,7 +28,11 @@ public class ApplicationBootstrap {
         Config.getEventConsumer().subscribe(em, sinkMap, customSinkMap);
     }
 
-    /*protected Map<String, ArrayList<Class<?>>> getSinkMap() {
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+
+    protected Map<String, ArrayList<Class<?>>> getSinkMap() {
         if (sinkMap == null) {
             buildSinkMap();
         }
@@ -40,7 +44,7 @@ public class ApplicationBootstrap {
             buildCustomSinkMap();
         }
         return customSinkMap;
-    }*/
+    }
 
     private void buildSinkMap() {
         if (sinkMap != null) {
