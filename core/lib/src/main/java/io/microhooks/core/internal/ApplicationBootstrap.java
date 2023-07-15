@@ -14,7 +14,8 @@ public class ApplicationBootstrap {
     //Callback to be exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
     //by the overriding container extension
     public void setup() throws Exception {      
-        Config.getEventConsumer().subscribe(em, CachingReflector.getSinkMap(), null);
+        Config.getEventConsumer().launch(em);
+        System.out.println(CachingReflector.getSinkMap());
     }
 
     protected EntityManager getEntityManager() {

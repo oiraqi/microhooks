@@ -21,7 +21,7 @@ public class KafkaEventConsumer extends EventConsumer {
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Long().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, EventDeserializer.class);
     }
-    protected void subscribeWithBroker() {
+    protected void subscribe() {
 
     }
     //processEvent(long sourceId, Event<Object> event, String stream)

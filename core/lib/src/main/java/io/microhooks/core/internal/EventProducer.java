@@ -12,7 +12,7 @@ public abstract class EventProducer {
         if (stream == null || stream.isEmpty()) {
             throw new IllegalArgumentException("No stream may be null or empty");
         }
-        publish(id, event, serviceName + "-" + stream);
+        doPublish(id, event, serviceName + "-" + stream);
     }
 
     protected abstract void doPublish(long id, Event<Object> event, String stream);
