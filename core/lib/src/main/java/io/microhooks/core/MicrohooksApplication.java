@@ -21,9 +21,9 @@ public @interface MicrohooksApplication {
     // The default public key to authenticate incoming events
     String authenticationKey() default "";
     // Whether to sign outgoing events or not
+    // This application's private key to sign outgoing events shall remain secret
+    // and shall be fetched from a secure config repo at runtime
     boolean sign() default true;
-    // This application's public key to sign outgoing events
-    String signingKey() default "";
     // Tag outgoing events with their respective owners
     boolean addOwnerToEvent() default false;
 }

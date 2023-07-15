@@ -12,7 +12,6 @@ import io.microhooks.core.ConfigOption;
 public @interface Source {
     String[] mappings();
     ConfigOption sign() default ConfigOption.APP;
-    String signingKey() default "";
     // Tag outgoing events with their respective owners
     ConfigOption addOwnerToEvent() default ConfigOption.APP;
 }
