@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import io.microhooks.core.MicrohooksApplication;
 
 @SpringBootApplication
-@MicrohooksApplication
+@MicrohooksApplication(name="SourceMicroservice")
 public class SourceMicroservice {
    
     public static void main(String[] args) {

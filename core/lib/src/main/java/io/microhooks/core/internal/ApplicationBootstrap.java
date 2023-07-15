@@ -3,19 +3,32 @@ package io.microhooks.core.internal;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.atteo.classindex.ClassIndex;
 
 import io.microhooks.consumer.Sink;
+import io.microhooks.core.internal.util.Config;
 
-public abstract class EventSubscriptionSetup {
+public class ApplicationBootstrap {
+
+    @PersistenceContext
+    EntityManager em;
 
     private Map<String, ArrayList<Class<?>>> sinkMap;
     private Map<String, ArrayList<Class<?>>> customSinkMap;
 
-    //Callback exposed to the underlying container
-    public abstract void subscribe() throws Exception;
+    //Callback exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
+    public void setup() throws Exception {
+        buildSinkMap();
+        buildCustomSinkMap();
+        
+        Config.getEventConsumer().subscribe(em, sinkMap, customSinkMap);
+    }
 
-    protected Map<String, ArrayList<Class<?>>> getSinkMap() {
+    /*protected Map<String, ArrayList<Class<?>>> getSinkMap() {
         if (sinkMap == null) {
             buildSinkMap();
         }
@@ -27,7 +40,7 @@ public abstract class EventSubscriptionSetup {
             buildCustomSinkMap();
         }
         return customSinkMap;
-    }
+    }*/
 
     private void buildSinkMap() {
         if (sinkMap != null) {

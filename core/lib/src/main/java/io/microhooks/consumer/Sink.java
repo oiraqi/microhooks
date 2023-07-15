@@ -12,4 +12,6 @@ import org.atteo.classindex.IndexAnnotated;
 @IndexAnnotated
 public @interface Sink {
     String stream();
+    AuthenticationType authentication() default AuthenticationType.APP;
+    String sourceKey() default "";
 }

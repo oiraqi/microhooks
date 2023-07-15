@@ -102,8 +102,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         } else if (annotations.contains("@io.microhooks.core.MicrohooksApplication")) {                  
             try {
                 Class microhooksApp = loader.findClass("io.microhooks.core.MicrohooksApplication", classFileLocator);
-                String container = (String)microhooksApp.getMethod("container").invoke(target.getDeclaredAnnotations().ofType(microhooksApp).load());
-                if (container.equals("spring")) {
+                Class containerType = loader.findClass("io.microhooks.core.ContainerType", classFileLocator);
+                Class brokerType = loader.findClass("io.microhooks.core.BrokerType", classFileLocator);
+                String container = microhooksApp.getMethod("container").invoke(target.getDeclaredAnnotations().ofType(microhooksApp).load()).toString();
+                if (container.equals("SPRING")) {
                     Class importt = loader.findClass("org.springframework.context.annotation.Import", classFileLocator);
                     Class springConfig = loader.findClass("io.microhooks.containers.spring.Config", classFileLocator);
                     builder = builder.annotateType(AnnotationDescription.Builder.ofType(importt)

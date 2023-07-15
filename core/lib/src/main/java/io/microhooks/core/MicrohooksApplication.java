@@ -12,7 +12,10 @@ import org.atteo.classindex.IndexAnnotated;
 @Target(ElementType.TYPE)
 @IndexAnnotated
 public @interface MicrohooksApplication {
-    String container() default "spring";
-    String broker() default "kafka";
+    String name();
+    ContainerType container() default ContainerType.SPRING;
+    BrokerType broker() default BrokerType.KAFKA;
     String brokerCluster() default "localhost:9092";
+    boolean authentication() default true;
+    String sourceKey() default "";
 }
