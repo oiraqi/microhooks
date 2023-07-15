@@ -1,22 +1,24 @@
 package io.microhooks.core.internal;
 
 import io.microhooks.core.Event;
+import io.microhooks.core.internal.util.Security;
 
 import java.util.Map;
 import java.util.ArrayList;
 
 import javax.persistence.EntityManager;
+import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class EventConsumer {
 
     private EntityManager em;
-    private Map<String, ArrayList<Class<?>>> sinks;
+    private Map<String, Map<Class<?>, String>> sinks;
     private Map<String, ArrayList<Class<?>>> customSinks;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public void subscribe(EntityManager em, Map<String, ArrayList<Class<?>>> sinks,
+    public void subscribe(EntityManager em, Map<String, Map<Class<?>, String>> sinks,
             Map<String, ArrayList<Class<?>>> customSinks) {
 
         this.em = em;
@@ -27,15 +29,21 @@ public abstract class EventConsumer {
 
     protected void processEvent(long sourceId, Event<Object> event, String stream) {
 
-        ArrayList<Class<?>> sinkEntityClasses = sinks.get(stream);
-        if (sinkEntityClasses != null && event.getLabel() != null) {
+        Map<Class<?>, String> sinkEntityClassMap = sinks.get(stream);
+        if (sinkEntityClassMap != null && event.getLabel() != null) {
             if (event.getLabel().equals(Event.RECORD_CREATED)) {
-                for (int i = 0; i < sinkEntityClasses.size(); i++) {
-                    Class<?> sinkEntityClass = sinkEntityClasses.get(i);
+                Iterator<Class<?>> sinkEntityClassIterator = sinkEntityClassMap.keySet().iterator();
+                while (sinkEntityClassIterator.hasNext()) {
+                    Class<?> sinkEntityClass = sinkEntityClassIterator.next();
+                    String authenticationKey = sinkEntityClassMap.get(sinkEntityClass);
+                    if (!authenticationKey.equals("") && !Security.verify(sourceId, event, authenticationKey))
+                            continue;
+                    
                     try {
                         Object sinkEntity = objectMapper.convertValue(event.getPayload(), sinkEntityClass);
                         ((Sinkable) sinkEntity).setMicrohooksSourceId(sourceId);
-                        em.persist(sinkEntity);
+                        System.out.println(sinkEntity);
+                        // em.persist(sinkEntity);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }                    

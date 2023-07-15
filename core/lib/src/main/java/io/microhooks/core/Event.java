@@ -14,16 +14,25 @@ public class Event<U> {
 	private final U payload;
 	private final String label;
 	private final long timestamp;
-	private final String owner;
+	private String owner;
 	@Getter
 	@Setter
 	private String signature;
 
-	public Event(U payload, String label) {		
+	public Event(U payload, String label, boolean addOwnerToEvent) {
 		this.payload = payload;
 		this.label = label;
 		timestamp = new Date().getTime();
-		owner = "iraqi"; //Config.getSecurityContext().getUsername();
+		if (addOwnerToEvent)
+			owner = "iraqi"; //Config.getSecurityContext().getUsername();
+	}
+
+	public Event(U payload, String label) {
+		this(payload, label, false);
+	}
+
+	public void sign(long id) {
+		signature = "sig";
 	}
 
 }

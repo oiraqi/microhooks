@@ -39,13 +39,19 @@ public class SourceListener extends Listener {
 
     private void publish(Object entity, String operation) throws Exception {
         long id = CachingReflector.getId(entity);
-        Iterator<Entry<String, Class<?>>> iterator = CachingReflector.getSourceMappings(entity).entrySet().iterator();        
+        Iterator<Entry<String, Entry<Class<?>, Boolean>>> iterator = CachingReflector.getSourceMappings(entity).entrySet().iterator();
+        boolean sign = CachingReflector.getSign(entity);
         while(iterator.hasNext()) {
-            Entry<String, Class<?>> mapping = iterator.next();
+            Entry<String, Entry<Class<?>, Boolean>> mapping = iterator.next();
             String stream = mapping.getKey();
-            Class<?> dtoClass = mapping.getValue();
+            Class<?> dtoClass = mapping.getValue().getKey();
+            boolean addOwnerToEvent = mapping.getValue().getValue();
             Object dto = objectMapper.convertValue(entity, dtoClass);
-            getEventProducer().publish(id, dto, operation, stream);
+            Event<Object> event = new Event<>(dto, operation, addOwnerToEvent);
+            if (sign) {
+                event.sign(id);
+            }
+            getEventProducer().publish(id, event, stream);
         }
     }
 

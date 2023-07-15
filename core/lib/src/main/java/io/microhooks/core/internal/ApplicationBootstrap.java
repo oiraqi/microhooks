@@ -10,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import org.atteo.classindex.ClassIndex;
 
 import io.microhooks.consumer.Sink;
+import io.microhooks.core.ConfigOption;
 import io.microhooks.core.internal.util.Config;
 
 public class ApplicationBootstrap {
@@ -17,7 +18,7 @@ public class ApplicationBootstrap {
     @PersistenceContext
     EntityManager em;
 
-    private Map<String, ArrayList<Class<?>>> sinkMap;
+    private Map<String, Map<Class<?>, String>> sinkMap; //<stream -- <entityClass -- authenticationKey>>
     private Map<String, ArrayList<Class<?>>> customSinkMap;
 
     //Callback to be exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
@@ -32,7 +33,7 @@ public class ApplicationBootstrap {
         return em;
     }
 
-    protected Map<String, ArrayList<Class<?>>> getSinkMap() {
+    protected Map<String, Map<Class<?>, String>> getSinkMap() {
         if (sinkMap == null) {
             buildSinkMap();
         }
@@ -56,12 +57,21 @@ public class ApplicationBootstrap {
         for (Class<?> sink : sinks) {
             Sink sinkAnnotation = sink.<Sink>getAnnotation(Sink.class);
             String stream = sinkAnnotation.stream();
+            ConfigOption authenticateOption = sinkAnnotation.authenticate();
+            String key = "";
+            if(authenticateOption == ConfigOption.ENABLED ||
+                (authenticateOption == ConfigOption.APP && Config.getAuthenticate())) {
+                key = sinkAnnotation.authenticationKey();
+                if (key.equals("")) {
+                    key = Config.getAuthenticationKey();
+                }
+            }
             if (sinkMap.containsKey(stream)) {
-                sinkMap.get(stream).add(sink);
+                sinkMap.get(stream).put(sink, key);
             } else {
-                ArrayList<Class<?>> list = new ArrayList<>();
-                list.add(sink);
-                sinkMap.put(stream, list);
+                Map<Class<?>, String> map = new HashMap<>();
+                map.put(sink, key);
+                sinkMap.put(stream, map);
             }
         }
     }

@@ -20,6 +20,7 @@ public class Config {
     private static int authenticate = -1;
     private static String authenticationKey = null;
     private static int sign = -1;
+    private static int addOwnerToEvent = -1;
 
     public static String getServiceName() {
         if (serviceName == null) {
@@ -46,6 +47,15 @@ public class Config {
             authenticationKey = annotation.authenticationKey();
         }
         return authenticationKey;
+    }
+
+    public static boolean getAddOwnerToEvent() {
+        if (addOwnerToEvent == -1) {
+            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
+            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
+            addOwnerToEvent = annotation.addOwnerToEvent() ? 1:0;
+        }
+        return addOwnerToEvent == 1;
     }
 
     public static boolean getSign() {

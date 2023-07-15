@@ -10,9 +10,7 @@ import org.apache.kafka.streams.kstream.KStream;
 import java.util.Arrays;
 import java.util.Properties;
 
-import io.microhooks.core.Event;
 import io.microhooks.core.internal.EventConsumer;
-import io.microhooks.core.internal.util.Config;
 
 public class KafkaEventConsumer extends EventConsumer {
 
@@ -21,7 +19,7 @@ public class KafkaEventConsumer extends EventConsumer {
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "KafkaEventConsumer");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.Long().getClass());
-        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, GenericKafkaDeserializer.class);
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, EventDeserializer.class);
     }
     protected void subscribeWithBroker() {
 

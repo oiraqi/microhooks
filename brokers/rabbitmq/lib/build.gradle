@@ -21,10 +21,8 @@ jar {
 }
 
 dependencies {
-    implementation files('../../../core/lib/build/libs/lib.jar')
+    implementation files('../../../core/lib/build/libs/microhooks.jar')
     
-    // Use JUnit test framework.
-    testImplementation 'junit:junit:4.13.2'
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api 'org.apache.commons:commons-math3:3.6.1'
