@@ -20,11 +20,11 @@ public class ApplicationBootstrap {
     private Map<String, ArrayList<Class<?>>> sinkMap;
     private Map<String, ArrayList<Class<?>>> customSinkMap;
 
-    //Callback exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
+    //Callback to be exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
+    //by the overriding container extension
     public void setup() throws Exception {
         buildSinkMap();
-        buildCustomSinkMap();
-        
+        buildCustomSinkMap();        
         Config.getEventConsumer().subscribe(em, sinkMap, customSinkMap);
     }
 
