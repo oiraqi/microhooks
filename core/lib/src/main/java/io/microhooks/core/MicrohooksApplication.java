@@ -16,6 +16,9 @@ public @interface MicrohooksApplication {
     ContainerType container() default ContainerType.SPRING;
     BrokerType broker() default BrokerType.KAFKA;
     String brokerCluster() default "localhost:9092";
-    boolean authentication() default true;
-    String sourceKey() default "";
+    boolean authenticate() default true; // Whether to authenticate/verify incoming events or not
+    String authenticationKey() default ""; // The default public key to authenticate incoming events
+    boolean sign() default true; // Whether to sign outgoing events or not
+    String signingKey() default ""; // This application's public key to sign outgoing events
+    boolean addOwnerToEvent() default false; // Tag outgoing events with their respective owners
 }
