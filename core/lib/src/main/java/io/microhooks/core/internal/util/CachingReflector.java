@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -12,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.Id;
 
+import org.atteo.classindex.ClassIndex;
+
+import io.microhooks.consumer.Sink;
 import io.microhooks.core.ConfigOption;
 import io.microhooks.core.internal.IdNotFoundException;
 import io.microhooks.producer.OnCreate;
@@ -22,28 +26,35 @@ import io.microhooks.producer.Track;
 
 public class CachingReflector {
 
-    //We use ConcurrentHashMap here for thread safety without sacrificing performance
+    // We use ConcurrentHashMap here for thread safety without sacrificing
+    // performance
 
-    //A cache for entity class Id names, so that they are extracted through
-    //refflection only once per entity class for better performance
+    // A cache for entity class Id names, so that they are extracted through
+    // refflection only once per entity class for better performance
     private static final Map<String, Long> IDMAP = new ConcurrentHashMap<>();
 
-    //A cache for reflected stream/DTO mappings so that reflection is performed only
-    //once per Source, entity class (for all its instances)
+    // A cache for reflected stream/DTO mappings so that reflection is performed
+    // only
+    // once per Source, entity class (for all its instances)
     private static final Map<String, Map<String, Entry<Class<?>, Boolean>>> SOURCE_MAPPINGS = new ConcurrentHashMap<>();
 
     private static final Map<String, Boolean> SOURCE_SIGN_MAPPINGS = new ConcurrentHashMap<>();
 
-    //We use Vector here for thread safety
-    //A cache for reflected fields so that reflection is performed only
-    //once per Trackable entity class (for all its instances)
+    // We use Vector here for thread safety
+    // A cache for reflected fields so that reflection is performed only
+    // once per Trackable entity class (for all its instances)
     private static final Map<String, Vector<String>> TRACKED_FIELDS_NAMES = new ConcurrentHashMap<String, Vector<String>>();
 
     private static final Map<String, ArrayList<Method>> ON_CREATE_METHODS = new ConcurrentHashMap<>();
     private static final Map<String, ArrayList<Method>> ON_UPDATE_METHODS = new ConcurrentHashMap<>();
     private static final Map<String, ArrayList<Method>> ON_DELETE_METHODS = new ConcurrentHashMap<>();
 
-    private CachingReflector() {}
+    private static final Map<String, Map<Class<?>, String>> SINK_MAP = new HashMap<>(); // <stream -- <entityClass --
+                                                                                        // authenticationKey>>
+    // private static final Map<String, ArrayList<Class<?>>> customSinkMap;
+
+    private CachingReflector() {
+    }
 
     public static Object getFieldValue(Object instance, String fieldName) throws Exception {
         for (Method method : instance.getClass().getDeclaredMethods()) {
@@ -71,10 +82,9 @@ public class CachingReflector {
             }
         }
 
-        throw new IdNotFoundException();        
+        throw new IdNotFoundException();
     }
 
-    
     public static Map<String, Entry<Class<?>, Boolean>> getSourceMappings(Object sourceEntity) throws Exception {
         Class<?> sourceEntityClass = sourceEntity.getClass();
         String sourceEntityClassName = sourceEntityClass.getName();
@@ -97,7 +107,7 @@ public class CachingReflector {
                     } else {
                         add = Config.getAddOwnerToEvent();
                     }
-                    
+
                     mappings.put(stream, new AbstractMap.SimpleEntry<>(dtoClass, add));
                 }
 
@@ -108,24 +118,24 @@ public class CachingReflector {
         } else {
             mappings = SOURCE_MAPPINGS.get(sourceEntityClassName);
         }
-        
+
         return mappings;
     }
 
     public static boolean getSign(Object sourceEntity) {
         Class<?> sourceEntityClass = sourceEntity.getClass();
         String sourceEntityClassName = sourceEntityClass.getName();
-        if(!SOURCE_SIGN_MAPPINGS.containsKey(sourceEntityClassName)) {
-            Source source = sourceEntityClass.<Source>getAnnotation(Source.class);           
+        if (!SOURCE_SIGN_MAPPINGS.containsKey(sourceEntityClassName)) {
+            Source source = sourceEntityClass.<Source>getAnnotation(Source.class);
             SOURCE_SIGN_MAPPINGS.put(
-                sourceEntityClassName, source.sign() == ConfigOption.ENABLED || 
-                (source.sign() == ConfigOption.APP && Config.getSign()));
+                    sourceEntityClassName, source.sign() == ConfigOption.ENABLED ||
+                            (source.sign() == ConfigOption.APP && Config.getSign()));
         }
         return SOURCE_SIGN_MAPPINGS.get(sourceEntityClassName);
     }
 
     public static Vector<String> getTrackedFields(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = (Class<?>)customSourceEntity.getClass();
+        Class<?> customSourceEntityClass = (Class<?>) customSourceEntity.getClass();
         String customSourceEntityClassName = customSourceEntityClass.getName();
 
         if (!TRACKED_FIELDS_NAMES.containsKey(customSourceEntityClassName)) {
@@ -137,8 +147,8 @@ public class CachingReflector {
                 }
             }
             TRACKED_FIELDS_NAMES.put(customSourceEntityClassName, trackedFieldsNames);
-        }        
-        
+        }
+
         return TRACKED_FIELDS_NAMES.get(customSourceEntityClassName);
     }
 
@@ -154,7 +164,7 @@ public class CachingReflector {
             }
             ON_CREATE_METHODS.put(customSourceEntityClassName, onCreateMethods);
         }
-        return ON_CREATE_METHODS.get(customSourceEntityClassName);        
+        return ON_CREATE_METHODS.get(customSourceEntityClassName);
     }
 
     public static ArrayList<Method> getOnUpdateMethods(Object customSourceEntity) {
@@ -169,7 +179,7 @@ public class CachingReflector {
             }
             ON_UPDATE_METHODS.put(customSourceEntityClassName, onUpdateMethods);
         }
-        return ON_UPDATE_METHODS.get(customSourceEntityClassName);        
+        return ON_UPDATE_METHODS.get(customSourceEntityClassName);
     }
 
     public static ArrayList<Method> getOnDeleteMethods(Object customSourceEntity) {
@@ -184,8 +194,57 @@ public class CachingReflector {
             }
             ON_DELETE_METHODS.put(customSourceEntityClassName, onDeleteMethods);
         }
-        return ON_DELETE_METHODS.get(customSourceEntityClassName);        
+        return ON_DELETE_METHODS.get(customSourceEntityClassName);
     }
 
-    
+    public static Map<String, Map<Class<?>, String>> getSinkMap() {
+        if (SINK_MAP.isEmpty()) {
+            buildSinkMap();
+        }
+        return SINK_MAP;
+    }
+
+    private static void buildSinkMap() {
+        Iterable<Class<?>> sinks = ClassIndex.getAnnotated(Sink.class);
+        for (Class<?> sink : sinks) {
+            Sink sinkAnnotation = sink.<Sink>getAnnotation(Sink.class);
+            String stream = sinkAnnotation.stream();
+            ConfigOption authenticateOption = sinkAnnotation.authenticate();
+            String key = "";
+            if (authenticateOption == ConfigOption.ENABLED ||
+                    (authenticateOption == ConfigOption.APP && Config.getAuthenticate())) {
+                key = sinkAnnotation.authenticationKey();
+                if (key.equals("")) {
+                    key = Config.getAuthenticationKey();
+                }
+            }
+            if (SINK_MAP.containsKey(stream)) {
+                SINK_MAP.get(stream).put(sink, key);
+            } else {
+                Map<Class<?>, String> map = new HashMap<>();
+                map.put(sink, key);
+                SINK_MAP.put(stream, map);
+            }
+        }
+    }
+
+    private static void buildCustomSinkMap() {
+
+        /*
+         * customSinkMap = new HashMap<>();
+         * Iterable<Class<?>> customSinks = ClassIndex.getAnnotated(CustomSink.class);
+         * for (Class<?> customSink : customSinks) {
+         * CustomSink customSinkAnnotation =
+         * customSink.<CustomSink>getAnnotation(CustomSink.class);
+         * String stream = customSinkAnnotation.stream();
+         * if (customSinkMap.containsKey(stream)) {
+         * customSinkMap.get(stream).add(customSink);
+         * } else {
+         * ArrayList list = new ArrayList();
+         * list.add(customSink);
+         * customSinkMap.put(stream, list);
+         * }
+         * }
+         */
+    }
 }
