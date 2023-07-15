@@ -1,8 +1,11 @@
 package io.microhooks.core.internal;
 
 import io.microhooks.core.Event;
+import io.microhooks.core.internal.util.Config;
 
 public abstract class EventProducer {
+
+    private String serviceName = Config.getServiceName();
 
     public void publish(long id, Object payload, String label, String[] streams) {
 
@@ -18,7 +21,7 @@ public abstract class EventProducer {
         
         Event<Object> event = new Event<Object>(payload, label);
         for (int i = 0; i < streams.length; i++) {
-            publish(id, event, streams[i]);
+            publish(id, event, serviceName + "/" + streams[i]);
         }
     }
 

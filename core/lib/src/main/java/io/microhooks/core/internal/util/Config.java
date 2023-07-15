@@ -16,6 +16,16 @@ public class Config {
     private static EventConsumer eventConsumer = null;
     private static BrokerType brokerType = null;
     private static String brokerCluster = null;
+    private static String serviceName = null;
+
+    public static String getServiceName() {
+        if (serviceName == null) {
+            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
+            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
+            serviceName = annotation.name();
+        }
+        return serviceName;
+    }
 
     public static void init() {
         if (brokerType == null || brokerCluster == null) {

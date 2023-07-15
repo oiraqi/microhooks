@@ -7,11 +7,13 @@ import java.lang.annotation.Target;
 
 import org.atteo.classindex.IndexAnnotated;
 
+import io.microhooks.core.ConfigOption;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @IndexAnnotated
 public @interface Sink {
     String stream();
-    AuthenticationType authentication() default AuthenticationType.APP;
-    String sourceKey() default "";
+    ConfigOption authenticate() default ConfigOption.APP;
+    String authenticationKey() default "";
 }
