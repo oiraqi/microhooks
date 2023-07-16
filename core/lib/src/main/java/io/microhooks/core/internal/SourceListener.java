@@ -1,9 +1,9 @@
 package io.microhooks.core.internal;
 
 
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PostUpdate;
 
 import io.microhooks.core.Event;
 import io.microhooks.core.internal.util.CachingReflector;

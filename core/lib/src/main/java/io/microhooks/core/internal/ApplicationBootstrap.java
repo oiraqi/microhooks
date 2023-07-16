@@ -1,7 +1,7 @@
 package io.microhooks.core.internal;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import io.microhooks.core.internal.util.CachingReflector;
 import io.microhooks.core.internal.util.Config;
@@ -9,7 +9,7 @@ import io.microhooks.core.internal.util.Config;
 public class ApplicationBootstrap {
 
     @PersistenceContext
-    EntityManager em;
+    protected EntityManager em;
 
     //Callback to be exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
     //by the overriding container extension

@@ -11,7 +11,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 import org.atteo.classindex.ClassIndex;
 

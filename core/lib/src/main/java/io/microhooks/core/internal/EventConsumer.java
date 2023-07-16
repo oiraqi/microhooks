@@ -6,7 +6,7 @@ import io.microhooks.core.internal.util.Security;
 
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

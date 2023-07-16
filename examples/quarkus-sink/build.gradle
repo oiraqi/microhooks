@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id 'net.bytebuddy.byte-buddy-gradle-plugin' version '1.14.5'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-arc'
+
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+
+    implementation 'io.quarkus:quarkus-resteasy-reactive-jackson:3.2.0.Final'
+
+    implementation files('../../core/lib/build/libs/microhooks.jar')
+    //implementation files('../../containers/quarkus/lib/build/libs/lib-1.0.jar')
+    implementation files('../../brokers/kafka/lib/build/libs/microhooks-kafka.jar')
+
+    implementation 'org.atteo.classindex:classindex:3.4'
+    annotationProcessor 'org.atteo.classindex:classindex:3.4'
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+}
+
+group 'io.microhooks.examples.quarkus'
+version '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+byteBuddy {
+  transformation {
+    plugin = io.microhooks.instrumentation.GradlePlugin.class
+  }
+}

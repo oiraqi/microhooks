@@ -1,0 +1,79 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.application") version "4.0.0"
+    id("io.micronaut.aot") version "4.0.0"
+}
+
+version = "0.1"
+group = "io.microhooks.examples"
+
+repositories {
+    maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+        mavenContent { snapshotsOnly() }
+    }
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-inject-java")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("io.micronaut:micronaut-http-client")
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+	annotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
+
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+
+    implementation 'org.apache.kafka:kafka-clients:2.4.0'
+
+    implementation 'org.apache.kafka:kafka-streams:3.5.0'
+
+    implementation files('../../core/lib/build/libs/microhooks.jar')
+    implementation files('../../containers/mn/lib/build/libs/microhooks-micronaut.jar')
+    implementation files('../../brokers/kafka/lib/build/libs/microhooks-kafka.jar')
+
+    implementation 'org.atteo.classindex:classindex:3.4'
+    annotationProcessor 'org.atteo.classindex:classindex:3.4'
+
+    implementation("io.micronaut.sql:micronaut-hibernate-jpa") 
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari") 
+    runtimeOnly "com.h2database:h2"
+    runtimeOnly("org.yaml:snakeyaml")
+}
+
+
+application {
+    mainClass.set("io.microhooks.examples.micronaut.SinkMicroservice")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("io.microhooks.examples.*")
+    }
+    aot {
+    // Please review carefully the optimizations enabled below
+    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+    }
+}
+
+
+
