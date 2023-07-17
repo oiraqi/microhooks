@@ -33,7 +33,7 @@ dependencies {
     implementation 'org.apache.kafka:kafka-streams:3.5.0'
 
     implementation files('../../core/lib/build/libs/microhooks.jar')
-    implementation files('../../containers/mn/lib/build/libs/microhooks-micronaut.jar')
+    implementation files('../../containers/micronaut/lib/build/libs/microhooks-micronaut.jar')
     implementation files('../../brokers/kafka/lib/build/libs/microhooks-kafka.jar')
 
     implementation 'org.atteo.classindex:classindex:3.4'

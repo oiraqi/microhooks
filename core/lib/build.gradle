@@ -19,7 +19,7 @@ repositories {
 }
 
 jar {
-    baseName 'microhooks'
+    archiveBaseName = 'microhooks'
 }
 
 dependencies {
