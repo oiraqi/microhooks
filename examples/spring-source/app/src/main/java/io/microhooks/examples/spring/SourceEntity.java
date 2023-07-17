@@ -68,7 +68,7 @@ public class SourceEntity {
     }
 
     @ProduceEventsOnUpdate // Notice Events (of ProduceEventsOnUpdate) in plural form
-    public Map<String, Event<String>> produceEventsOnUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
+    public Map<String, Event<String>> produceEventsOnUpdate(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
         Map<String, Event<String>> streamedEvents = new HashMap<>();
         streamedEvents.put("CustomStream1", new Event<>("Hi Micronaut!", "Greetings"));
         streamedEvents.put("CustomStream2", new Event<>("Hi Quarkus!", "Greetings"));
