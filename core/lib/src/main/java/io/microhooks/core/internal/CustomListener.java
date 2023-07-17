@@ -39,7 +39,7 @@ public class CustomListener extends Listener {
     @SuppressWarnings("unchecked")
     public void onPostUpdate(Object entity) throws Exception {
         Map<String, Object> trackedFields = ((Trackable) entity).getMicrohooksTrackedFields();
-        if (trackedFields == null) {
+        if (trackedFields == null) { // entity is Trackable but didn't define any @Track fields
             return;
         }
 
@@ -90,7 +90,7 @@ public class CustomListener extends Listener {
     // This method is called only once per entity lifecycle, when loaded
     private void setTrackedFields(Object entity) throws Exception {
 
-        Vector<String> trackedFieldsNames = CachingReflector.getTrackedFields(entity);
+        Vector<String> trackedFieldsNames = CachingReflector.getTrackedFieldsNames(entity);
         if (trackedFieldsNames == null) {
             return;
         }

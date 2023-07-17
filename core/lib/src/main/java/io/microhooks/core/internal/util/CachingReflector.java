@@ -134,7 +134,7 @@ public class CachingReflector {
         return SOURCE_SIGN_MAPPINGS.get(sourceEntityClassName);
     }
 
-    public static Vector<String> getTrackedFields(Object customSourceEntity) {
+    public static Vector<String> getTrackedFieldsNames(Object customSourceEntity) {
         Class<?> customSourceEntityClass = (Class<?>) customSourceEntity.getClass();
         String customSourceEntityClassName = customSourceEntityClass.getName();
 
@@ -146,7 +146,7 @@ public class CachingReflector {
                     trackedFieldsNames.add(field.getName());
                 }
             }
-            if (trackedFieldsNames.isEmpty()) {
+            if (trackedFieldsNames.isEmpty()) { // entity is Trackable but didn't define any @Track fields
                 trackedFieldsNames = null;
             }
             TRACKED_FIELDS_NAMES.put(customSourceEntityClassName, trackedFieldsNames);
