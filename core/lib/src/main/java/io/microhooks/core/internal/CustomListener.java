@@ -15,9 +15,9 @@ import jakarta.persistence.PostUpdate;
 import io.microhooks.core.Event;
 import io.microhooks.core.internal.util.CachingReflector;
 import io.microhooks.core.internal.util.logging.Logged;
-import io.microhooks.producer.OnCreate;
-import io.microhooks.producer.OnDelete;
-import io.microhooks.producer.OnUpdate;
+import io.microhooks.producer.ProduceEventOnCreate;
+import io.microhooks.producer.ProduceEventOnDelete;
+import io.microhooks.producer.ProduceEventOnUpdate;
 
 public class CustomListener extends Listener {
 
@@ -29,7 +29,7 @@ public class CustomListener extends Listener {
         for (Method method : CachingReflector.getOnCreateMethods(entity)) {
             Event<Object> event = (Event<Object>) method.invoke(entity);
             long id = CachingReflector.getId(entity);
-            getEventProducer().publish(id, event, method.getAnnotation(OnCreate.class).stream());
+            getEventProducer().publish(id, event, method.getAnnotation(ProduceEventOnCreate.class).stream());
             // Don't return here as we allow several methods to be annotated with OnCreate
         }
     }
@@ -60,7 +60,7 @@ public class CustomListener extends Listener {
                     changedTrackedFields);
 
             long id = CachingReflector.getId(entity);
-            getEventProducer().publish(id, event, method.getAnnotation(OnUpdate.class).stream());
+            getEventProducer().publish(id, event, method.getAnnotation(ProduceEventOnUpdate.class).stream());
             // Don't return here as we allow several methods to be annotated with OnUpdate
         }
     }
@@ -78,7 +78,7 @@ public class CustomListener extends Listener {
         for (Method method : CachingReflector.getOnDeleteMethods(entity)) {
             Event<Object> event = (Event<Object>) method.invoke(entity);
             long id = CachingReflector.getId(entity);
-            getEventProducer().publish(id, event, method.getAnnotation(OnDelete.class).stream());
+            getEventProducer().publish(id, event, method.getAnnotation(ProduceEventOnDelete.class).stream());
             // Don't return here as we allow several methods to be annotated with OnDelete
         }
     }

@@ -18,9 +18,9 @@ import org.atteo.classindex.ClassIndex;
 import io.microhooks.consumer.Sink;
 import io.microhooks.core.ConfigOption;
 import io.microhooks.core.internal.IdNotFoundException;
-import io.microhooks.producer.OnCreate;
-import io.microhooks.producer.OnDelete;
-import io.microhooks.producer.OnUpdate;
+import io.microhooks.producer.ProduceEventOnCreate;
+import io.microhooks.producer.ProduceEventOnDelete;
+import io.microhooks.producer.ProduceEventOnUpdate;
 import io.microhooks.producer.Source;
 import io.microhooks.producer.Track;
 
@@ -158,7 +158,7 @@ public class CachingReflector {
         if (!ON_CREATE_METHODS.containsKey(customSourceEntityClassName)) {
             ArrayList<Method> onCreateMethods = new ArrayList<>();
             for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
-                if (method.isAnnotationPresent(OnCreate.class)) {
+                if (method.isAnnotationPresent(ProduceEventOnCreate.class)) {
                     onCreateMethods.add(method);
                 }
             }
@@ -173,7 +173,7 @@ public class CachingReflector {
         if (!ON_UPDATE_METHODS.containsKey(customSourceEntityClassName)) {
             ArrayList<Method> onUpdateMethods = new ArrayList<>();
             for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
-                if (method.isAnnotationPresent(OnUpdate.class)) {
+                if (method.isAnnotationPresent(ProduceEventOnUpdate.class)) {
                     onUpdateMethods.add(method);
                 }
             }
@@ -188,7 +188,7 @@ public class CachingReflector {
         if (!ON_DELETE_METHODS.containsKey(customSourceEntityClassName)) {
             ArrayList<Method> onDeleteMethods = new ArrayList<>();
             for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
-                if (method.isAnnotationPresent(OnDelete.class)) {
+                if (method.isAnnotationPresent(ProduceEventOnDelete.class)) {
                     onDeleteMethods.add(method);
                 }
             }

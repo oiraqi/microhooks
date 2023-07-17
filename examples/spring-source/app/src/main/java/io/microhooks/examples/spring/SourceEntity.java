@@ -9,8 +9,8 @@ import javax.persistence.Id;
 
 import io.microhooks.core.Event;
 import io.microhooks.producer.CustomSource;
-import io.microhooks.producer.OnCreate;
-import io.microhooks.producer.OnUpdate;
+import io.microhooks.producer.ProduceEventOnCreate;
+import io.microhooks.producer.ProduceEventOnUpdate;
 import io.microhooks.producer.Source;
 import io.microhooks.producer.Track;
 import lombok.Data;
@@ -30,12 +30,12 @@ public class SourceEntity {
 
     private int amount;
 
-    @OnCreate(stream = "CustomStream")
+    @ProduceEventOnCreate(stream = "CustomStream")
     public Event<String> onCreate() {
         return new Event<>(name, "CustomCreate");
     }
 
-    @OnUpdate(stream = "CustomStream")
+    @ProduceEventOnUpdate(stream = "CustomStream")
     public Event<String> onUpdate(Map<String, Object> changedTrackedFieldsPreviousValues) {
         String oldName = (String) changedTrackedFieldsPreviousValues.get("name");
         System.out.println(oldName + " --> " + name);
