@@ -50,7 +50,7 @@ public class SourceEntity {
     }
 
     @ProduceEventOnUpdate(stream = "CustomStream2") // Notice Event (of ProduceEventOnUpdate) in singular form
-    public Event<String> produceAmountChangedEvent(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
+    public Event<String> produceAmountExcessivelyChangedEvent(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
         if (!changedTrackedFieldsWithPreviousValues.containsKey("amount")) {
             // Won't produce any event
             return null;
@@ -58,13 +58,13 @@ public class SourceEntity {
 
         int oldAmount = (int) changedTrackedFieldsWithPreviousValues.get("amount");
         System.out.println(oldAmount + " --> " + amount);
-        
+
         if (Math.abs(oldAmount - amount) < 5) {
             // Won't produce any event
             return null;
         }
         
-        return new Event<>(oldAmount + " --> " + amount, "DeltaThresholdExceeded");
+        return new Event<>(oldAmount + " --> " + amount, "AmountExcessivelyChanged");
     }
 
     @ProduceEventsOnUpdate // Notice Events (of ProduceEventsOnUpdate) in plural form
