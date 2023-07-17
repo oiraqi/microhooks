@@ -22,6 +22,7 @@ public class Controller {
 
         entity.setName("Hello world!");
         entity.setName("Hello again!");
+        entity.setAmount(5);
         sourceRepo.save(entity);
         
         return "Hello!";

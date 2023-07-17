@@ -52,7 +52,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
         if (isSource || isCustomSource) {
             Class[] listeners = null;
-            Class entityListeners = loader.findClass("javax.persistence.EntityListeners", classFileLocator);
+            Class entityListeners = loader.findClass("jakarta.persistence.EntityListeners", classFileLocator);
             loader.findClass("io.microhooks.core.internal.Listener", classFileLocator);
 
             if (isCustomSource) {

@@ -2,6 +2,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.0.0"
     id("io.micronaut.aot") version "4.0.0"
+    id 'net.bytebuddy.byte-buddy-gradle-plugin' version '1.14.5'
 }
 
 version = "0.1"
@@ -75,5 +76,9 @@ micronaut {
     }
 }
 
-
+byteBuddy {
+  transformation {
+    plugin = io.microhooks.instrumentation.GradlePlugin.class
+  }
+}
 

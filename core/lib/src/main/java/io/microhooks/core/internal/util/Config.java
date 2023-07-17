@@ -6,7 +6,6 @@ import io.microhooks.core.BrokerType;
 import io.microhooks.core.MicrohooksApplication;
 import io.microhooks.core.internal.BrokerNotSupportedException;
 import io.microhooks.core.internal.EventProducer;
-import io.microhooks.core.internal.NullEventProducer;
 import io.microhooks.core.internal.EventConsumer;
 import io.microhooks.core.internal.SecurityContext;
 
@@ -67,30 +66,35 @@ public class Config {
         return sign == 1;
     }
 
-    public static void init() {
+    private static void init() {
         if (brokerType == null || brokerCluster == null) {
             Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
             MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
             if (brokerType == null) {
                 brokerType = annotation.broker();
+                if (brokerType == null) {
+                    brokerType = BrokerType.KAFKA;
+                }
             }
             if (brokerCluster == null) {
                 brokerCluster = annotation.brokerCluster();
+                if (brokerCluster == null) {
+                    brokerCluster = "localhost:9092";
+                }
             }
         }        
+    }
+
+    public static String getBrokerCluster() {
+        if (brokerCluster == null) {
+            init();
+        }
+        return brokerCluster;
     }
 
     public static EventProducer getEventProducer() throws Exception {
         if (eventProducer == null) {            
             init();
-
-            if (brokerType == null) {
-                return new NullEventProducer();
-            }
-
-            if (brokerCluster == null) {
-                brokerCluster = "localhost:9092";
-            }
 
             Class<?> clazz = null;
 
@@ -112,15 +116,6 @@ public class Config {
     public static EventConsumer getEventConsumer() throws Exception {
         if (eventConsumer == null) {
             init();
-
-            if (brokerType == null) {
-                brokerType = BrokerType.KAFKA;
-            }
-
-            String brokerCluster = System.getProperty("brokerCluster");
-            if (brokerCluster == null) {
-                brokerCluster = "localhost:9092";
-            }
 
             Class<?> clazz = null;
 

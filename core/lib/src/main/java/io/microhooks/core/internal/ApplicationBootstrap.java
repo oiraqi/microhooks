@@ -11,15 +11,25 @@ public class ApplicationBootstrap {
     @PersistenceContext
     protected EntityManager em;
 
-    //Callback to be exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
-    //by the overriding container extension
-    public void setup() throws Exception {      
-        Config.getEventConsumer().launch(em);
+    // Callback to be exposed to the underlying container (Spring, Quarkus,
+    // Micronaut, ...)
+    // by the overriding container extension
+    public void setup() {
+        if (!CachingReflector.getSinkMap().isEmpty()) {
+            new Thread(() -> {
+                try {
+                    Config.getEventConsumer().launch(em);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+
         System.out.println(CachingReflector.getSinkMap());
     }
 
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }

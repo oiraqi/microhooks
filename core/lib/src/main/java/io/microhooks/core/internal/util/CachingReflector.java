@@ -31,7 +31,7 @@ public class CachingReflector {
 
     // A cache for entity class Id names, so that they are extracted through
     // refflection only once per entity class for better performance
-    private static final Map<String, Long> IDMAP = new ConcurrentHashMap<>();
+    private static final Map<String, String> IDMAP = new ConcurrentHashMap<>();
 
     // A cache for reflected stream/DTO mappings so that reflection is performed
     // only
@@ -69,20 +69,21 @@ public class CachingReflector {
         Class<?> entityClass = entity.getClass();
         String entityClassName = entityClass.getName();
 
-        if (IDMAP.containsKey(entityClassName)) {
-            return IDMAP.get(entityClassName);
-        }
-
-        Field[] fields = entityClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(Id.class)) {
-                Long id = ((Long) CachingReflector.getFieldValue(entity, field.getName()));
-                IDMAP.put(entityClassName, id);
-                return id;
+        if (!IDMAP.containsKey(entityClassName)) {
+            Field[] fields = entityClass.getDeclaredFields();
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(Id.class)) {                    
+                    IDMAP.put(entityClassName, field.getName());
+                    break;
+                }
             }
         }
 
-        throw new IdNotFoundException();
+        if (!IDMAP.containsKey(entityClassName)) {
+            throw new IdNotFoundException();
+        }
+        return ((Long) CachingReflector.getFieldValue(entity, IDMAP.get(entityClassName)));
+
     }
 
     public static Map<String, Entry<Class<?>, Boolean>> getSourceMappings(Object sourceEntity) throws Exception {

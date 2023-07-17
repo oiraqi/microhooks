@@ -23,6 +23,9 @@ public class KafkaEventProducer extends EventProducer {
 
     @Override
     protected void doPublish(long id, Event<Object> event, String stream) {
+        System.out.println(event);
+        System.out.println(id);
+        System.out.println(stream);
         producer.send(new ProducerRecord<Long, Event<Object>>(stream, id, event));
     }
     
