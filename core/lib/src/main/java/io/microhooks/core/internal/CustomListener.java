@@ -38,8 +38,12 @@ public class CustomListener extends Listener {
     @Logged
     @SuppressWarnings("unchecked")
     public void onPostUpdate(Object entity) throws Exception {
-        for (Method method : CachingReflector.getOnUpdateMethods(entity)) {
-            Map<String, Object> trackedFields = ((Trackable) entity).getMicrohooksTrackedFields();
+        Map<String, Object> trackedFields = ((Trackable) entity).getMicrohooksTrackedFields();
+        if (trackedFields == null) {
+            return;
+        }
+
+        for (Method method : CachingReflector.getOnUpdateMethods(entity)) {            
             Iterator<String> keys = trackedFields.keySet().iterator();
             Map<String, Object> changedTrackedFields = new HashMap<>();
             while (keys.hasNext()) {
@@ -86,11 +90,14 @@ public class CustomListener extends Listener {
     // This method is called only once per entity lifecycle, when loaded
     private void setTrackedFields(Object entity) throws Exception {
 
+        Vector<String> trackedFieldsNames = CachingReflector.getTrackedFields(entity);
+        if (trackedFieldsNames == null) {
+            return;
+        }
+
         Trackable trackableEntity = (Trackable) entity;
         // Highly-concurrent thread-safe
         Map<String, Object> trackedFields = new ConcurrentHashMap<>();
-        Vector<String> trackedFieldsNames = CachingReflector.getTrackedFields(entity);
-
         for (int i = 0; i < trackedFieldsNames.size(); i++) {
             String filedName = trackedFieldsNames.get(i);
             Object fieldValue = CachingReflector.getFieldValue(entity, filedName);

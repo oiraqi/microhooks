@@ -146,6 +146,9 @@ public class CachingReflector {
                     trackedFieldsNames.add(field.getName());
                 }
             }
+            if (trackedFieldsNames.isEmpty()) {
+                trackedFieldsNames = null;
+            }
             TRACKED_FIELDS_NAMES.put(customSourceEntityClassName, trackedFieldsNames);
         }
 
