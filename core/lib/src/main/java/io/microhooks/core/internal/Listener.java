@@ -14,7 +14,6 @@ public abstract class Listener {
                 eventProducer = Config.getEventProducer();
             } catch (Exception e) {
                 e.printStackTrace();
-                System.out.println("Returning null");
             }
             
         }

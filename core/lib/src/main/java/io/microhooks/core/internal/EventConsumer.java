@@ -26,8 +26,6 @@ public abstract class EventConsumer {
     }
 
     public void processEvent(long sourceId, Event<JsonNode> event, String stream) {
-        System.out.println(sourceId);
-        System.out.println(event);
         Map<Class<?>, String> sinkEntityClassMap = CachingReflector.getSinkMap().get(stream);
         if (sinkEntityClassMap != null && event.getLabel() != null) {
             if (event.getLabel().equals(Event.RECORD_CREATED)) {
@@ -41,11 +39,7 @@ public abstract class EventConsumer {
                     try {
                         Object sinkEntity = objectMapper.convertValue(event.getPayload(), sinkEntityClass);
                         ((Sinkable) sinkEntity).setMicrohooksSourceId(sourceId);
-                        System.out.println("Before -----------> " + sinkEntity);
-                        //Config.getContext().save(em, sinkEntity);
-                        //em.persist(sinkEntity);
                         eventRepository.save(sinkEntity);
-                        System.out.println("After ------------> " + sinkEntity);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }                    

@@ -13,7 +13,6 @@ public class KafkaEventProducer extends EventProducer {
 
     public KafkaEventProducer(String brokers) {
         Properties props = new Properties();
-        System.out.println(brokers);
         props.put("bootstrap.servers", brokers);
         props.put("acks", "all");
         props.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
@@ -23,9 +22,6 @@ public class KafkaEventProducer extends EventProducer {
 
     @Override
     protected void doPublish(long id, Event<Object> event, String stream) {
-        System.out.println(event);
-        System.out.println(id);
-        System.out.println(stream);
         producer.send(new ProducerRecord<Long, Event<Object>>(stream, id, event));
     }
     
