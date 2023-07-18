@@ -1,9 +1,6 @@
 package io.microhooks.brokers.kafka;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Properties;
-import java.util.regex.Pattern;
 import java.time.Duration;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -11,7 +8,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.Consumer;
 
 import io.microhooks.core.Event;
@@ -32,6 +28,7 @@ public class KafkaEventConsumer extends EventConsumer {
 
         consumer = new KafkaConsumer<>(props);
     }
+
     protected void subscribe() {
         consumer.subscribe(CachingReflector.getSinkMap().keySet());
         while (true) {

@@ -6,6 +6,7 @@ import io.microhooks.core.internal.util.CachingReflector;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
+
 import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,15 +15,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public abstract class EventConsumer {
 
     private EntityManager em;
+    private EventRepository eventRepository;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public void launch(EntityManager em) {
+    public void launch(EventRepository eventRepository, EntityManager em) {
 
         this.em = em;
+        this.eventRepository = eventRepository;
         subscribe();
     }
 
-    protected void processEvent(long sourceId, Event<JsonNode> event, String stream) {
+    public void processEvent(long sourceId, Event<JsonNode> event, String stream) {
         System.out.println(sourceId);
         System.out.println(event);
         Map<Class<?>, String> sinkEntityClassMap = CachingReflector.getSinkMap().get(stream);
@@ -38,9 +41,11 @@ public abstract class EventConsumer {
                     try {
                         Object sinkEntity = objectMapper.convertValue(event.getPayload(), sinkEntityClass);
                         ((Sinkable) sinkEntity).setMicrohooksSourceId(sourceId);
-                        System.out.println(sinkEntity);
-                        em.persist(sinkEntity);
-                        System.out.println(sinkEntity);
+                        System.out.println("Before -----------> " + sinkEntity);
+                        //Config.getContext().save(em, sinkEntity);
+                        //em.persist(sinkEntity);
+                        eventRepository.save(sinkEntity);
+                        System.out.println("After ------------> " + sinkEntity);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }                    

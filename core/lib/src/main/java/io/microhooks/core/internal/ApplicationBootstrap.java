@@ -14,15 +14,16 @@ public class ApplicationBootstrap {
     // Callback to be exposed to the underlying container (Spring, Quarkus,
     // Micronaut, ...)
     // by the overriding container extension
-    public void setup() {
+    public void setup(EventRepository eventRepository) {
+        System.out.println("YYYYYYYYYYYYYYYYYYYYYYY " + em);
         if (!CachingReflector.getSinkMap().isEmpty()) {
-            new Thread(() -> {
+            //new Thread(() -> {
                 try {
-                    Config.getEventConsumer().launch(em);
+                    Config.getEventConsumer().launch(eventRepository, em);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }).start();
+            //}).start();
         }
 
         System.out.println(CachingReflector.getSinkMap());

@@ -7,7 +7,7 @@ import io.microhooks.core.MicrohooksApplication;
 import io.microhooks.core.internal.BrokerNotSupportedException;
 import io.microhooks.core.internal.EventProducer;
 import io.microhooks.core.internal.EventConsumer;
-import io.microhooks.core.internal.SecurityContext;
+import io.microhooks.core.internal.Context;
 
 public class Config {
 
@@ -134,7 +134,7 @@ public class Config {
         return eventConsumer;
     }
 
-    public static SecurityContext getSecurityContext() {
-        return null;
+    public static Context getContext() throws Exception {
+        return (Context) Class.forName("io.microhooks.containers.micronaut.MicronautContext").getConstructor().newInstance();
     }
 }
