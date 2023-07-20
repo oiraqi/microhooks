@@ -7,6 +7,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.microhooks.core.internal.SinkRepository;
 import io.microhooks.core.internal.util.SinkHelper;
 
@@ -23,7 +25,7 @@ public class TransactionalSinkRepository implements SinkRepository {
         sinkHelper.create(sinkEntity, sourceId, em);
     }
 
-    public void update(Class<?> sinkEntityClass, Object payload, long sourceId) throws Exception{
+    public void update(Class<?> sinkEntityClass, JsonNode payload, long sourceId) throws Exception{
         sinkHelper.update(sinkEntityClass, payload, sourceId, em);
     }
 
