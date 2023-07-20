@@ -15,7 +15,8 @@ dependencies {
     
     implementation files('../../../core/lib/build/libs/microhooks.jar')
     
-    implementation 'javax.persistence:javax.persistence-api:2.2'
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
 }
 
 group 'io.microhooks.containers.quarkus'

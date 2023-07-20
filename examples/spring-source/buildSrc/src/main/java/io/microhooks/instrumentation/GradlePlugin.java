@@ -20,7 +20,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
             try {
                 bytes = classFileLocator.locate(name).resolve();
                 return defineClass(name, bytes, 0, bytes.length);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 if (!name.equals("io.microhooks.containers.spring.Config"))
                     e.printStackTrace();
             }
@@ -31,12 +31,12 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
     @Override
     public boolean matches(TypeDescription target) {
         String annotations = target.getDeclaredAnnotations().toString();
-        return annotations.contains("@io.microhooks.core.MicrohooksApplication") ||
-                annotations.contains("@io.microhooks.producer.Source") ||
+        return  annotations.contains("@io.microhooks.producer.Source") ||
                 annotations.contains("@io.microhooks.producer.CustomSource") ||
                 annotations.contains("@io.microhooks.consumer.Sink") ||
                 annotations.contains("@io.microhooks.consumer.CustomSink") ||
-                annotations.contains("@io.microhooks.core.Dto");
+                annotations.contains("@io.microhooks.core.Dto") ||
+                annotations.contains("@org.springframework.boot.autoconfigure.SpringBootApplication");
     }
 
     @Override
@@ -88,9 +88,11 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                             .defineTypeArray("value", listeners).build());
         } else if(isSink) {
             Class sinkable = loader.findClass("io.microhooks.core.internal.Sinkable", classFileLocator);
+            Class unique = loader.findClass("jakarta.persistence.Column", classFileLocator);
             builder = builder.implement(sinkable)
                     .defineField("microhooksSourceId", long.class, Visibility.PRIVATE)
-                    .defineMethod("getMicrohooksSourceId", long.class, Visibility.PUBLIC)
+                    .annotateField(AnnotationDescription.Builder.ofType(unique).define("unique", true).build())
+                    .defineMethod("getMicrohooksSourceId", long.class, Visibility.PUBLIC)                    
                     .intercept(FieldAccessor.ofField("microhooksSourceId"))
                     .defineMethod("setMicrohooksSourceId", void.class, Visibility.PUBLIC)
                     .withParameters(long.class)
@@ -100,10 +102,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                                                         classFileLocator);
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
                             .define("ignoreUnknown", true).build());
-        } else if (annotations.contains("@io.microhooks.core.MicrohooksApplication")) {
+        } else if (annotations.contains("@org.springframework.boot.autoconfigure.SpringBootApplication")) {
             Class springConfig = loader.findClass("io.microhooks.containers.spring.Config", classFileLocator);
             if (springConfig != null) {
-                Class importt = loader.findClass("org.springframework.context.annotation.Import", classFileLocator);                    
+                Class importt = loader.findClass("org.springframework.context.annotation.Import", classFileLocator);
                 builder = builder.annotateType(AnnotationDescription.Builder.ofType(importt)
                         .defineTypeArray("value", new Class[]{springConfig}).build());
             } 
@@ -116,5 +118,4 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
     @Override
     public void close() throws IOException {
     }
-
 }

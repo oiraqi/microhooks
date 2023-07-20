@@ -45,6 +45,7 @@ public class SourceListener extends Listener {
             Class<?> dtoClass = mapping.getValue().getKey();
             boolean addOwnerToEvent = mapping.getValue().getValue();
             Object dto = objectMapper.convertValue(entity, dtoClass);
+            System.out.println("-------------> " + dto);
             Event<Object> event = new Event<>(dto, operation, addOwnerToEvent);
             getEventProducer().publish(id, event, stream);
         }

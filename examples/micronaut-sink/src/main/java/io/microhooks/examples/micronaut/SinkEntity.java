@@ -6,7 +6,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import io.microhooks.consumer.Sink;
-
 import lombok.Data;
 
 @Entity
@@ -19,5 +18,10 @@ public class SinkEntity {
     private long id;
 
     private String name;
+
+    @Override
+    public String toString() {
+        return "SinkEntity {id: " + id + ", name: " + name + "}";
+    }
 
 }

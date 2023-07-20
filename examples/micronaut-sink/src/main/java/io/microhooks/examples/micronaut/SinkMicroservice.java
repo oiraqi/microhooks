@@ -3,12 +3,10 @@
  */
 package io.microhooks.examples.micronaut;
 
-import io.microhooks.core.MicrohooksApplication;
-import io.microhooks.core.ContainerType;
 
 import io.micronaut.runtime.Micronaut;
 
-@MicrohooksApplication
+
 public class SinkMicroservice {
     
     public static void main(String[] args) {

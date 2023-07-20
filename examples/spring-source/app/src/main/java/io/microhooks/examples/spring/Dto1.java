@@ -8,4 +8,9 @@ import lombok.Data;
 @Dto
 public class Dto1 {
     private String name;
+
+    @Override
+    public String toString() {
+        return "Dto1 {name: " + name + "}";
+    }
 }

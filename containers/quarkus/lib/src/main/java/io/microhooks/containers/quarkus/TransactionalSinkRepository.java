@@ -1,8 +1,7 @@
-package io.microhooks.containers.spring;
+package io.microhooks.containers.quarkus;
 
-import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -11,7 +10,7 @@ import jakarta.transaction.Transactional;
 import io.microhooks.core.internal.SinkRepository;
 import io.microhooks.core.internal.util.SinkHelper;
 
-@Component
+@ApplicationScoped
 @Transactional
 public class TransactionalSinkRepository implements SinkRepository {
     
@@ -24,7 +23,7 @@ public class TransactionalSinkRepository implements SinkRepository {
         sinkHelper.create(sinkEntity, sourceId, em);
     }
 
-    public void update(Class<?> sinkEntityClass, JsonNode payload, long sourceId) throws Exception{
+    public void update(Class<?> sinkEntityClass, Object payload, long sourceId) throws Exception{
         sinkHelper.update(sinkEntityClass, payload, sourceId, em);
     }
 
