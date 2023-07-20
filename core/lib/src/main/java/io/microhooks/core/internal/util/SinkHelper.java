@@ -25,7 +25,6 @@ public class SinkHelper {
         }
         
         copyProperties(sinkEntity, payload);
-        System.out.println("SinkEntity ---------> " + sinkEntity);
         em.persist(sinkEntity);
     }
 
