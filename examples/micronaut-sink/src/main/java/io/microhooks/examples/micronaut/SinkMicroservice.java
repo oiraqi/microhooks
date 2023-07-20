@@ -8,7 +8,7 @@ import io.microhooks.core.ContainerType;
 
 import io.micronaut.runtime.Micronaut;
 
-@MicrohooksApplication(name="SinkMicroservice1", container=ContainerType.MICRONAUT)
+@MicrohooksApplication
 public class SinkMicroservice {
     
     public static void main(String[] args) {

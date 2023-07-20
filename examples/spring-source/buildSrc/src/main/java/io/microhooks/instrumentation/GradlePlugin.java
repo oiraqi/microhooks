@@ -21,7 +21,8 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                 bytes = classFileLocator.locate(name).resolve();
                 return defineClass(name, bytes, 0, bytes.length);
             } catch (IOException e) {
-                e.printStackTrace();
+                if (!name.equals("io.microhooks.containers.spring.Config"))
+                    e.printStackTrace();
             }
             return null;
         }
@@ -99,21 +100,13 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                                                         classFileLocator);
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
                             .define("ignoreUnknown", true).build());
-        } else if (annotations.contains("@io.microhooks.core.MicrohooksApplication")) {                  
-            try {
-                Class microhooksApp = loader.findClass("io.microhooks.core.MicrohooksApplication", classFileLocator);
-                Class containerType = loader.findClass("io.microhooks.core.ContainerType", classFileLocator);
-                Class brokerType = loader.findClass("io.microhooks.core.BrokerType", classFileLocator);
-                String container = microhooksApp.getMethod("container").invoke(target.getDeclaredAnnotations().ofType(microhooksApp).load()).toString();
-                if (container.equals("SPRING")) {
-                    Class importt = loader.findClass("org.springframework.context.annotation.Import", classFileLocator);
-                    Class springConfig = loader.findClass("io.microhooks.containers.spring.Config", classFileLocator);
-                    builder = builder.annotateType(AnnotationDescription.Builder.ofType(importt)
-                            .defineTypeArray("value", new Class[]{springConfig}).build());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }   
+        } else if (annotations.contains("@io.microhooks.core.MicrohooksApplication")) {
+            Class springConfig = loader.findClass("io.microhooks.containers.spring.Config", classFileLocator);
+            if (springConfig != null) {
+                Class importt = loader.findClass("org.springframework.context.annotation.Import", classFileLocator);                    
+                builder = builder.annotateType(AnnotationDescription.Builder.ofType(importt)
+                        .defineTypeArray("value", new Class[]{springConfig}).build());
+            } 
         }
 
         return builder;

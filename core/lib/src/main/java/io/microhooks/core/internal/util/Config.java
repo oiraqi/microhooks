@@ -1,9 +1,12 @@
 package io.microhooks.core.internal.util;
 
-import org.atteo.classindex.ClassIndex;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 import io.microhooks.core.BrokerType;
-import io.microhooks.core.MicrohooksApplication;
+import io.microhooks.core.ContainerType;
 import io.microhooks.core.internal.BrokerNotSupportedException;
 import io.microhooks.core.internal.EventProducer;
 import io.microhooks.core.internal.EventConsumer;
@@ -13,89 +16,61 @@ public class Config {
 
     private static EventProducer eventProducer = null;
     private static EventConsumer eventConsumer = null;
-    private static BrokerType brokerType = null;
-    private static String brokerCluster = null;
-    private static String serviceName = null;
-    private static int authenticate = -1;
-    private static String authenticationKey = null;
-    private static int sign = -1;
-    private static int addOwnerToEvent = -1;
+    private static ContainerType containerType = Defaults.CONTAINER_TYPE;
+    private static BrokerType brokerType = Defaults.BROKER_TYPE;
+    private static String brokerCluster = Defaults.BROKER_CLUSTER;
+    private static String serviceName = Defaults.SERVICE_NAME;
+    private static boolean addOwnerToEvent = Defaults.ADD_OWNER_TO_EVENT;
+    private static Context context = null;
+
+    public static void init() {
+        try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(new FileInputStream("src/main/resources/application.properties")))) {
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                if (!line.startsWith("microhooks")) {
+                    continue;
+                }
+                StringTokenizer strk = new StringTokenizer(line, "=");
+                String key = strk.nextToken().trim();
+                String value = strk.nextToken().trim();
+                if (key.equals("microhooks.service.name")) {
+                    serviceName = value;
+                } else if (key.equals("microhooks.container")) {
+                    containerType = ContainerType.valueOf(value.toUpperCase());
+                } else if (key.equals("microhooks.broker.type")) {
+                    brokerType = BrokerType.valueOf(value.toUpperCase());
+                } else if (key.equals("microhooks.broker.cluster")) {
+                    brokerCluster = value;
+                } else if (key.equals("microhooks.events.out.addOwner")) {
+                    addOwnerToEvent = Boolean.valueOf(value);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        /*
+         * Iterable<Class<?>> microhooksApp =
+         * ClassIndex.getAnnotated(MicrohooksApplication.class);
+         * MicrohooksApplication annotation = microhooksApp.iterator().next()
+         * .<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
+         */
+    }
 
     public static String getServiceName() {
-        if (serviceName == null) {
-            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
-            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
-            serviceName = annotation.name();
-        }
         return serviceName;
     }
 
-    public static boolean getAuthenticate() {
-        if (authenticate == -1) {
-            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
-            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
-            authenticate = annotation.authenticate() ? 1:0;
-        }
-        return authenticate == 1;
-    }
-
-    public static String getAuthenticationKey() {
-        if (authenticationKey == null) {
-            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
-            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
-            authenticationKey = annotation.authenticationKey();
-        }
-        return authenticationKey;
-    }
-
     public static boolean getAddOwnerToEvent() {
-        if (addOwnerToEvent == -1) {
-            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
-            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
-            addOwnerToEvent = annotation.addOwnerToEvent() ? 1:0;
-        }
-        return addOwnerToEvent == 1;
-    }
-
-    public static boolean getSign() {
-        if (sign == -1) {
-            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
-            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
-            sign = annotation.sign() ? 1:0;
-        }
-        return sign == 1;
-    }
-
-    private static void init() {
-        if (brokerType == null || brokerCluster == null) {
-            Iterable<Class<?>> microhooksApp = ClassIndex.getAnnotated(MicrohooksApplication.class);
-            MicrohooksApplication annotation = microhooksApp.iterator().next().<MicrohooksApplication>getAnnotation(MicrohooksApplication.class);
-            if (brokerType == null) {
-                brokerType = annotation.broker();
-                if (brokerType == null) {
-                    brokerType = BrokerType.KAFKA;
-                }
-            }
-            if (brokerCluster == null) {
-                brokerCluster = annotation.brokerCluster();
-                if (brokerCluster == null) {
-                    brokerCluster = "localhost:9092";
-                }
-            }
-        }        
+        return addOwnerToEvent;
     }
 
     public static String getBrokerCluster() {
-        if (brokerCluster == null) {
-            init();
-        }
         return brokerCluster;
     }
 
     public static EventProducer getEventProducer() throws Exception {
-        if (eventProducer == null) {            
-            init();
-
+        if (eventProducer == null) {
             Class<?> clazz = null;
 
             if (brokerType == BrokerType.KAFKA) {
@@ -115,7 +90,6 @@ public class Config {
 
     public static EventConsumer getEventConsumer() throws Exception {
         if (eventConsumer == null) {
-            init();
 
             Class<?> clazz = null;
 
@@ -134,7 +108,26 @@ public class Config {
         return eventConsumer;
     }
 
-    public static Context getContext() throws Exception {
-        return (Context) Class.forName("io.microhooks.containers.micronaut.MicronautContext").getConstructor().newInstance();
+    public static Context getContext() {
+        if (context == null) {
+            try {
+                if (containerType == ContainerType.MICRONAUT) {
+                    context = (Context) Class.forName("io.microhooks.containers.micronaut.MicronautContext")
+                            .getConstructor()
+                            .newInstance();
+                } else if (containerType == ContainerType.QUARKUS) {
+                    return (Context) Class.forName("io.microhooks.containers.quarkus.QuarkusContext").getConstructor()
+                            .newInstance();
+                } else {
+                    context = (Context) Class.forName("io.microhooks.containers.spring.SpringContext").getConstructor()
+                        .newInstance();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return null;
+            }
+        }
+        return context;
+
     }
 }

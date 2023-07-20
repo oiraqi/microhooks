@@ -2,6 +2,7 @@ package io.microhooks.core;
 
 import java.util.Date;
 
+import io.microhooks.core.internal.util.Config;
 import lombok.Getter;
 
 @Getter
@@ -14,7 +15,6 @@ public class Event<P> {
 	private String label = null;
 	private long timestamp = 0;
 	private String owner = null;
-	private String signature = null;
 
 	public Event() {}
 
@@ -23,7 +23,7 @@ public class Event<P> {
 		this.label = label;
 		timestamp = new Date().getTime();
 		if (addOwnerToEvent)
-			owner = "iraqi"; //Config.getSecurityContext().getUsername();
+			owner = Config.getContext().getUsername();
 	}
 
 	public Event(P payload, String label) {
@@ -55,25 +55,9 @@ public class Event<P> {
 		}
 	}
 
-	public void setSignature(String signature) {
-		if (this.signature == null) {
-			this.signature = signature; 
-		}
-	}
-
-	public void sign(long id) {
-		if (this.signature == null) {
-			signature = "sig";
-		}		
-	}
-
-	public boolean verify(long id, String authenticationKey) {
-		return true;
-	}
-
 	@Override
 	public String toString() {
-		return "{Label: " + label + ", Timestamp: " + timestamp + ", Owner: " + owner + ", Payload: " + payload + ", Signature: " + signature + "}";
+		return "{Label: " + label + ", Timestamp: " + timestamp + ", Owner: " + owner + ", Payload: " + payload + "}";
 	}
 
 }

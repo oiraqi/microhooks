@@ -34,13 +34,11 @@ public class EventSerdes {
         JsonNode payload = root.at("/payload");
         String owner = root.at("/owner").textValue();
         long timestamp = root.at("/timestamp").asLong();
-        String signature = root.at("/signature").textValue();
         Event<JsonNode> event = new Event<JsonNode>();
         event.setPayload(payload);
         event.setLabel(label);
         event.setOwner(owner);
         event.setTimestamp(timestamp);
-        event.setSignature(signature);
         return event;
     }
 }

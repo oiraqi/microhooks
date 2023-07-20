@@ -16,7 +16,6 @@ import jakarta.persistence.Id;
 import org.atteo.classindex.ClassIndex;
 
 import io.microhooks.consumer.Sink;
-import io.microhooks.core.ConfigOption;
 import io.microhooks.core.internal.IdNotFoundException;
 import io.microhooks.producer.ProduceEventOnCreate;
 import io.microhooks.producer.ProduceEventOnDelete;
@@ -38,7 +37,6 @@ public class CachingReflector {
     // once per Source, entity class (for all its instances)
     private static final Map<String, Map<String, Entry<Class<?>, Boolean>>> SOURCE_MAPPINGS = new ConcurrentHashMap<>();
 
-    private static final Map<String, Boolean> SOURCE_SIGN_MAPPINGS = new ConcurrentHashMap<>();
 
     // We use Vector here for thread safety
     // A cache for reflected fields so that reflection is performed only
@@ -49,8 +47,7 @@ public class CachingReflector {
     private static final Map<String, ArrayList<Method>> ON_UPDATE_METHODS = new ConcurrentHashMap<>();
     private static final Map<String, ArrayList<Method>> ON_DELETE_METHODS = new ConcurrentHashMap<>();
 
-    private static final Map<String, Map<Class<?>, String>> SINK_MAP = new HashMap<>(); // <stream -- <entityClass --
-                                                                                        // authenticationKey>>
+    private static final Map<String, ArrayList<Class<?>>> SINK_MAP = new HashMap<>(); // <stream -- entityClasses>
     // private static final Map<String, ArrayList<Class<?>>> customSinkMap;
 
     private CachingReflector() {
@@ -123,18 +120,6 @@ public class CachingReflector {
         return mappings;
     }
 
-    public static boolean getSign(Object sourceEntity) {
-        Class<?> sourceEntityClass = sourceEntity.getClass();
-        String sourceEntityClassName = sourceEntityClass.getName();
-        if (!SOURCE_SIGN_MAPPINGS.containsKey(sourceEntityClassName)) {
-            Source source = sourceEntityClass.<Source>getAnnotation(Source.class);
-            SOURCE_SIGN_MAPPINGS.put(
-                    sourceEntityClassName, source.sign() == ConfigOption.ENABLED ||
-                            (source.sign() == ConfigOption.APP && Config.getSign()));
-        }
-        return SOURCE_SIGN_MAPPINGS.get(sourceEntityClassName);
-    }
-
     public static Vector<String> getTrackedFieldsNames(Object customSourceEntity) {
         Class<?> customSourceEntityClass = (Class<?>) customSourceEntity.getClass();
         String customSourceEntityClassName = customSourceEntityClass.getName();
@@ -201,7 +186,7 @@ public class CachingReflector {
         return ON_DELETE_METHODS.get(customSourceEntityClassName);
     }
 
-    public static Map<String, Map<Class<?>, String>> getSinkMap() {
+    public static Map<String, ArrayList<Class<?>>> getSinkMap() {
         if (SINK_MAP.isEmpty()) {
             buildSinkMap();
         }
@@ -213,21 +198,12 @@ public class CachingReflector {
         for (Class<?> sink : sinks) {
             Sink sinkAnnotation = sink.<Sink>getAnnotation(Sink.class);
             String stream = sinkAnnotation.stream();
-            ConfigOption authenticateOption = sinkAnnotation.authenticate();
-            String key = "";
-            if (authenticateOption == ConfigOption.ENABLED ||
-                    (authenticateOption == ConfigOption.APP && Config.getAuthenticate())) {
-                key = sinkAnnotation.authenticationKey();
-                if (key.equals("")) {
-                    key = Config.getAuthenticationKey();
-                }
-            }
             if (SINK_MAP.containsKey(stream)) {
-                SINK_MAP.get(stream).put(sink, key);
+                SINK_MAP.get(stream).add(sink);
             } else {
-                Map<Class<?>, String> map = new HashMap<>();
-                map.put(sink, key);
-                SINK_MAP.put(stream, map);
+                ArrayList<Class<?>> list = new ArrayList<>();
+                list.add(sink);
+                SINK_MAP.put(stream, list);
             }
         }
     }
