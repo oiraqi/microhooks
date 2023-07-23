@@ -40,10 +40,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
     @Override
     public boolean matches(TypeDescription target) {
         String annotations = target.getDeclaredAnnotations().toString();
-        return  annotations.contains("@io.microhooks.producer.Source") ||
-                annotations.contains("@io.microhooks.producer.CustomSource") ||
-                annotations.contains("@io.microhooks.consumer.Sink") ||
-                annotations.contains("@io.microhooks.consumer.CustomSink") ||
+        return  annotations.contains("@io.microhooks.source.Source") ||
+                annotations.contains("@io.microhooks.source.CustomSource") ||
+                annotations.contains("@io.microhooks.sink.Sink") ||
+                annotations.contains("@io.microhooks.sink.CustomSink") ||
                 annotations.contains("@io.microhooks.core.Dto") ||
                 annotations.contains("@org.springframework.boot.autoconfigure.SpringBootApplication");
     }
@@ -53,8 +53,8 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
             ClassFileLocator classFileLocator) {
 
         String annotations = target.getDeclaredAnnotations().toString();
-        boolean isSource = annotations.contains("@io.microhooks.producer.Source");
-        boolean isCustomSource = annotations.contains("@io.microhooks.producer.CustomSource");
+        boolean isSource = annotations.contains("@io.microhooks.source.Source");
+        boolean isCustomSource = annotations.contains("@io.microhooks.source.CustomSource");
 
         Loader loader = new Loader(classFileLocator);
 
@@ -94,8 +94,8 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
             return builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
                             .defineTypeArray("value", listeners).build());
         } 
-        boolean isSink = annotations.contains("@io.microhooks.consumer.Sink");
-        boolean isCustomSink = annotations.contains("@io.microhooks.consumer.CustomSink");
+        boolean isSink = annotations.contains("@io.microhooks.sink.Sink");
+        boolean isCustomSink = annotations.contains("@io.microhooks.sink.CustomSink");
         if (isSink || isCustomSink) {
             if(isSink) {
                 Class sinkable = loader.findClass("io.microhooks.core.internal.Sinkable");
@@ -140,7 +140,6 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
         @Advice.OnMethodExit
         public static void enter(@Advice.This Object customSink) throws Exception {
-            //customSink.getClass().getMethod("__mhks__register").invoke(customSink);
             Method method = Class.forName("io.microhooks.core.internal.util.CachingReflector")
                                 .getDeclaredMethod("registerCustomSink", Object.class);
             method.invoke(null, customSink);
