@@ -15,6 +15,15 @@ public abstract class EventProducer {
         doPublish(id, event, serviceName + "-" + stream);
     }
 
+    public void publish(long id, Event<Object> event, String[] streams) {
+        if (streams == null) {
+            return;
+        }
+        for (String stream : streams) {
+            publish(id, event, stream);
+        }
+    }
+
     protected abstract void doPublish(long id, Event<Object> event, String stream);
 
 }

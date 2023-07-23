@@ -2,6 +2,8 @@ package io.microhooks.examples.spring;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Arrays;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,12 +35,12 @@ public class SourceEntity {
     @Track
     private int amount;
 
-    @ProduceEventOnCreate(stream = "CustomStream")
+    @ProduceEventOnCreate(streams="CustomStream")
     public Event<String> onCreate() {
         return new Event<>(name, "CustomCreate");
     }
 
-    @ProduceEventOnUpdate(stream = "CustomStream1") // Notice Event (of ProduceEventOnUpdate) in singular form
+    @ProduceEventOnUpdate(streams="CustomStream1") // Notice Event (of ProduceEventOnUpdate) in singular form
     public Event<String> produceNameChangedEvent(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
         if (!changedTrackedFieldsWithPreviousValues.containsKey("name")) {
             return null;
@@ -49,7 +51,7 @@ public class SourceEntity {
         return new Event<>(oldName + " --> " + name, "NameChanged");
     }
 
-    @ProduceEventOnUpdate(stream = "CustomStream2") // Notice Event (of ProduceEventOnUpdate) in singular form
+    @ProduceEventOnUpdate(streams="CustomStream2") // Notice Event (of ProduceEventOnUpdate) in singular form
     public Event<String> produceAmountExcessivelyChangedEvent(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
         if (!changedTrackedFieldsWithPreviousValues.containsKey("amount")) {
             // Won't produce any event
@@ -68,10 +70,10 @@ public class SourceEntity {
     }
 
     @ProduceEventsOnUpdate // Notice Events (of ProduceEventsOnUpdate) in plural form
-    public Map<String, Event<String>> produceGreetingsOnUpdate(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
-        Map<String, Event<String>> streamedEvents = new HashMap<>();
-        streamedEvents.put("CustomStream1", new Event<>("Hi Micronaut!", "Greetings"));
-        streamedEvents.put("CustomStream2", new Event<>("Hi Quarkus!", "Greetings"));
+    public Map<Event<String>, String[]> produceGreetingsOnUpdate(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
+        Map<Event<String>, String[]> streamedEvents = new HashMap<>();
+        streamedEvents.put(new Event<>("Hi Micronaut!", "Greetings"), new String[]{"CustomStream1"});
+        streamedEvents.put(new Event<>("Hi Quarkus!", "Greetings"), new String[]{"CustomStream2"});
         return streamedEvents;
     }
 

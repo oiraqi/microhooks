@@ -25,6 +25,9 @@ import io.microhooks.sink.Sink;
 import io.microhooks.source.ProduceEventOnCreate;
 import io.microhooks.source.ProduceEventOnDelete;
 import io.microhooks.source.ProduceEventOnUpdate;
+import io.microhooks.source.ProduceEventsOnCreate;
+import io.microhooks.source.ProduceEventsOnDelete;
+import io.microhooks.source.ProduceEventsOnUpdate;
 import io.microhooks.source.Source;
 import io.microhooks.source.Track;
 
@@ -48,9 +51,13 @@ public class CachingReflector {
     // once per Trackable entity class (for all its instances)
     private static final Map<String, Vector<String>> TRACKED_FIELDS_NAMES = new ConcurrentHashMap<String, Vector<String>>();
 
-    private static final Map<String, ArrayList<Method>> ON_CREATE_METHODS = new ConcurrentHashMap<>();
-    private static final Map<String, ArrayList<Method>> ON_UPDATE_METHODS = new ConcurrentHashMap<>();
-    private static final Map<String, ArrayList<Method>> ON_DELETE_METHODS = new ConcurrentHashMap<>();
+    private static final Map<String, ArrayList<Method>> PRODUCE_EVENT_ON_CREATE_METHODS = new ConcurrentHashMap<>();
+    private static final Map<String, ArrayList<Method>> PRODUCE_EVENT_ON_UPDATE_METHODS = new ConcurrentHashMap<>();
+    private static final Map<String, ArrayList<Method>> PRODUCE_EVENT_ON_DELETE_METHODS = new ConcurrentHashMap<>();
+
+    private static final Map<String, ArrayList<Method>> PRODUCE_EVENTS_ON_CREATE_METHODS = new ConcurrentHashMap<>();
+    private static final Map<String, ArrayList<Method>> PRODUCE_EVENTS_ON_UPDATE_METHODS = new ConcurrentHashMap<>();
+    private static final Map<String, ArrayList<Method>> PRODUCE_EVENTS_ON_DELETE_METHODS = new ConcurrentHashMap<>();
 
     private static final Map<String, ArrayList<Class<?>>> SINK_MAP = new HashMap<>(); // <stream -- entityClasses>
     private static final Map<String, ArrayList<Object>> CUSTOM_SINK_MAP = new HashMap<>(); // <stream -- [sink1, sink2, ...]>>
@@ -154,49 +161,97 @@ public class CachingReflector {
         return TRACKED_FIELDS_NAMES.get(customSourceEntityClassName);
     }
 
-    public static ArrayList<Method> getOnCreateMethods(Object customSourceEntity) {
+    public static ArrayList<Method> getProduceEventOnCreateMethods(Object customSourceEntity) {
         Class<?> customSourceEntityClass = customSourceEntity.getClass();
         String customSourceEntityClassName = customSourceEntityClass.getName();
-        if (!ON_CREATE_METHODS.containsKey(customSourceEntityClassName)) {
-            ArrayList<Method> onCreateMethods = new ArrayList<>();
+        initOnCreateMethods(customSourceEntityClass);
+        return PRODUCE_EVENT_ON_CREATE_METHODS.get(customSourceEntityClassName);
+    }
+
+    public static ArrayList<Method> getProduceEventsOnCreateMethods(Object customSourceEntity) {
+        Class<?> customSourceEntityClass = customSourceEntity.getClass();
+        String customSourceEntityClassName = customSourceEntityClass.getName();
+        initOnCreateMethods(customSourceEntityClass);
+        return PRODUCE_EVENTS_ON_CREATE_METHODS.get(customSourceEntityClassName);
+    }
+
+    private static void initOnCreateMethods(Class<?> customSourceEntityClass) {
+        String customSourceEntityClassName = customSourceEntityClass.getName();
+        if (!PRODUCE_EVENT_ON_CREATE_METHODS.containsKey(customSourceEntityClassName)) {            
+            ArrayList<Method> produceEventOnCreateMethods = new ArrayList<>();
+            ArrayList<Method> produceEventsOnCreateMethods = new ArrayList<>();
             for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
                 if (method.isAnnotationPresent(ProduceEventOnCreate.class)) {
-                    onCreateMethods.add(method);
+                    produceEventOnCreateMethods.add(method);
+                } else if (method.isAnnotationPresent(ProduceEventsOnCreate.class)) {
+                    produceEventsOnCreateMethods.add(method);
                 }
             }
-            ON_CREATE_METHODS.put(customSourceEntityClassName, onCreateMethods);
+            PRODUCE_EVENT_ON_CREATE_METHODS.put(customSourceEntityClassName, produceEventOnCreateMethods);
+            PRODUCE_EVENTS_ON_CREATE_METHODS.put(customSourceEntityClassName, produceEventsOnCreateMethods);
         }
-        return ON_CREATE_METHODS.get(customSourceEntityClassName);
     }
 
-    public static ArrayList<Method> getOnUpdateMethods(Object customSourceEntity) {
+    public static ArrayList<Method> getProduceEventOnUpdateMethods(Object customSourceEntity) {
         Class<?> customSourceEntityClass = customSourceEntity.getClass();
         String customSourceEntityClassName = customSourceEntityClass.getName();
-        if (!ON_UPDATE_METHODS.containsKey(customSourceEntityClassName)) {
-            ArrayList<Method> onUpdateMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
+        initOnUpdateMethods(customSourceEntityClass);
+        return PRODUCE_EVENT_ON_UPDATE_METHODS.get(customSourceEntityClassName);
+    }
+
+    public static ArrayList<Method> getProduceEventsOnUpdateMethods(Object customSourceEntity) {
+        Class<?> customSourceEntityClass = customSourceEntity.getClass();
+        String customSourceEntityClassName = customSourceEntityClass.getName();
+        initOnUpdateMethods(customSourceEntityClass);
+        return PRODUCE_EVENTS_ON_UPDATE_METHODS.get(customSourceEntityClassName);
+    }
+
+    private static void initOnUpdateMethods(Class<?> customSourceEntityClass) {
+        String customSourceEntityClassName = customSourceEntityClass.getName();
+        if (!PRODUCE_EVENT_ON_UPDATE_METHODS.containsKey(customSourceEntityClassName)) {            
+            ArrayList<Method> produceEventOnUpdateMethods = new ArrayList<>();
+            ArrayList<Method> produceEventsOnUpdateMethods = new ArrayList<>();
+            for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
                 if (method.isAnnotationPresent(ProduceEventOnUpdate.class)) {
-                    onUpdateMethods.add(method);
+                    produceEventOnUpdateMethods.add(method);
+                } else if (method.isAnnotationPresent(ProduceEventsOnUpdate.class)) {
+                    produceEventsOnUpdateMethods.add(method);
                 }
             }
-            ON_UPDATE_METHODS.put(customSourceEntityClassName, onUpdateMethods);
+            PRODUCE_EVENT_ON_UPDATE_METHODS.put(customSourceEntityClassName, produceEventOnUpdateMethods);
+            PRODUCE_EVENTS_ON_UPDATE_METHODS.put(customSourceEntityClassName, produceEventsOnUpdateMethods);
         }
-        return ON_UPDATE_METHODS.get(customSourceEntityClassName);
     }
 
-    public static ArrayList<Method> getOnDeleteMethods(Object customSourceEntity) {
+    public static ArrayList<Method> getProduceEventOnDeleteMethods(Object customSourceEntity) {
         Class<?> customSourceEntityClass = customSourceEntity.getClass();
         String customSourceEntityClassName = customSourceEntityClass.getName();
-        if (!ON_DELETE_METHODS.containsKey(customSourceEntityClassName)) {
-            ArrayList<Method> onDeleteMethods = new ArrayList<>();
+        initOnDeleteMethods(customSourceEntityClass);
+        return PRODUCE_EVENT_ON_DELETE_METHODS.get(customSourceEntityClassName);
+    }
+
+    public static ArrayList<Method> getProduceEventsOnDeleteMethods(Object customSourceEntity) {
+        Class<?> customSourceEntityClass = customSourceEntity.getClass();
+        String customSourceEntityClassName = customSourceEntityClass.getName();
+        initOnDeleteMethods(customSourceEntityClass);
+        return PRODUCE_EVENTS_ON_DELETE_METHODS.get(customSourceEntityClassName);
+    }
+
+    private static void initOnDeleteMethods(Class<?> customSourceEntityClass) {
+        String customSourceEntityClassName = customSourceEntityClass.getName();
+        if (!PRODUCE_EVENT_ON_DELETE_METHODS.containsKey(customSourceEntityClassName)) {            
+            ArrayList<Method> produceEventOnDeleteMethods = new ArrayList<>();
+            ArrayList<Method> produceEventsOnDeleteMethods = new ArrayList<>();
             for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
                 if (method.isAnnotationPresent(ProduceEventOnDelete.class)) {
-                    onDeleteMethods.add(method);
+                    produceEventOnDeleteMethods.add(method);
+                } else if (method.isAnnotationPresent(ProduceEventsOnDelete.class)) {
+                    produceEventsOnDeleteMethods.add(method);
                 }
             }
-            ON_DELETE_METHODS.put(customSourceEntityClassName, onDeleteMethods);
+            PRODUCE_EVENT_ON_DELETE_METHODS.put(customSourceEntityClassName, produceEventOnDeleteMethods);
+            PRODUCE_EVENTS_ON_DELETE_METHODS.put(customSourceEntityClassName, produceEventsOnDeleteMethods);
         }
-        return ON_DELETE_METHODS.get(customSourceEntityClassName);
     }
 
     public static ArrayList<Class<?>> getSinks(String stream) {
