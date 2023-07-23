@@ -30,7 +30,7 @@ public class TransactionalSinkRepository implements SinkRepository {
     }
 
     public void delete(Class<?> sinkEntityClass, long sourceId) {
-        sinkHelper.update(sinkEntityClass, sourceId, em);
+        sinkHelper.delete(sinkEntityClass, sourceId, em);
     }
 
 }

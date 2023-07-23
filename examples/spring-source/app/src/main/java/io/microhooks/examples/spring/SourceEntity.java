@@ -9,12 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import io.microhooks.core.Event;
-import io.microhooks.producer.CustomSource;
-import io.microhooks.producer.ProduceEventOnCreate;
-import io.microhooks.producer.ProduceEventOnUpdate;
-import io.microhooks.producer.ProduceEventsOnUpdate;
-import io.microhooks.producer.Source;
-import io.microhooks.producer.Track;
+import io.microhooks.source.CustomSource;
+import io.microhooks.source.ProduceEventOnCreate;
+import io.microhooks.source.ProduceEventOnUpdate;
+import io.microhooks.source.ProduceEventsOnUpdate;
+import io.microhooks.source.Source;
+import io.microhooks.source.Track;
 import lombok.Data;
 
 @Entity

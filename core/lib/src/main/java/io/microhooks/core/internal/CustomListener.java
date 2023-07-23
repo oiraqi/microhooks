@@ -15,9 +15,9 @@ import jakarta.persistence.PostUpdate;
 import io.microhooks.core.Event;
 import io.microhooks.core.internal.util.CachingReflector;
 import io.microhooks.core.internal.util.logging.Logged;
-import io.microhooks.producer.ProduceEventOnCreate;
-import io.microhooks.producer.ProduceEventOnDelete;
-import io.microhooks.producer.ProduceEventOnUpdate;
+import io.microhooks.source.ProduceEventOnCreate;
+import io.microhooks.source.ProduceEventOnDelete;
+import io.microhooks.source.ProduceEventOnUpdate;
 
 public class CustomListener extends Listener {
 

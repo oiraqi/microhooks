@@ -1,4 +1,4 @@
-package io.microhooks.producer;
+package io.microhooks.source;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ProduceEventOnCreate {
-    String stream();
+public @interface ProduceEventsOnUpdate {
 }

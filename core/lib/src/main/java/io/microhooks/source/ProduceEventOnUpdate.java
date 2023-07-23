@@ -1,4 +1,4 @@
-package io.microhooks.producer;
+package io.microhooks.source;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.FIELD})
-public @interface Track {
-    
+@Target(ElementType.METHOD)
+public @interface ProduceEventOnUpdate {
+    String stream();
 }

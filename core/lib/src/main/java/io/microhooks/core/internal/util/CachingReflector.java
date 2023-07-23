@@ -18,15 +18,15 @@ import jakarta.persistence.Id;
 
 import org.atteo.classindex.ClassIndex;
 
-import io.microhooks.consumer.CustomSink;
-import io.microhooks.consumer.ProcessEvent;
-import io.microhooks.consumer.Sink;
 import io.microhooks.core.internal.IdNotFoundException;
-import io.microhooks.producer.ProduceEventOnCreate;
-import io.microhooks.producer.ProduceEventOnDelete;
-import io.microhooks.producer.ProduceEventOnUpdate;
-import io.microhooks.producer.Source;
-import io.microhooks.producer.Track;
+import io.microhooks.sink.CustomSink;
+import io.microhooks.sink.ProcessEvent;
+import io.microhooks.sink.Sink;
+import io.microhooks.source.ProduceEventOnCreate;
+import io.microhooks.source.ProduceEventOnDelete;
+import io.microhooks.source.ProduceEventOnUpdate;
+import io.microhooks.source.Source;
+import io.microhooks.source.Track;
 
 public class CachingReflector {
 
@@ -293,5 +293,4 @@ public class CachingReflector {
             REGISTERED_CUSTOM_SINK_CLASSES.put(customSink.getName(), streams);
         }
     }
-
 }

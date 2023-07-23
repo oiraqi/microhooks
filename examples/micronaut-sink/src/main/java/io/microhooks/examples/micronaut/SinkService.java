@@ -3,8 +3,8 @@ package io.microhooks.examples.micronaut;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.microhooks.consumer.CustomSink;
-import io.microhooks.consumer.ProcessEvent;
+import io.microhooks.sink.CustomSink;
+import io.microhooks.sink.ProcessEvent;
 import io.microhooks.core.Event;
 import jakarta.inject.Singleton;
 
