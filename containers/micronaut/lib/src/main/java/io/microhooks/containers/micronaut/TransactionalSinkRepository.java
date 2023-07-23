@@ -42,4 +42,16 @@ public class TransactionalSinkRepository implements SinkRepository {
         }
     }
 
+    public void delete(Class<?> sinkEntityClass, long sourceId) {
+        EntityTransaction tx = em.getTransaction();
+        tx.begin();
+        try {
+            sinkHelper.delete(sinkEntityClass, sourceId, em);
+            tx.commit();
+        } catch (Exception ex) {
+        } finally {
+            tx.rollback();
+        }
+    }
+
 }

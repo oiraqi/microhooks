@@ -42,10 +42,10 @@ public class CustomListener extends Listener {
         if (trackedFields == null) { // entity is Trackable but didn't define any @Track fields
             return;
         }
-
-        for (Method method : CachingReflector.getOnUpdateMethods(entity)) {            
+        for (Method method : CachingReflector.getOnUpdateMethods(entity)) {    
             Iterator<String> keys = trackedFields.keySet().iterator();
             Map<String, Object> changedTrackedFields = new HashMap<>();
+            String stream = method.getAnnotation(ProduceEventOnUpdate.class).stream();
             while (keys.hasNext()) {
                 String fieldName = keys.next();
                 Object oldValue = trackedFields.get(fieldName);
@@ -55,16 +55,16 @@ public class CustomListener extends Listener {
                 }
 
                 if (oldValue == null || !oldValue.equals(newValue)) {
-                    changedTrackedFields.put(fieldName, trackedFields.get(fieldName));
+                    changedTrackedFields.put(fieldName, trackedFields.get(fieldName)); 
                     // Highly-concurrent thread safe
                     trackedFields.put(fieldName, newValue);
                 }
             }
-            Event<Object> event = (Event<Object>) method.invoke(entity,
-                    changedTrackedFields);
-
-            long id = CachingReflector.getId(entity);
-            getEventProducer().publish(id, event, method.getAnnotation(ProduceEventOnUpdate.class).stream());
+            Event<Object> event = (Event<Object>) method.invoke(entity, changedTrackedFields);
+            if (event != null) {
+                long id = CachingReflector.getId(entity);
+                getEventProducer().publish(id, event, stream);
+            }
             // Don't return here as we allow several methods to be annotated with OnUpdate
         }
     }

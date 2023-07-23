@@ -7,7 +7,7 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.scheduling.TaskExecutors;
-
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.PersistenceContext;
@@ -19,6 +19,9 @@ public class SinkController {
 
     @PersistenceContext
     EntityManager em;
+
+    @Inject
+    SinkService sinkService;
     
     @Get
     public String list() {

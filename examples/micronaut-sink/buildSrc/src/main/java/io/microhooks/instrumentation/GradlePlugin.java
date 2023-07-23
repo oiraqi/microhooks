@@ -1,6 +1,7 @@
 package io.microhooks.instrumentation;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import net.bytebuddy.description.type.TypeDescription;
@@ -11,11 +12,19 @@ import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.modifier.FieldPersistence;
+import net.bytebuddy.matcher.ElementMatchers;
+import net.bytebuddy.asm.Advice;
 
 public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
     private static class Loader extends ClassLoader {
-        public Class findClass(String name, ClassFileLocator classFileLocator) {
+        private ClassFileLocator classFileLocator;
+
+        public Loader(ClassFileLocator classFileLocator) {
+            this.classFileLocator = classFileLocator;
+        }
+
+        public Class<?> findClass(String name) {
             byte[] bytes;
             try {
                 bytes = classFileLocator.locate(name).resolve();
@@ -46,18 +55,16 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         String annotations = target.getDeclaredAnnotations().toString();
         boolean isSource = annotations.contains("@io.microhooks.producer.Source");
         boolean isCustomSource = annotations.contains("@io.microhooks.producer.CustomSource");
-        boolean isSink = annotations.contains("@io.microhooks.consumer.Sink");
-        boolean isCustomSink = annotations.contains("@io.microhooks.consumer.CustomSink");
 
-        Loader loader = new Loader();       
+        Loader loader = new Loader(classFileLocator);
 
         if (isSource || isCustomSource) {
             Class[] listeners = null;
-            Class entityListeners = loader.findClass("jakarta.persistence.EntityListeners", classFileLocator);
-            loader.findClass("io.microhooks.core.internal.Listener", classFileLocator);
+            Class entityListeners = loader.findClass("jakarta.persistence.EntityListeners");
+            loader.findClass("io.microhooks.core.internal.Listener");
 
             if (isCustomSource) {
-                Class trackable = loader.findClass("io.microhooks.core.internal.Trackable", classFileLocator);
+                Class trackable = loader.findClass("io.microhooks.core.internal.Trackable");
                 Generic map = TypeDescription.Generic.Builder.parameterizedType(Map.class, String.class, Object.class)
                         .build();
                 builder = builder.implement(trackable)
@@ -68,10 +75,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                         .withParameters(map)
                         .intercept(FieldAccessor.ofField("microhooksTrackedFields"));
                 
-                Class customListener = loader.findClass("io.microhooks.core.internal.CustomListener", classFileLocator);
+                Class customListener = loader.findClass("io.microhooks.core.internal.CustomListener");
                 
                 if (isSource) {
-                    Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener", classFileLocator);
+                    Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener");
                     listeners = new Class[2];
                     listeners[0] = sourceListener;
                     listeners[1] = customListener;
@@ -80,16 +87,20 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     listeners[0] = customListener;
                 }
             } else {
-                Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener", classFileLocator);
+                Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener");
                 listeners = new Class[1];
                 listeners[0] = sourceListener;
             }
-            builder = builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
+            return builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
                             .defineTypeArray("value", listeners).build());
-        } else if(isSink) {
-            Class sinkable = loader.findClass("io.microhooks.core.internal.Sinkable", classFileLocator);
-            Class unique = loader.findClass("jakarta.persistence.Column", classFileLocator);
-            builder = builder.implement(sinkable)
+        } 
+        boolean isSink = annotations.contains("@io.microhooks.consumer.Sink");
+        boolean isCustomSink = annotations.contains("@io.microhooks.consumer.CustomSink");
+        if (isSink || isCustomSink) {
+            if(isSink) {
+                Class sinkable = loader.findClass("io.microhooks.core.internal.Sinkable");
+                Class unique = loader.findClass("jakarta.persistence.Column");
+                builder = builder.implement(sinkable)
                     .defineField("microhooksSourceId", long.class, Visibility.PRIVATE)
                     .annotateField(AnnotationDescription.Builder.ofType(unique).define("unique", true).build())
                     .defineMethod("getMicrohooksSourceId", long.class, Visibility.PUBLIC)                    
@@ -97,15 +108,21 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     .defineMethod("setMicrohooksSourceId", void.class, Visibility.PUBLIC)
                     .withParameters(long.class)
                     .intercept(FieldAccessor.ofField("microhooksSourceId"));
-        } else if (annotations.contains("@io.microhooks.core.Dto")) {
-            Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties",
-                                                        classFileLocator);
+            }
+            if (isCustomSink) {
+                builder = builder.constructor(ElementMatchers.any())
+                            .intercept(Advice.to(CustomSinkAdvisor.class));
+            }
+            return builder;
+        } 
+        if (annotations.contains("@io.microhooks.core.Dto")) {
+            Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties");
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
                             .define("ignoreUnknown", true).build());
         } else if (annotations.contains("@org.springframework.boot.autoconfigure.SpringBootApplication")) {
-            Class springConfig = loader.findClass("io.microhooks.containers.spring.Config", classFileLocator);
+            Class springConfig = loader.findClass("io.microhooks.containers.spring.Config");
             if (springConfig != null) {
-                Class importt = loader.findClass("org.springframework.context.annotation.Import", classFileLocator);
+                Class importt = loader.findClass("org.springframework.context.annotation.Import");
                 builder = builder.annotateType(AnnotationDescription.Builder.ofType(importt)
                         .defineTypeArray("value", new Class[]{springConfig}).build());
             } 
@@ -117,5 +134,16 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
     @Override
     public void close() throws IOException {
+    }
+
+    private static class CustomSinkAdvisor {
+
+        @Advice.OnMethodExit
+        public static void enter(@Advice.This Object customSink) throws Exception {
+            //customSink.getClass().getMethod("__mhks__register").invoke(customSink);
+            Method method = Class.forName("io.microhooks.core.internal.util.CachingReflector")
+                                .getDeclaredMethod("registerCustomSink", Object.class);
+            method.invoke(null, customSink);
+        }
     }
 }

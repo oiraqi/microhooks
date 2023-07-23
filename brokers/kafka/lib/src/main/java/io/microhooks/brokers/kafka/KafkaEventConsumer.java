@@ -30,7 +30,8 @@ public class KafkaEventConsumer extends EventConsumer {
     }
 
     protected void subscribe() {
-        consumer.subscribe(CachingReflector.getSinkMap().keySet());
+        System.out.println(CachingReflector.getAllStreams());
+        consumer.subscribe(CachingReflector.getAllStreams());
         while (true) {
             ConsumerRecords<Long, Event<JsonNode>> identifiedEvents = consumer.poll(Duration.ofSeconds(60));
             identifiedEvents.forEach(record -> {

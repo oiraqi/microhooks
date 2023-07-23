@@ -5,16 +5,21 @@ import java.lang.reflect.Method;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.persistence.Id;
 
 import org.atteo.classindex.ClassIndex;
 
+import io.microhooks.consumer.CustomSink;
+import io.microhooks.consumer.ProcessEvent;
 import io.microhooks.consumer.Sink;
 import io.microhooks.core.internal.IdNotFoundException;
 import io.microhooks.producer.ProduceEventOnCreate;
@@ -48,9 +53,17 @@ public class CachingReflector {
     private static final Map<String, ArrayList<Method>> ON_DELETE_METHODS = new ConcurrentHashMap<>();
 
     private static final Map<String, ArrayList<Class<?>>> SINK_MAP = new HashMap<>(); // <stream -- entityClasses>
-    // private static final Map<String, ArrayList<Class<?>>> customSinkMap;
+    private static final Map<String, ArrayList<Object>> CUSTOM_SINK_MAP = new HashMap<>(); // <stream -- [sink1, sink2, ...]>>
+    private static final Map<String, ArrayList<String>> REGISTERED_CUSTOM_SINK_CLASSES = new HashMap<>(); // <class - [stream1, stream2, ...]>
+    private static final Map<String, Map<Method, String>> PROCESS_EVENT_METHODS = new HashMap<>(); // <stream#className -- [<m1, label1>, <m2, label2>]>
+    private static final Set<String> CUSTOM_SINK_STREAMS = new HashSet<>();
 
     private CachingReflector() {
+    }
+
+    public static void init() {
+        buildSinkMap();
+        registerCustomSinkClasses();
     }
 
     public static Object getFieldValue(Object instance, String fieldName) throws Exception {
@@ -161,7 +174,7 @@ public class CachingReflector {
         String customSourceEntityClassName = customSourceEntityClass.getName();
         if (!ON_UPDATE_METHODS.containsKey(customSourceEntityClassName)) {
             ArrayList<Method> onUpdateMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
+            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
                 if (method.isAnnotationPresent(ProduceEventOnUpdate.class)) {
                     onUpdateMethods.add(method);
                 }
@@ -186,11 +199,54 @@ public class CachingReflector {
         return ON_DELETE_METHODS.get(customSourceEntityClassName);
     }
 
-    public static Map<String, ArrayList<Class<?>>> getSinkMap() {
-        if (SINK_MAP.isEmpty()) {
-            buildSinkMap();
+    public static ArrayList<Class<?>> getSinks(String stream) {
+        return SINK_MAP.get(stream);
+    }
+
+    public static void registerCustomSink(Object customSink) {
+        List<String> streams = REGISTERED_CUSTOM_SINK_CLASSES.get(customSink.getClass().getName());
+        for (String stream : streams) {
+            ArrayList<Object> customSinks = null;
+            if (!CUSTOM_SINK_MAP.containsKey(stream)) {
+                customSinks = new ArrayList<>();
+                CUSTOM_SINK_MAP.put(stream, customSinks);
+            } else {
+                customSinks = CUSTOM_SINK_MAP.get(stream);
+            }
+            customSinks.add(customSink);
         }
-        return SINK_MAP;
+    }
+
+    public static Map<Method, String> getProcessEventMethodsToInvoke(String stream, Object customSink) {
+        String key = stream + "#" + customSink.getClass().getName();
+        return PROCESS_EVENT_METHODS.get(key);
+    }
+
+    public static boolean hasSinks() {
+        return !SINK_MAP.isEmpty() || !CUSTOM_SINK_MAP.isEmpty();
+    }
+
+    public static Set<String> getSinkStreams() {
+        return SINK_MAP.keySet();
+    }
+
+    public static Set<String> getCustomSinkStreams() {
+        return CUSTOM_SINK_MAP.keySet();
+    }
+
+    public static Set<String> getAllStreams() {
+        HashSet<String> set = new HashSet<>();
+        for (String topic : SINK_MAP.keySet()) {
+            set.add(topic);
+        }
+        for (String topic : CUSTOM_SINK_STREAMS) {
+            set.add(topic);
+        }
+        return set;
+    } 
+
+    public static List<Object> getCustomSinks(String stream) {
+        return CUSTOM_SINK_MAP.get(stream);
     }
 
     private static void buildSinkMap() {
@@ -208,23 +264,34 @@ public class CachingReflector {
         }
     }
 
-    private static void buildCustomSinkMap() {
-
-        /*
-         * customSinkMap = new HashMap<>();
-         * Iterable<Class<?>> customSinks = ClassIndex.getAnnotated(CustomSink.class);
-         * for (Class<?> customSink : customSinks) {
-         * CustomSink customSinkAnnotation =
-         * customSink.<CustomSink>getAnnotation(CustomSink.class);
-         * String stream = customSinkAnnotation.stream();
-         * if (customSinkMap.containsKey(stream)) {
-         * customSinkMap.get(stream).add(customSink);
-         * } else {
-         * ArrayList list = new ArrayList();
-         * list.add(customSink);
-         * customSinkMap.put(stream, list);
-         * }
-         * }
-         */
+    private static void registerCustomSinkClasses() {
+        Iterable<Class<?>> customSinks = ClassIndex.getAnnotated(CustomSink.class);
+        for (Class<?> customSink : customSinks) {
+            ArrayList<String> streams = new ArrayList<>();
+            for (Method method : customSink.getDeclaredMethods()) {
+                ProcessEvent pe = null;
+                if ((pe = method.getAnnotation(ProcessEvent.class)) != null) {
+                    String stream = pe.stream();
+                    if (!CUSTOM_SINK_STREAMS.contains(stream)) {
+                        CUSTOM_SINK_STREAMS.add(stream);
+                    }
+                    String label = pe.label();
+                    String key = stream + "#" + customSink.getName();
+                    if (!streams.contains(stream)) {
+                        streams.add(stream);
+                    }
+                    Map<Method, String> methods = null;
+                    if (!PROCESS_EVENT_METHODS.containsKey(key)) {
+                        methods = new HashMap<>();
+                        PROCESS_EVENT_METHODS.put(key, methods);
+                    } else {
+                        methods = PROCESS_EVENT_METHODS.get(key);
+                    }
+                    methods.put(method, label);
+                }
+            }
+            REGISTERED_CUSTOM_SINK_CLASSES.put(customSink.getName(), streams);
+        }
     }
+
 }

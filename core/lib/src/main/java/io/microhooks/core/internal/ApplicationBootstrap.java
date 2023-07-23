@@ -11,8 +11,9 @@ public class ApplicationBootstrap {
     public void setup(SinkRepository sinkRepository) {
 
         Config.init();
+        CachingReflector.init();
         
-        if (!CachingReflector.getSinkMap().isEmpty()) {
+        if (CachingReflector.hasSinks()) {
             new Thread(() -> {
                 try {
                     Config.getEventConsumer().launch(sinkRepository);

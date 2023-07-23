@@ -28,6 +28,15 @@ public class SinkHelper {
         em.persist(sinkEntity);
     }
 
+    public void delete(Class<?> sinkEntityClass, long sourceId, EntityManager em) {
+        Object sinkEntity = findBySourceId(sinkEntityClass.getName(), sourceId, em);
+        if (sinkEntity == null) {
+            return;
+        }
+        
+        em.remove(sinkEntity);
+    }
+
     private Object findBySourceId(String entityName, long sourceId, EntityManager em) {
         return em.createQuery("SELECT o FROM " + entityName + " o WHERE o.microhooksSourceId = :sourceId")
                 .setParameter("sourceId", sourceId).getSingleResult();

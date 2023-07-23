@@ -29,4 +29,8 @@ public class TransactionalSinkRepository implements SinkRepository {
         sinkHelper.update(sinkEntityClass, payload, sourceId, em);
     }
 
+    public void delete(Class<?> sinkEntityClass, long sourceId) {
+        sinkHelper.update(sinkEntityClass, sourceId, em);
+    }
+
 }

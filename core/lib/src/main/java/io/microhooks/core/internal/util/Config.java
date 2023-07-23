@@ -20,8 +20,6 @@ public class Config {
     private static Context context = null;
 
     public static void init() {
-        initContext();
-        initBrokerType();
 
         try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(new FileInputStream("src/main/resources/application.properties")))) {
@@ -35,6 +33,7 @@ public class Config {
                 String value = strk.nextToken().trim();
                 if (key.equals("microhooks.service.name")) {
                     serviceName = value;
+                    System.out.println(value);
                 } else if (key.equals("microhooks.broker.cluster")) {
                     brokerCluster = value;
                 } else if (key.equals("microhooks.events.out.addOwner")) {
@@ -44,6 +43,9 @@ public class Config {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+        initContext();
+        initBrokerType();
 
     }
 
