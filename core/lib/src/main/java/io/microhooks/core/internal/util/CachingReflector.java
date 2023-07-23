@@ -180,7 +180,7 @@ public class CachingReflector {
         if (!PRODUCE_EVENT_ON_CREATE_METHODS.containsKey(customSourceEntityClassName)) {            
             ArrayList<Method> produceEventOnCreateMethods = new ArrayList<>();
             ArrayList<Method> produceEventsOnCreateMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
+            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
                 if (method.isAnnotationPresent(ProduceEventOnCreate.class)) {
                     produceEventOnCreateMethods.add(method);
                 } else if (method.isAnnotationPresent(ProduceEventsOnCreate.class)) {
@@ -208,10 +208,10 @@ public class CachingReflector {
 
     private static void initOnUpdateMethods(Class<?> customSourceEntityClass) {
         String customSourceEntityClassName = customSourceEntityClass.getName();
-        if (!PRODUCE_EVENT_ON_UPDATE_METHODS.containsKey(customSourceEntityClassName)) {            
+        if (!PRODUCE_EVENT_ON_UPDATE_METHODS.containsKey(customSourceEntityClassName)) {
             ArrayList<Method> produceEventOnUpdateMethods = new ArrayList<>();
             ArrayList<Method> produceEventsOnUpdateMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
+            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
                 if (method.isAnnotationPresent(ProduceEventOnUpdate.class)) {
                     produceEventOnUpdateMethods.add(method);
                 } else if (method.isAnnotationPresent(ProduceEventsOnUpdate.class)) {
@@ -242,7 +242,7 @@ public class CachingReflector {
         if (!PRODUCE_EVENT_ON_DELETE_METHODS.containsKey(customSourceEntityClassName)) {            
             ArrayList<Method> produceEventOnDeleteMethods = new ArrayList<>();
             ArrayList<Method> produceEventsOnDeleteMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getClass().getDeclaredMethods()) {
+            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
                 if (method.isAnnotationPresent(ProduceEventOnDelete.class)) {
                     produceEventOnDeleteMethods.add(method);
                 } else if (method.isAnnotationPresent(ProduceEventsOnDelete.class)) {
