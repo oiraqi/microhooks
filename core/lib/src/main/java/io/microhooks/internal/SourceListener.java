@@ -1,18 +1,18 @@
-package io.microhooks.core.internal;
+package io.microhooks.internal;
 
 
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
 
-import io.microhooks.core.Event;
-import io.microhooks.core.internal.util.CachingReflector;
-import io.microhooks.core.internal.util.logging.Logged;
-
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.microhooks.common.Event;
+import io.microhooks.internal.util.CachingReflector;
+import io.microhooks.internal.util.logging.Logged;
 
 public class SourceListener extends Listener {
 

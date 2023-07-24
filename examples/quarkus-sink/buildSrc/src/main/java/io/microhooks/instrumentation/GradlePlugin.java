@@ -44,7 +44,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                 annotations.contains("@io.microhooks.source.CustomSource") ||
                 annotations.contains("@io.microhooks.sink.Sink") ||
                 annotations.contains("@io.microhooks.sink.CustomSink") ||
-                annotations.contains("@io.microhooks.core.Dto") ||
+                annotations.contains("@io.microhooks.common.Dto") ||
                 annotations.contains("@org.springframework.boot.autoconfigure.SpringBootApplication");
     }
 
@@ -61,10 +61,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         if (isSource || isCustomSource) {
             Class[] listeners = null;
             Class entityListeners = loader.findClass("jakarta.persistence.EntityListeners");
-            loader.findClass("io.microhooks.core.internal.Listener");
+            loader.findClass("io.microhooks.internal.Listener");
 
             if (isCustomSource) {
-                Class trackable = loader.findClass("io.microhooks.core.internal.Trackable");
+                Class trackable = loader.findClass("io.microhooks.internal.Trackable");
                 Generic map = TypeDescription.Generic.Builder.parameterizedType(Map.class, String.class, Object.class)
                         .build();
                 builder = builder.implement(trackable)
@@ -75,10 +75,10 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                         .withParameters(map)
                         .intercept(FieldAccessor.ofField("microhooksTrackedFields"));
                 
-                Class customListener = loader.findClass("io.microhooks.core.internal.CustomListener");
+                Class customListener = loader.findClass("io.microhooks.internal.CustomListener");
                 
                 if (isSource) {
-                    Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener");
+                    Class sourceListener = loader.findClass("io.microhooks.internal.SourceListener");
                     listeners = new Class[2];
                     listeners[0] = sourceListener;
                     listeners[1] = customListener;
@@ -87,7 +87,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     listeners[0] = customListener;
                 }
             } else {
-                Class sourceListener = loader.findClass("io.microhooks.core.internal.SourceListener");
+                Class sourceListener = loader.findClass("io.microhooks.internal.SourceListener");
                 listeners = new Class[1];
                 listeners[0] = sourceListener;
             }
@@ -98,7 +98,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         boolean isCustomSink = annotations.contains("@io.microhooks.sink.CustomSink");
         if (isSink || isCustomSink) {
             if(isSink) {
-                Class sinkable = loader.findClass("io.microhooks.core.internal.Sinkable");
+                Class sinkable = loader.findClass("io.microhooks.internal.Sinkable");
                 Class unique = loader.findClass("jakarta.persistence.Column");
                 builder = builder.implement(sinkable)
                     .defineField("microhooksSourceId", long.class, Visibility.PRIVATE)
@@ -115,7 +115,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
             }
             return builder;
         } 
-        if (annotations.contains("@io.microhooks.core.Dto")) {
+        if (annotations.contains("@io.microhooks.common.Dto")) {
             Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties");
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
                             .define("ignoreUnknown", true).build());
@@ -140,7 +140,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
         @Advice.OnMethodExit
         public static void enter(@Advice.This Object customSink) throws Exception {
-            Method method = Class.forName("io.microhooks.core.internal.util.CachingReflector")
+            Method method = Class.forName("io.microhooks.internal.util.CachingReflector")
                                 .getDeclaredMethod("registerCustomSink", Object.class);
             method.invoke(null, customSink);
         }

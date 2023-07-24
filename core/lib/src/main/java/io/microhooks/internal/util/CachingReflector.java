@@ -1,4 +1,4 @@
-package io.microhooks.core.internal.util;
+package io.microhooks.internal.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,7 +18,7 @@ import jakarta.persistence.Id;
 
 import org.atteo.classindex.ClassIndex;
 
-import io.microhooks.core.internal.IdNotFoundException;
+import io.microhooks.internal.IdNotFoundException;
 import io.microhooks.sink.CustomSink;
 import io.microhooks.sink.ProcessEvent;
 import io.microhooks.sink.Sink;

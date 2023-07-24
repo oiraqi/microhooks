@@ -10,7 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import io.microhooks.core.Event;
+import io.microhooks.common.Event;
 import io.microhooks.source.CustomSource;
 import io.microhooks.source.ProduceEventOnCreate;
 import io.microhooks.source.ProduceEventOnUpdate;

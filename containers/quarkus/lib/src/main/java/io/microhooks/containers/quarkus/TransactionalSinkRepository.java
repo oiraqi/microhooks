@@ -9,8 +9,8 @@ import jakarta.transaction.Transactional;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.microhooks.core.internal.SinkRepository;
-import io.microhooks.core.internal.util.SinkHelper;
+import io.microhooks.internal.SinkRepository;
+import io.microhooks.internal.util.SinkHelper;
 
 @ApplicationScoped
 @Transactional

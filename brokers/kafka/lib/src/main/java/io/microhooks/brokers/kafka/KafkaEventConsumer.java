@@ -10,10 +10,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.Consumer;
 
-import io.microhooks.core.Event;
-import io.microhooks.core.internal.EventConsumer;
-import io.microhooks.core.internal.util.CachingReflector;
-import io.microhooks.core.internal.util.Config;
+import io.microhooks.common.Event;
+import io.microhooks.internal.EventConsumer;
+import io.microhooks.internal.util.CachingReflector;
+import io.microhooks.internal.util.Config;
 
 public class KafkaEventConsumer extends EventConsumer {
 
@@ -30,11 +30,10 @@ public class KafkaEventConsumer extends EventConsumer {
     }
 
     protected void subscribe() {
-        System.out.println(CachingReflector.getAllStreams());
         consumer.subscribe(CachingReflector.getAllStreams());
         while (true) {
-            ConsumerRecords<Long, Event<JsonNode>> identifiedEvents = consumer.poll(Duration.ofSeconds(60));
-            identifiedEvents.forEach(record -> {
+            ConsumerRecords<Long, Event<JsonNode>> records = consumer.poll(Duration.ofSeconds(60));
+            records.forEach(record -> {
                 processEvent(record.key(), record.value(), record.topic());
             });
         }

@@ -4,8 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import io.quarkus.runtime.Startup;
 
-import io.microhooks.core.internal.ApplicationBootstrap;
-import io.microhooks.core.internal.SinkRepository;
+import io.microhooks.internal.ApplicationBootstrap;
+import io.microhooks.internal.SinkRepository;
 
 @ApplicationScoped
 @Startup

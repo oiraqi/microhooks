@@ -1,7 +1,7 @@
-package io.microhooks.core.internal;
+package io.microhooks.internal;
 
-import io.microhooks.core.Event;
-import io.microhooks.core.internal.util.Config;
+import io.microhooks.common.Event;
+import io.microhooks.internal.util.Config;
 
 public abstract class EventProducer {
 

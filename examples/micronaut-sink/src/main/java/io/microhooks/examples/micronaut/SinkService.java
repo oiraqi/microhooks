@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.microhooks.sink.CustomSink;
 import io.microhooks.sink.ProcessEvent;
-import io.microhooks.core.Event;
+import io.microhooks.common.Event;
 import jakarta.inject.Singleton;
 
 @Singleton

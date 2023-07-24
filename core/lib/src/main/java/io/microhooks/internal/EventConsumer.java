@@ -1,4 +1,4 @@
-package io.microhooks.core.internal;
+package io.microhooks.internal;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.microhooks.core.Event;
-import io.microhooks.core.internal.util.CachingReflector;
+import io.microhooks.common.Event;
+import io.microhooks.internal.util.CachingReflector;
 
 public abstract class EventConsumer {
 

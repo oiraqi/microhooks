@@ -4,7 +4,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import io.microhooks.core.internal.Context;
+import io.microhooks.internal.Context;
 
 public class SpringContext implements Context {
 

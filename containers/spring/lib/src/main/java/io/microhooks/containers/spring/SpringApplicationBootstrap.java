@@ -5,8 +5,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import io.microhooks.core.internal.ApplicationBootstrap;
-import io.microhooks.core.internal.SinkRepository;
+import io.microhooks.internal.ApplicationBootstrap;
+import io.microhooks.internal.SinkRepository;
 
 @Component
 public class SpringApplicationBootstrap extends ApplicationBootstrap {

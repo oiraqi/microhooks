@@ -1,4 +1,4 @@
-package io.microhooks.core.internal;
+package io.microhooks.internal;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -12,10 +12,9 @@ import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
-
-import io.microhooks.core.Event;
-import io.microhooks.core.internal.util.CachingReflector;
-import io.microhooks.core.internal.util.logging.Logged;
+import io.microhooks.common.Event;
+import io.microhooks.internal.util.CachingReflector;
+import io.microhooks.internal.util.logging.Logged;
 import io.microhooks.source.ProduceEventOnCreate;
 import io.microhooks.source.ProduceEventOnDelete;
 import io.microhooks.source.ProduceEventOnUpdate;

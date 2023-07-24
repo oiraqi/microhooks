@@ -5,7 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import io.microhooks.consumer.Sink;
+import io.microhooks.sink.Sink;
 
 import lombok.Data;
 

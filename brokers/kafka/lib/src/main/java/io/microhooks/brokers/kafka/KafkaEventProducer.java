@@ -4,8 +4,8 @@ import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import io.microhooks.core.Event;
-import io.microhooks.core.internal.EventProducer;
+import io.microhooks.common.Event;
+import io.microhooks.internal.EventProducer;
 
 public class KafkaEventProducer extends EventProducer {
 

@@ -1,4 +1,4 @@
-package io.microhooks.core.internal.util;
+package io.microhooks.internal.util;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -7,9 +7,8 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.microhooks.internal.Sinkable;
 import jakarta.persistence.EntityManager;
-
-import io.microhooks.core.internal.Sinkable;
 
 public class SinkHelper {
 

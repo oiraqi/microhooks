@@ -1,14 +1,14 @@
-package io.microhooks.core.internal.util;
+package io.microhooks.internal.util;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-import io.microhooks.core.internal.NoSupportedBrokerException;
-import io.microhooks.core.internal.EventProducer;
-import io.microhooks.core.internal.EventConsumer;
-import io.microhooks.core.internal.Context;
+import io.microhooks.internal.Context;
+import io.microhooks.internal.EventConsumer;
+import io.microhooks.internal.EventProducer;
+import io.microhooks.internal.NoSupportedBrokerException;
 
 public class Config {
 

@@ -1,4 +1,4 @@
-package io.microhooks.core.internal.util;
+package io.microhooks.internal.util;
 
 import java.util.Random;
 

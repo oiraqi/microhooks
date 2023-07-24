@@ -1,11 +1,11 @@
-package io.microhooks.core.internal.util;
+package io.microhooks.internal.util;
 
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.microhooks.core.Event;
+import io.microhooks.common.Event;
 
 public class EventSerdes {
     //Thread-safe, as long as we don't call setConfig and setDateFormat

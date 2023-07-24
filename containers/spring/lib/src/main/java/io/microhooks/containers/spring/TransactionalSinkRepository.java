@@ -8,8 +8,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
-import io.microhooks.core.internal.SinkRepository;
-import io.microhooks.core.internal.util.SinkHelper;
+import io.microhooks.internal.SinkRepository;
+import io.microhooks.internal.util.SinkHelper;
 
 @Component
 @Transactional

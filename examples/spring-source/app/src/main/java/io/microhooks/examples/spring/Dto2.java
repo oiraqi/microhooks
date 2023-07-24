@@ -1,6 +1,6 @@
 package io.microhooks.examples.spring;
 
-import io.microhooks.core.Dto;
+import io.microhooks.common.Dto;
 
 import lombok.Data;
 

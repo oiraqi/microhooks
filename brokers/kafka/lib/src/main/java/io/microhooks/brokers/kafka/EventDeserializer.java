@@ -5,8 +5,8 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.microhooks.core.internal.util.EventSerdes;
-import io.microhooks.core.Event;
+import io.microhooks.internal.util.EventSerdes;
+import io.microhooks.common.Event;
 
 public class EventDeserializer implements Deserializer<Event<JsonNode>> {
 
