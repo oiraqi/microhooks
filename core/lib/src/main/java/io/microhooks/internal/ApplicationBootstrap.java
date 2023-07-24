@@ -5,9 +5,8 @@ import io.microhooks.internal.util.Config;
 
 public class ApplicationBootstrap {
 
-    // Callback to be exposed to the underlying container (Spring, Quarkus,
-    // Micronaut, ...)
-    // by the overriding container extension
+    // Callback to be exposed to the underlying container (Spring, Quarkus, Micronaut, ...)
+    // By the overriding container extension
     public void setup(SinkRepository sinkRepository) {
 
         Config.init();
