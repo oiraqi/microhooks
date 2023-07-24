@@ -12,6 +12,7 @@ public class ApplicationBootstrap {
 
         Config.init();
         CachingReflector.init();
+        System.out.println(Config.getServiceName() + " Started!");
         
         if (CachingReflector.hasSinks()) {
             new Thread(() -> {
