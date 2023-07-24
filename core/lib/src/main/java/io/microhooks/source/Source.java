@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Source {
-    // stream:dto:[add owner to event or not], e.g., {"stream1:dto1:y", "stream2:dto2:n"}
+    // stream:projection:[add owner to event or not], e.g., {"stream1:projection1:y", "stream2:projection2:n"}
     String[] mappings();
 }

@@ -42,10 +42,10 @@ public class SourceListener extends Listener {
         while(iterator.hasNext()) {
             Entry<String, Entry<Class<?>, Boolean>> mapping = iterator.next();
             String stream = mapping.getKey();
-            Class<?> dtoClass = mapping.getValue().getKey();
+            Class<?> projectionClass = mapping.getValue().getKey();
             boolean addOwnerToEvent = mapping.getValue().getValue();
-            Object dto = objectMapper.convertValue(entity, dtoClass);
-            Event<Object> event = new Event<>(dto, operation, addOwnerToEvent);
+            Object projection = objectMapper.convertValue(entity, projectionClass);
+            Event<Object> event = new Event<>(projection, operation, addOwnerToEvent);
             getEventProducer().publish(id, event, stream);
         }
     }

@@ -1,4 +1,4 @@
-package io.microhooks.common;
+package io.microhooks.source;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Dto {
+public @interface Projection {
     
 }

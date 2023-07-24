@@ -21,7 +21,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Source(mappings = {"Stream1:io.microhooks.examples.spring.Dto1", "Stream2:io.microhooks.examples.spring.Dto2"})
+@Source(mappings = {"Stream1:io.microhooks.examples.spring.Projection1", "Stream2:io.microhooks.examples.spring.Projection2"})
 @CustomSource
 public class SourceEntity {
 

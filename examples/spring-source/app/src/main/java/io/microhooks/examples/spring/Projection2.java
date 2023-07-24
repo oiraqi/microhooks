@@ -1,11 +1,11 @@
 package io.microhooks.examples.spring;
 
-import io.microhooks.common.Dto;
+import io.microhooks.source.Projection;
 
 import lombok.Data;
 
 @Data
-@Dto
-public class Dto2 {
+@Projection
+public class Projection2 {
     private int amount;
 }

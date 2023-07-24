@@ -1,16 +1,16 @@
 package io.microhooks.examples.spring;
 
-import io.microhooks.common.Dto;
+import io.microhooks.source.Projection;
 
 import lombok.Data;
 
 @Data
-@Dto
-public class Dto1 {
+@Projection
+public class Projection1 {
     private String name;
 
     @Override
     public String toString() {
-        return "Dto1 {name: " + name + "}";
+        return "Projection1 {name: " + name + "}";
     }
 }
