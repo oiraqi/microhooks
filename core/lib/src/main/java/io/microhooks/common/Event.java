@@ -2,7 +2,6 @@ package io.microhooks.common;
 
 import java.util.Date;
 
-import io.microhooks.internal.util.Config;
 import lombok.Getter;
 
 @Getter
@@ -14,21 +13,14 @@ public class Event<P> {
 	private P payload = null;
 	private String label = null;
 	private long timestamp = 0;
-	private String owner = null;
 
 	public Event() {
 	}
 
-	public Event(P payload, String label, boolean addOwnerToEvent) {
+	public Event(P payload, String label) {
 		this.payload = payload;
 		this.label = label;
 		timestamp = new Date().getTime();
-		if (addOwnerToEvent)
-			owner = Config.getContext().getUsername();
-	}
-
-	public Event(P payload, String label) {
-		this(payload, label, false);
 	}
 
 	// An event must be immutable
@@ -50,15 +42,9 @@ public class Event<P> {
 		}
 	}
 
-	public void setOwner(String owner) {
-		if (this.owner == null) {
-			this.owner = owner;
-		}
-	}
-
 	@Override
 	public String toString() {
-		return "{Label: " + label + ", Timestamp: " + timestamp + ", Owner: " + owner + ", Payload: " + payload + "}";
+		return "{Label: " + label + ", Timestamp: " + timestamp + ", Payload: " + payload + "}";
 	}
 
 }

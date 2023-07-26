@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-import io.microhooks.internal.Context;
 import io.microhooks.internal.EventConsumer;
 import io.microhooks.internal.EventProducer;
 import io.microhooks.internal.NoSupportedBrokerException;
@@ -16,8 +15,6 @@ public class Config {
     private static EventConsumer eventConsumer = null;
     private static String brokerCluster = Defaults.BROKER_CLUSTER;
     private static String serviceName = Defaults.SERVICE_NAME;
-    private static boolean addOwnerToEvent = Defaults.ADD_OWNER_TO_EVENT;
-    private static Context context = null;
 
     public static void init() {
 
@@ -36,39 +33,14 @@ public class Config {
                     System.out.println(value);
                 } else if (key.equals("microhooks.broker.cluster")) {
                     brokerCluster = value;
-                } else if (key.equals("microhooks.events.out.addOwner")) {
-                    addOwnerToEvent = Boolean.valueOf(value);
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        initContext();
         initBrokerType();
 
-    }
-
-    private static void initContext() {
-        try {
-            Class.forName("io.microhooks.containers.spring.SpringApplicationBootstrap");
-            context = (Context) Class.forName("io.microhooks.containers.spring.SpringContext").getConstructor()
-                            .newInstance();
-        } catch (Exception e) {
-            try {
-                Class.forName("io.microhooks.containers.micronaut.MicronautApplicationBootstrap");
-                context = (Context) Class.forName("io.microhooks.containers.micronaut.MicronautContext")
-                            .getConstructor()
-                            .newInstance();
-            } catch (Exception ex) {
-                try {
-                    Class.forName("io.microhooks.containers.quarkus.QuarkusApplicationBootstrap");
-                    context = (Context) Class.forName("io.microhooks.containers.quarkus.QuarkusContext").getConstructor()
-                            .newInstance();
-                } catch (Exception exx) {
-                }
-            }
-        }
     }
 
     private static void initBrokerType() {
@@ -110,10 +82,6 @@ public class Config {
         return serviceName;
     }
 
-    public static boolean getAddOwnerToEvent() {
-        return addOwnerToEvent;
-    }
-
     public static String getBrokerCluster() {
         return brokerCluster;
     }
@@ -126,8 +94,4 @@ public class Config {
         return eventConsumer;
     }
 
-    public static Context getContext() {
-        return context;
-
-    }
 }

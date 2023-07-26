@@ -2,7 +2,6 @@ package io.microhooks.internal.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -41,9 +39,8 @@ public class CachingReflector {
     private static final Map<String, String> IDMAP = new ConcurrentHashMap<>();
 
     // A cache for reflected stream/DTO mappings so that reflection is performed
-    // only
-    // once per Source, entity class (for all its instances)
-    private static final Map<String, Map<String, Entry<Class<?>, Boolean>>> SOURCE_MAPPINGS = new ConcurrentHashMap<>();
+    // only once per Source, entity class (for all its instances)
+    private static final Map<String, Map<String, Class<?>>> SOURCE_MAPPINGS = new ConcurrentHashMap<>();
 
 
     // We use Vector here for thread safety
@@ -103,10 +100,10 @@ public class CachingReflector {
 
     }
 
-    public static Map<String, Entry<Class<?>, Boolean>> getSourceMappings(Object sourceEntity) throws Exception {
+    public static Map<String, Class<?>> getSourceMappings(Object sourceEntity) throws Exception {
         Class<?> sourceEntityClass = sourceEntity.getClass();
         String sourceEntityClassName = sourceEntityClass.getName();
-        Map<String, Entry<Class<?>, Boolean>> mappings = null;
+        Map<String, Class<?>> mappings = null;
         if (!SOURCE_MAPPINGS.containsKey(sourceEntityClassName)) {
             mappings = new ConcurrentHashMap<>();
             Source source = sourceEntityClass.<Source>getAnnotation(Source.class);
@@ -116,17 +113,8 @@ public class CachingReflector {
                     String stream = strTok.nextToken();
                     String dtoClassName = strTok.nextToken();
                     Class<?> dtoClass = Class.forName(dtoClassName);
-                    boolean add = false;
-                    if (strTok.hasMoreTokens()) {
-                        String addOwnerToEvent = strTok.nextToken();
-                        if (addOwnerToEvent.equals("y")) {
-                            add = true;
-                        }
-                    } else {
-                        add = Config.getAddOwnerToEvent();
-                    }
 
-                    mappings.put(stream, new AbstractMap.SimpleEntry<>(dtoClass, add));
+                    mappings.put(stream, dtoClass);
                 }
 
             } catch (Exception ex) {

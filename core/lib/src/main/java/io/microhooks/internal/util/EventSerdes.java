@@ -32,12 +32,10 @@ public class EventSerdes {
         JsonNode root = mapper.readTree(bytes);        
         String label = root.at("/label").textValue();
         JsonNode payload = root.at("/payload");
-        String owner = root.at("/owner").textValue();
         long timestamp = root.at("/timestamp").asLong();
         Event<JsonNode> event = new Event<JsonNode>();
         event.setPayload(payload);
         event.setLabel(label);
-        event.setOwner(owner);
         event.setTimestamp(timestamp);
         return event;
     }
