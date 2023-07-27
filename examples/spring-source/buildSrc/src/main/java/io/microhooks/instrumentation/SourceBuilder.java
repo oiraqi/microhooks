@@ -34,8 +34,6 @@ public class SourceBuilder {
     private static final Map<String, List<String>> PRODUCE_EVENTS_ON_UPDATE_METHODS = new HashMap<>();
     private static final Map<String, List<String>> PRODUCE_EVENTS_ON_DELETE_METHODS = new HashMap<>();
 
-    private static final String REF_FOLDER = "src/main/resources/";
-
     private static Class source = null;
     private static Class produceEventOnCreate = null;
     private static Class produceEventsOnCreate = null;
@@ -156,52 +154,53 @@ public class SourceBuilder {
     }
 
     public static void save() throws IOException {
-        String path = REF_FOLDER;
-        if (!new File(REF_FOLDER).exists()) {
-            path = "app/" + REF_FOLDER;
+        String path = "./";
+        if (new File("app/").exists()) {
+            path = "app/";
         }
-        if (!new File(path + "/store").exists()) {
-            new File(path + "/store").mkdir();
-            new File(path + "/store/source").mkdir();
-            new File(path + "/store/sink").mkdir();
+        if (!new File(path + ".context").exists()) {
+            new File(path + ".context").mkdir();
+            new File(path + ".context/source").mkdir();
+            new File(path + ".context/sink").mkdir();
         }
+        path += ".context/source/";
         System.out.println(SOURCE_MAP);
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "store/source/sources.bin"))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "sources.bin"))) {
             out.writeObject(SOURCE_MAP);
         }
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/streams.bin"))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "streams.bin"))) {
             out.writeObject(SOURCE_STREAMS);
         }
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/tracked-fields-names.bin"))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "tracked-fields-names.bin"))) {
             out.writeObject(TRACKED_FIELDS_NAMES);
         }
         if (!PRODUCE_EVENT_ON_CREATE_METHODS.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/produce-event-on-create-methods.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "produce-event-on-create-methods.bin"))) {
                 out.writeObject(PRODUCE_EVENT_ON_CREATE_METHODS);
             }
         }
         if (!PRODUCE_EVENTS_ON_CREATE_METHODS.isEmpty()) {
-           try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/produce-events-on-create-methods.bin"))) {
+           try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "produce-events-on-create-methods.bin"))) {
                 out.writeObject(PRODUCE_EVENTS_ON_CREATE_METHODS);
             }
         }
         if (!PRODUCE_EVENT_ON_UPDATE_METHODS.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/produce-event-on-update-methods.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "produce-event-on-update-methods.bin"))) {
                 out.writeObject(PRODUCE_EVENT_ON_UPDATE_METHODS);
             }
         }
         if (!PRODUCE_EVENTS_ON_UPDATE_METHODS.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/produce-events-on-update-methods.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "produce-events-on-update-methods.bin"))) {
                 out.writeObject(PRODUCE_EVENTS_ON_UPDATE_METHODS);
             }
         }
         if (!PRODUCE_EVENT_ON_DELETE_METHODS.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/produce-event-on-delete-methods.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "produce-event-on-delete-methods.bin"))) {
                 out.writeObject(PRODUCE_EVENT_ON_DELETE_METHODS);
             }
         }
         if (!PRODUCE_EVENTS_ON_DELETE_METHODS.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "/store/source/produce-events-on-delete-methods.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "produce-events-on-delete-methods.bin"))) {
                 out.writeObject(PRODUCE_EVENTS_ON_DELETE_METHODS);
             }
         }

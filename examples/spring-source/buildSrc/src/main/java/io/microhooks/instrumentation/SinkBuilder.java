@@ -74,36 +74,37 @@ public class SinkBuilder {
     }
 
     public static void save() throws IOException {
-        String path = REF_FOLDER;
-        if (!new File(REF_FOLDER).exists()) {
-            path = "app/" + REF_FOLDER;
+        String path = "./";
+        if (new File("app/").exists()) {
+            path = "app/";
         }
-        if (!new File(path + "/store").exists()) {
-            new File(path + "/store").mkdir();
-            new File(path + "/store/source").mkdir();
-            new File(path + "/store/sink").mkdir();
+        if (!new File(path + ".context").exists()) {
+            new File(path + ".context").mkdir();
+            new File(path + ".context/source").mkdir();
+            new File(path + ".context/sink").mkdir();
         }
+        path += ".context/sink/";
         System.out.println(SINK_MAP);
         if (!SINK_MAP.isEmpty()) {
-           try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "store/sink/sinks.bin"))) {
+           try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "sinks.bin"))) {
                 out.writeObject(SINK_MAP);
             }
         }
 
         if (!CUSTOM_SINK_STREAMS.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "store/sink/custom-sink-streams.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "custom-sink-streams.bin"))) {
                 out.writeObject(CUSTOM_SINK_STREAMS);
             }
         }
 
         if (!PROCESS_EVENT_METHODS.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "store/sink/process-event-methods.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "process-event-methods.bin"))) {
                 out.writeObject(PROCESS_EVENT_METHODS);
             }
         }
 
         if (!REGISTERED_CUSTOM_SINK_CLASSES.isEmpty()) {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "store/sink/registered-custom-sink-classes.bin"))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "registered-custom-sink-classes.bin"))) {
                 out.writeObject(REGISTERED_CUSTOM_SINK_CLASSES);
             }
         }
