@@ -1,4 +1,4 @@
-package io.microhooks.internal.util;
+package io.microhooks.internal;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -17,11 +17,10 @@ import jakarta.persistence.Id;
 
 import org.atteo.classindex.ClassIndex;
 
-import io.microhooks.internal.IdNotFoundException;
 import io.microhooks.sink.CustomSink;
 import io.microhooks.sink.ProcessEvent;
 
-public class CachingReflector {
+public class Context {
 
     // We use ConcurrentHashMap here for thread safety without sacrificing
     // performance
@@ -56,7 +55,7 @@ public class CachingReflector {
     private static final Map<String, Map<Method, String>> PROCESS_EVENT_METHODS = new HashMap<>(); // <stream#className -- [<m1, label1>, <m2, label2>]>
     private static final Set<String> CUSTOM_SINK_STREAMS = new HashSet<>();
 
-    private CachingReflector() {
+    private Context() {
     }
 
     public static void init() {
@@ -92,7 +91,7 @@ public class CachingReflector {
         if (!IDMAP.containsKey(entityClassName)) {
             throw new IdNotFoundException();
         }
-        return ((Long) CachingReflector.getFieldValue(entity, IDMAP.get(entityClassName)));
+        return ((Long) Context.getFieldValue(entity, IDMAP.get(entityClassName)));
 
     }
 

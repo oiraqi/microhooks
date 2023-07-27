@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.microhooks.common.Event;
-import io.microhooks.internal.util.CachingReflector;
 
 public abstract class EventConsumer {
 
@@ -26,7 +25,7 @@ public abstract class EventConsumer {
 
     public void processEvent(long sourceId, Event<JsonNode> event, String stream) {
         String label = event.getLabel();
-        List<Class<?>> sinkEntityClassList = CachingReflector.getSinks(stream);
+        List<Class<?>> sinkEntityClassList = Context.getSinks(stream);
 
         if (label != null) {            
             if (label.equals(Event.RECORD_CREATED)) {
@@ -93,12 +92,12 @@ public abstract class EventConsumer {
     }
 
     private void handleCustomEvent(long sourceId, Event<JsonNode> event, String stream) {
-        List<Object> customSinks = CachingReflector.getCustomSinks(stream);
+        List<Object> customSinks = Context.getCustomSinks(stream);
         if (customSinks == null) {
             return;
         }
         for (Object customSink : customSinks) {
-            Map<Method, String> map = CachingReflector.getProcessEventMethodsToInvoke(stream, customSink);
+            Map<Method, String> map = Context.getProcessEventMethodsToInvoke(stream, customSink);
             for (Entry<Method, String> entry : map.entrySet()) {
                 Method method = entry.getKey();
                 String label = entry.getValue();

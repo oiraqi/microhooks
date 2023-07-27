@@ -1,6 +1,5 @@
 package io.microhooks.internal;
 
-import io.microhooks.internal.util.CachingReflector;
 import io.microhooks.internal.util.Config;
 
 public class ApplicationBootstrap {
@@ -10,10 +9,10 @@ public class ApplicationBootstrap {
     public void setup(SinkRepository sinkRepository) {
 
         Config.init();
-        CachingReflector.init();
+        Context.init();
         System.out.println(Config.getServiceName() + " Started!");
         
-        if (CachingReflector.hasSinks()) {
+        if (Context.hasSinks()) {
             new Thread(() -> {
                 try {
                     Config.getEventConsumer().launch(sinkRepository);

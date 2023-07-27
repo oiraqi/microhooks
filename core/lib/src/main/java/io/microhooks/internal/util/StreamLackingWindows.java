@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import io.microhooks.internal.Context;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +21,7 @@ public class StreamLackingWindows {
 
     public static void init() throws Exception {
         load();
-        Set<String> streams = CachingReflector.getSourceStreams();
+        Set<String> streams = Context.getSourceStreams();
         for (String stream : streams) {
             if (!exists(stream)) {
                 addStream(stream);

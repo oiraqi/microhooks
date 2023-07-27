@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.microhooks.common.Event;
-import io.microhooks.internal.util.CachingReflector;
 import io.microhooks.internal.util.logging.Logged;
 
 public class SourceListener extends Listener {
@@ -37,8 +36,8 @@ public class SourceListener extends Listener {
     }
 
     private void publish(Object entity, String operation) throws Exception {
-        long id = CachingReflector.getId(entity);
-        Iterator<Entry<String, Class<?>>> iterator = CachingReflector.getSourceMappings(entity).entrySet().iterator();
+        long id = Context.getId(entity);
+        Iterator<Entry<String, Class<?>>> iterator = Context.getSourceMappings(entity).entrySet().iterator();
         while(iterator.hasNext()) {
             Entry<String, Class<?>> mapping = iterator.next();
             String stream = mapping.getKey();
