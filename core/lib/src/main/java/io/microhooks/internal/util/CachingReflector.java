@@ -1,5 +1,7 @@
 package io.microhooks.internal.util;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -7,9 +9,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.persistence.Id;
@@ -19,15 +20,6 @@ import org.atteo.classindex.ClassIndex;
 import io.microhooks.internal.IdNotFoundException;
 import io.microhooks.sink.CustomSink;
 import io.microhooks.sink.ProcessEvent;
-import io.microhooks.sink.Sink;
-import io.microhooks.source.ProduceEventOnCreate;
-import io.microhooks.source.ProduceEventOnDelete;
-import io.microhooks.source.ProduceEventOnUpdate;
-import io.microhooks.source.ProduceEventsOnCreate;
-import io.microhooks.source.ProduceEventsOnDelete;
-import io.microhooks.source.ProduceEventsOnUpdate;
-import io.microhooks.source.Source;
-import io.microhooks.source.Track;
 
 public class CachingReflector {
 
@@ -38,25 +30,27 @@ public class CachingReflector {
     // refflection only once per entity class for better performance
     private static final Map<String, String> IDMAP = new ConcurrentHashMap<>();
 
-    // A cache for reflected stream/DTO mappings so that reflection is performed
+    // A cache for reflected stream/Projection mappings so that reflection is performed
     // only once per Source, entity class (for all its instances)
-    private static final Map<String, Map<String, Class<?>>> SOURCE_MAPPINGS = new ConcurrentHashMap<>();
+    private static Map<String, Map<String, Class<?>>> SOURCE_MAP;
+
+    private static Set<String> SOURCE_STREAMS;
 
 
     // We use Vector here for thread safety
     // A cache for reflected fields so that reflection is performed only
     // once per Trackable entity class (for all its instances)
-    private static final Map<String, Vector<String>> TRACKED_FIELDS_NAMES = new ConcurrentHashMap<String, Vector<String>>();
+    private static Map<String, Set<String>> TRACKED_FIELDS_NAMES;
 
-    private static final Map<String, ArrayList<Method>> PRODUCE_EVENT_ON_CREATE_METHODS = new ConcurrentHashMap<>();
-    private static final Map<String, ArrayList<Method>> PRODUCE_EVENT_ON_UPDATE_METHODS = new ConcurrentHashMap<>();
-    private static final Map<String, ArrayList<Method>> PRODUCE_EVENT_ON_DELETE_METHODS = new ConcurrentHashMap<>();
+    private static final Map<String, List<Method>> PRODUCE_EVENT_ON_CREATE_METHODS = new HashMap<>();
+    private static final Map<String, List<Method>> PRODUCE_EVENT_ON_UPDATE_METHODS = new HashMap<>();
+    private static final Map<String, List<Method>> PRODUCE_EVENT_ON_DELETE_METHODS = new HashMap<>();
 
-    private static final Map<String, ArrayList<Method>> PRODUCE_EVENTS_ON_CREATE_METHODS = new ConcurrentHashMap<>();
-    private static final Map<String, ArrayList<Method>> PRODUCE_EVENTS_ON_UPDATE_METHODS = new ConcurrentHashMap<>();
-    private static final Map<String, ArrayList<Method>> PRODUCE_EVENTS_ON_DELETE_METHODS = new ConcurrentHashMap<>();
+    private static final Map<String, List<Method>> PRODUCE_EVENTS_ON_CREATE_METHODS = new HashMap<>();
+    private static final Map<String, List<Method>> PRODUCE_EVENTS_ON_UPDATE_METHODS = new HashMap<>();
+    private static final Map<String, List<Method>> PRODUCE_EVENTS_ON_DELETE_METHODS = new HashMap<>();
 
-    private static final Map<String, ArrayList<Class<?>>> SINK_MAP = new HashMap<>(); // <stream -- entityClasses>
+    private static Map<String, ArrayList<Class<?>>> SINK_MAP; // <stream -- entityClasses>
     private static final Map<String, ArrayList<Object>> CUSTOM_SINK_MAP = new HashMap<>(); // <stream -- [sink1, sink2, ...]>>
     private static final Map<String, ArrayList<String>> REGISTERED_CUSTOM_SINK_CLASSES = new HashMap<>(); // <class - [stream1, stream2, ...]>
     private static final Map<String, Map<Method, String>> PROCESS_EVENT_METHODS = new HashMap<>(); // <stream#className -- [<m1, label1>, <m2, label2>]>
@@ -66,7 +60,9 @@ public class CachingReflector {
     }
 
     public static void init() {
-        buildSinkMap();
+        loadSourceMap();
+        loadOnMethods();
+        loadSinkMap();
         registerCustomSinkClasses();
     }
 
@@ -101,145 +97,45 @@ public class CachingReflector {
     }
 
     public static Map<String, Class<?>> getSourceMappings(Object sourceEntity) throws Exception {
-        Class<?> sourceEntityClass = sourceEntity.getClass();
-        String sourceEntityClassName = sourceEntityClass.getName();
-        Map<String, Class<?>> mappings = null;
-        if (!SOURCE_MAPPINGS.containsKey(sourceEntityClassName)) {
-            mappings = new ConcurrentHashMap<>();
-            Source source = sourceEntityClass.<Source>getAnnotation(Source.class);
-            try {
-                for (String mapping : source.mappings()) {
-                    StringTokenizer strTok = new StringTokenizer(mapping, ":");
-                    String stream = strTok.nextToken();
-                    String dtoClassName = strTok.nextToken();
-                    Class<?> dtoClass = Class.forName(dtoClassName);
-
-                    mappings.put(stream, dtoClass);
-                }
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            SOURCE_MAPPINGS.put(sourceEntityClassName, mappings);
-        } else {
-            mappings = SOURCE_MAPPINGS.get(sourceEntityClassName);
-        }
-
-        return mappings;
+        return SOURCE_MAP.get(sourceEntity.getClass().getName());
     }
 
-    public static Vector<String> getTrackedFieldsNames(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = (Class<?>) customSourceEntity.getClass();
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-
-        if (!TRACKED_FIELDS_NAMES.containsKey(customSourceEntityClassName)) {
-            Vector<String> trackedFieldsNames = new Vector<>();
-            Field[] fields = customSourceEntityClass.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(Track.class)) {
-                    trackedFieldsNames.add(field.getName());
-                }
-            }
-            if (trackedFieldsNames.isEmpty()) { // entity is Trackable but didn't define any @Track fields
-                trackedFieldsNames = null;
-            }
-            TRACKED_FIELDS_NAMES.put(customSourceEntityClassName, trackedFieldsNames);
-        }
-
-        return TRACKED_FIELDS_NAMES.get(customSourceEntityClassName);
+    public static Set<String> getSourceStreams() {
+        return SOURCE_STREAMS;
     }
 
-    public static ArrayList<Method> getProduceEventOnCreateMethods(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = customSourceEntity.getClass();
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        initOnCreateMethods(customSourceEntityClass);
-        return PRODUCE_EVENT_ON_CREATE_METHODS.get(customSourceEntityClassName);
+    public static Set<String> getTrackedFieldsNames(Object customSourceEntity) {
+        return TRACKED_FIELDS_NAMES.get(customSourceEntity.getClass().getName());
     }
 
-    public static ArrayList<Method> getProduceEventsOnCreateMethods(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = customSourceEntity.getClass();
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        initOnCreateMethods(customSourceEntityClass);
-        return PRODUCE_EVENTS_ON_CREATE_METHODS.get(customSourceEntityClassName);
+    public static List<Method> getProduceEventOnCreateMethods(Object customSourceEntity) {
+        List<Method> methods = PRODUCE_EVENT_ON_CREATE_METHODS.get(customSourceEntity.getClass().getName());
+        return methods != null ? methods:new ArrayList<>();
     }
 
-    private static void initOnCreateMethods(Class<?> customSourceEntityClass) {
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        if (!PRODUCE_EVENT_ON_CREATE_METHODS.containsKey(customSourceEntityClassName)) {            
-            ArrayList<Method> produceEventOnCreateMethods = new ArrayList<>();
-            ArrayList<Method> produceEventsOnCreateMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(ProduceEventOnCreate.class)) {
-                    produceEventOnCreateMethods.add(method);
-                } else if (method.isAnnotationPresent(ProduceEventsOnCreate.class)) {
-                    produceEventsOnCreateMethods.add(method);
-                }
-            }
-            PRODUCE_EVENT_ON_CREATE_METHODS.put(customSourceEntityClassName, produceEventOnCreateMethods);
-            PRODUCE_EVENTS_ON_CREATE_METHODS.put(customSourceEntityClassName, produceEventsOnCreateMethods);
-        }
+    public static List<Method> getProduceEventsOnCreateMethods(Object customSourceEntity) {
+        List<Method> methods =  PRODUCE_EVENTS_ON_CREATE_METHODS.get(customSourceEntity.getClass().getName());
+        return methods != null ? methods:new ArrayList<>();
     }
 
-    public static ArrayList<Method> getProduceEventOnUpdateMethods(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = customSourceEntity.getClass();
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        initOnUpdateMethods(customSourceEntityClass);
-        return PRODUCE_EVENT_ON_UPDATE_METHODS.get(customSourceEntityClassName);
+    public static List<Method> getProduceEventOnUpdateMethods(Object customSourceEntity) {
+        List<Method> methods =  PRODUCE_EVENT_ON_UPDATE_METHODS.get(customSourceEntity.getClass().getName());
+        return methods != null ? methods:new ArrayList<>();
     }
 
-    public static ArrayList<Method> getProduceEventsOnUpdateMethods(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = customSourceEntity.getClass();
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        initOnUpdateMethods(customSourceEntityClass);
-        return PRODUCE_EVENTS_ON_UPDATE_METHODS.get(customSourceEntityClassName);
+    public static List<Method> getProduceEventsOnUpdateMethods(Object customSourceEntity) {
+        List<Method> methods =  PRODUCE_EVENTS_ON_UPDATE_METHODS.get(customSourceEntity.getClass().getName());
+        return methods != null ? methods:new ArrayList<>();
     }
 
-    private static void initOnUpdateMethods(Class<?> customSourceEntityClass) {
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        if (!PRODUCE_EVENT_ON_UPDATE_METHODS.containsKey(customSourceEntityClassName)) {
-            ArrayList<Method> produceEventOnUpdateMethods = new ArrayList<>();
-            ArrayList<Method> produceEventsOnUpdateMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(ProduceEventOnUpdate.class)) {
-                    produceEventOnUpdateMethods.add(method);
-                } else if (method.isAnnotationPresent(ProduceEventsOnUpdate.class)) {
-                    produceEventsOnUpdateMethods.add(method);
-                }
-            }
-            PRODUCE_EVENT_ON_UPDATE_METHODS.put(customSourceEntityClassName, produceEventOnUpdateMethods);
-            PRODUCE_EVENTS_ON_UPDATE_METHODS.put(customSourceEntityClassName, produceEventsOnUpdateMethods);
-        }
+    public static List<Method> getProduceEventOnDeleteMethods(Object customSourceEntity) {
+        List<Method> methods =  PRODUCE_EVENT_ON_DELETE_METHODS.get(customSourceEntity.getClass().getName());
+        return methods != null ? methods:new ArrayList<>();
     }
 
-    public static ArrayList<Method> getProduceEventOnDeleteMethods(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = customSourceEntity.getClass();
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        initOnDeleteMethods(customSourceEntityClass);
-        return PRODUCE_EVENT_ON_DELETE_METHODS.get(customSourceEntityClassName);
-    }
-
-    public static ArrayList<Method> getProduceEventsOnDeleteMethods(Object customSourceEntity) {
-        Class<?> customSourceEntityClass = customSourceEntity.getClass();
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        initOnDeleteMethods(customSourceEntityClass);
-        return PRODUCE_EVENTS_ON_DELETE_METHODS.get(customSourceEntityClassName);
-    }
-
-    private static void initOnDeleteMethods(Class<?> customSourceEntityClass) {
-        String customSourceEntityClassName = customSourceEntityClass.getName();
-        if (!PRODUCE_EVENT_ON_DELETE_METHODS.containsKey(customSourceEntityClassName)) {            
-            ArrayList<Method> produceEventOnDeleteMethods = new ArrayList<>();
-            ArrayList<Method> produceEventsOnDeleteMethods = new ArrayList<>();
-            for (Method method : customSourceEntityClass.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(ProduceEventOnDelete.class)) {
-                    produceEventOnDeleteMethods.add(method);
-                } else if (method.isAnnotationPresent(ProduceEventsOnDelete.class)) {
-                    produceEventsOnDeleteMethods.add(method);
-                }
-            }
-            PRODUCE_EVENT_ON_DELETE_METHODS.put(customSourceEntityClassName, produceEventOnDeleteMethods);
-            PRODUCE_EVENTS_ON_DELETE_METHODS.put(customSourceEntityClassName, produceEventsOnDeleteMethods);
-        }
+    public static List<Method> getProduceEventsOnDeleteMethods(Object customSourceEntity) {
+        List<Method> methods =  PRODUCE_EVENTS_ON_DELETE_METHODS.get(customSourceEntity.getClass().getName());
+        return methods != null ? methods:new ArrayList<>();
     }
 
     public static ArrayList<Class<?>> getSinks(String stream) {
@@ -292,20 +188,113 @@ public class CachingReflector {
         return CUSTOM_SINK_MAP.get(stream);
     }
 
-    private static void buildSinkMap() {
-        Iterable<Class<?>> sinks = ClassIndex.getAnnotated(Sink.class);
-        for (Class<?> sink : sinks) {
-            Sink sinkAnnotation = sink.<Sink>getAnnotation(Sink.class);
-            String stream = sinkAnnotation.stream();
-            if (SINK_MAP.containsKey(stream)) {
-                SINK_MAP.get(stream).add(sink);
-            } else {
-                ArrayList<Class<?>> list = new ArrayList<>();
-                list.add(sink);
-                SINK_MAP.put(stream, list);
-            }
+    private static void loadSourceMap() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/sources.bin"))) {
+            SOURCE_MAP = (Map<String, Map<String, Class<?>>>)in.readObject();
+        } catch (Exception ex) {
+            SOURCE_MAP = new HashMap<>();
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/streams.bin"))) {
+            SOURCE_STREAMS = (Set<String>)in.readObject();
+        } catch (Exception ex) {
+            SOURCE_STREAMS = new HashSet<>();
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/tracked-fields-names.bin"))) {
+            TRACKED_FIELDS_NAMES = (Map<String, Set<String>>)in.readObject();
+        } catch (Exception ex) {
+            TRACKED_FIELDS_NAMES = new HashMap<>();
         }
     }
+
+    private static void loadOnMethods() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-event-on-create-methods.bin"))) {
+            Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
+            for (Entry<String, List<String>> entry : map.entrySet()) {
+                List<Method> methods = new ArrayList<>();
+                for (String method : entry.getValue()) {
+                    methods.add(Class.forName(entry.getKey()).getMethod(method));
+                }
+                PRODUCE_EVENT_ON_CREATE_METHODS.put(entry.getKey(), methods);                
+            }
+        } catch (Exception ex) {
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-events-on-create-methods.bin"))) {
+            Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
+            for (Entry<String, List<String>> entry : map.entrySet()) {
+                List<Method> methods = new ArrayList<>();
+                for (String method : entry.getValue()) {
+                    methods.add(Class.forName(entry.getKey()).getMethod(method));
+                }
+                PRODUCE_EVENTS_ON_CREATE_METHODS.put(entry.getKey(), methods);
+                
+            }
+        } catch (Exception ex) {
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-event-on-update-methods.bin"))) {
+            Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
+            for (Entry<String, List<String>> entry : map.entrySet()) {
+                List<Method> methods = new ArrayList<>();
+                for (String method : entry.getValue()) {
+                    methods.add(Class.forName(entry.getKey()).getMethod(method, Map.class));
+                }
+                PRODUCE_EVENT_ON_UPDATE_METHODS.put(entry.getKey(), methods);
+                
+            }
+        } catch (Exception ex) {
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-events-on-update-methods.bin"))) {
+            Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
+            for (Entry<String, List<String>> entry : map.entrySet()) {
+                List<Method> methods = new ArrayList<>();
+                for (String method : entry.getValue()) {
+                    methods.add(Class.forName(entry.getKey()).getMethod(method));
+                }
+                PRODUCE_EVENTS_ON_UPDATE_METHODS.put(entry.getKey(), methods);
+                
+            }
+        } catch (Exception ex) {
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-event-on-uelete-methods.bin"))) {
+            Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
+            for (Entry<String, List<String>> entry : map.entrySet()) {
+                List<Method> methods = new ArrayList<>();
+                for (String method : entry.getValue()) {
+                    methods.add(Class.forName(entry.getKey()).getMethod(method));
+                }
+                PRODUCE_EVENT_ON_DELETE_METHODS.put(entry.getKey(), methods);
+                
+            }
+        } catch (Exception ex) {
+        }
+
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-events-on-uelete-methods.bin"))) {
+            Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
+            for (Entry<String, List<String>> entry : map.entrySet()) {
+                List<Method> methods = new ArrayList<>();
+                for (String method : entry.getValue()) {
+                    methods.add(Class.forName(entry.getKey()).getMethod(method));
+                }
+                PRODUCE_EVENTS_ON_DELETE_METHODS.put(entry.getKey(), methods);
+                
+            }
+        } catch (Exception ex) {
+        }
+    }
+
+    private static void loadSinkMap() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/sink/sinks.bin"))) {
+            SINK_MAP = (Map<String, ArrayList<Class<?>>>)in.readObject();
+        } catch (Exception ex) {
+            SINK_MAP = new HashMap<>();
+        }
+    }
+
 
     private static void registerCustomSinkClasses() {
         Iterable<Class<?>> customSinks = ClassIndex.getAnnotated(CustomSink.class);

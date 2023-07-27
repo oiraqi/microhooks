@@ -17,14 +17,15 @@ public class SinkHelper {
         em.persist(sinkEntity);
     }
 
-    public void update(Class<?> sinkEntityClass, JsonNode payload, long sourceId, EntityManager em) throws Exception {
+    public boolean update(Class<?> sinkEntityClass, JsonNode payload, long sourceId, EntityManager em) throws Exception {
         Object sinkEntity = findBySourceId(sinkEntityClass.getName(), sourceId, em);
         if (sinkEntity == null) {
-            return;
+            return false;
         }
         
         copyProperties(sinkEntity, payload);
         em.persist(sinkEntity);
+        return true;
     }
 
     public void delete(Class<?> sinkEntityClass, long sourceId, EntityManager em) {

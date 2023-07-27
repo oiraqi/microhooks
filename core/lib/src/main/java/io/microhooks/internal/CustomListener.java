@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Vector;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import jakarta.persistence.PostLoad;
@@ -119,16 +119,15 @@ public class CustomListener extends Listener {
     // This method is called only once per entity lifecycle, when loaded
     private void setTrackedFields(Object entity) throws Exception {
 
-        Vector<String> trackedFieldsNames = CachingReflector.getTrackedFieldsNames(entity);
-        if (trackedFieldsNames == null) {
+        Set<String> trackedFieldsNames = CachingReflector.getTrackedFieldsNames(entity);
+        if (trackedFieldsNames.isEmpty()) {
             return;
         }
 
         Trackable trackableEntity = (Trackable) entity;
         // Highly-concurrent thread-safe
         Map<String, Object> trackedFields = new ConcurrentHashMap<>();
-        for (int i = 0; i < trackedFieldsNames.size(); i++) {
-            String filedName = trackedFieldsNames.get(i);
+        for (String filedName : trackedFieldsNames) {
             Object fieldValue = CachingReflector.getFieldValue(entity, filedName);
             // Highly-concurrent thread safe
             trackedFields.put(filedName, fieldValue);

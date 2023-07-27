@@ -17,26 +17,6 @@ import net.bytebuddy.asm.Advice;
 
 public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
-    private static class Loader extends ClassLoader {
-        private ClassFileLocator classFileLocator;
-
-        public Loader(ClassFileLocator classFileLocator) {
-            this.classFileLocator = classFileLocator;
-        }
-
-        public Class<?> findClass(String name) {
-            byte[] bytes;
-            try {
-                bytes = classFileLocator.locate(name).resolve();
-                return defineClass(name, bytes, 0, bytes.length);
-            } catch (Exception e) {
-                if (!name.equals("io.microhooks.containers.spring.Config"))
-                    e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
     @Override
     public boolean matches(TypeDescription target) {
         String annotations = target.getDeclaredAnnotations().toString();
@@ -44,7 +24,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                 annotations.contains("@io.microhooks.source.CustomSource") ||
                 annotations.contains("@io.microhooks.sink.Sink") ||
                 annotations.contains("@io.microhooks.sink.CustomSink") ||
-                annotations.contains("@io.microhooks.common.Dto") ||
+                annotations.contains("@io.microhooks.source.Projection") ||
                 annotations.contains("@org.springframework.boot.autoconfigure.SpringBootApplication");
     }
 
@@ -82,14 +62,17 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     listeners = new Class[2];
                     listeners[0] = sourceListener;
                     listeners[1] = customListener;
+                    SourceBuilder.buildSource(target, loader);
                 } else {
                     listeners = new Class[1];
                     listeners[0] = customListener;
                 }
+                SourceBuilder.buildCustomSource(target, loader);
             } else {
                 Class sourceListener = loader.findClass("io.microhooks.internal.SourceListener");
                 listeners = new Class[1];
                 listeners[0] = sourceListener;
+                SourceBuilder.buildSource(target, loader);
             }
             return builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
                             .defineTypeArray("value", listeners).build());
@@ -108,6 +91,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     .defineMethod("setMicrohooksSourceId", void.class, Visibility.PUBLIC)
                     .withParameters(long.class)
                     .intercept(FieldAccessor.ofField("microhooksSourceId"));
+                SinkBuilder.build(target, loader);
             }
             if (isCustomSink) {
                 builder = builder.constructor(ElementMatchers.any())
@@ -115,7 +99,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
             }
             return builder;
         } 
-        if (annotations.contains("@io.microhooks.common.Dto")) {
+        if (annotations.contains("@io.microhooks.source.Projection")) {
             Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties");
             builder = builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
                             .define("ignoreUnknown", true).build());
@@ -134,6 +118,8 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
     @Override
     public void close() throws IOException {
+        SourceBuilder.save();
+        SinkBuilder.save();
     }
 
     private static class CustomSinkAdvisor {

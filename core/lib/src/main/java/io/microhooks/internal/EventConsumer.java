@@ -1,6 +1,7 @@
 package io.microhooks.internal;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,11 @@ public abstract class EventConsumer {
         while (sinkEntityClassIterator.hasNext()) {
             Class<?> sinkEntityClass = sinkEntityClassIterator.next();
             try {
-                sinkRepository.update(sinkEntityClass, event.getPayload(), sourceId);
+                if (!sinkRepository.update(sinkEntityClass, event.getPayload(), sourceId)) {
+                    // We missed the creation of this record at the source because this stream
+                    // has been added later. Let's catch up and create it
+                    handleRecordCreatedEvent(sourceId, event, Arrays.asList(sinkEntityClass));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
