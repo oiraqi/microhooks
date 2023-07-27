@@ -59,10 +59,8 @@ public class Context {
     }
 
     public static void init() {
-        loadSourceMap();
-        loadOnMethods();
-        loadSinkMap();
-        registerCustomSinkClasses();
+        loadSourceContext();
+        loadSinkContext();
     }
 
     public static Object getFieldValue(Object instance, String fieldName) throws Exception {
@@ -145,7 +143,7 @@ public class Context {
         List<String> streams = REGISTERED_CUSTOM_SINK_CLASSES.get(customSink.getClass().getName());
         for (String stream : streams) {
             ArrayList<Object> customSinks = null;
-            if (!CUSTOM_SINK_MAP.containsKey(stream)) {
+            if (!CUSTOM_SINK_MAP.containsKey(stream)) { // The first object to register for this stream
                 customSinks = new ArrayList<>();
                 CUSTOM_SINK_MAP.put(stream, customSinks);
             } else {
@@ -187,19 +185,34 @@ public class Context {
         return CUSTOM_SINK_MAP.get(stream);
     }
 
+    private static void loadSourceContext() {
+        loadSourceMap();
+        loadSourceStreams();
+        loadTrackedFieldsNames();
+    }
+
+    private static void loadSinkContext() {
+        loadSinkMap();
+        loadProduceMethods();
+    }
+
     private static void loadSourceMap() {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/sources.bin"))) {
             SOURCE_MAP = (Map<String, Map<String, Class<?>>>)in.readObject();
         } catch (Exception ex) {
             SOURCE_MAP = new HashMap<>();
         }
+    }
 
+    private static void loadSourceStreams() {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/streams.bin"))) {
             SOURCE_STREAMS = (Set<String>)in.readObject();
         } catch (Exception ex) {
             SOURCE_STREAMS = new HashSet<>();
         }
+    }
 
+    private static void loadTrackedFieldsNames() {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/tracked-fields-names.bin"))) {
             TRACKED_FIELDS_NAMES = (Map<String, Set<String>>)in.readObject();
         } catch (Exception ex) {
@@ -207,7 +220,15 @@ public class Context {
         }
     }
 
-    private static void loadOnMethods() {
+    private static void loadSinkMap() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/sink/sinks.bin"))) {
+            SINK_MAP = (Map<String, ArrayList<Class<?>>>)in.readObject();
+        } catch (Exception ex) {
+            SINK_MAP = new HashMap<>();
+        }
+    }
+
+    private static void loadProduceMethods() {
         try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-event-on-create-methods.bin"))) {
             Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
             for (Entry<String, List<String>> entry : map.entrySet()) {
@@ -285,15 +306,6 @@ public class Context {
         } catch (Exception ex) {
         }
     }
-
-    private static void loadSinkMap() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/sink/sinks.bin"))) {
-            SINK_MAP = (Map<String, ArrayList<Class<?>>>)in.readObject();
-        } catch (Exception ex) {
-            SINK_MAP = new HashMap<>();
-        }
-    }
-
 
     private static void registerCustomSinkClasses() {
         Iterable<Class<?>> customSinks = ClassIndex.getAnnotated(CustomSink.class);

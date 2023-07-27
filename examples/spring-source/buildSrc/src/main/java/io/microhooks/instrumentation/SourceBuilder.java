@@ -44,7 +44,7 @@ public class SourceBuilder {
     private static Class produceEventOnDelete = null;
     private static Class produceEventsOnDelete = null;
 
-    public static void buildSource(TypeDescription target, Loader loader) {
+    public static void processSource(TypeDescription target, Loader loader) {
         Map<String, Class<?>> map = new HashMap<>();
         if (source == null) {
             source = loader.findClass("io.microhooks.source.Source");
@@ -79,7 +79,7 @@ public class SourceBuilder {
         SOURCE_MAP.put(target.getActualName(), map);
     }
 
-    public static void buildCustomSource(TypeDescription target, Loader loader) {
+    public static void processCustomSource(TypeDescription target, Loader loader) {
         
         parseTrackedFields(target, loader);
 
