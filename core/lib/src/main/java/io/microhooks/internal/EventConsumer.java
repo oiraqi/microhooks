@@ -20,12 +20,10 @@ public abstract class EventConsumer {
 
     public void launch(SinkRepository sinkRepository) {
         this.sinkRepository = sinkRepository;
-        System.out.println("7777777777777777777777777");
         subscribe();
     }
 
     public void processEvent(long sourceId, Event<JsonNode> event, String stream) {
-        System.out.println("11111111111111111111111111");
         String label = event.getLabel();
         List<Class<?>> sinkEntityClassList = Context.getSinks(stream);
 
@@ -55,7 +53,6 @@ public abstract class EventConsumer {
     private void handleRecordCreatedEvent(long sourceId, Event<JsonNode> event, List<Class<?>> sinkEntityClassList) {
         for (Class<?> sinkEntityClass : sinkEntityClassList) {
             try {
-                System.out.println(event.getPayload());
                 Object sinkEntity = objectMapper.convertValue(event.getPayload(), sinkEntityClass);
                 sinkRepository.create(sinkEntity, sourceId);
             } catch (Exception e) {

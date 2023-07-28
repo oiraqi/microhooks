@@ -316,7 +316,6 @@ public class Context {
                 SINK_MAP.put(entry.getKey(), classes);
             });
         } catch (Exception ex) {
-            ex.printStackTrace();
             SINK_MAP = new HashMap<>();
         }
     }

@@ -30,7 +30,6 @@ public class Config {
                 String value = strk.nextToken().trim();
                 if (key.equals("microhooks.service.name")) {
                     serviceName = value;
-                    System.out.println(value);
                 } else if (key.equals("microhooks.broker.cluster")) {
                     brokerCluster = value;
                 }
