@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,12 +21,10 @@ public class SinkBuilder {
     private static final Map<String, Map<String, String>> PROCESS_EVENT_METHODS = new HashMap<>(); // <stream#className -- [<m1, label1>, <m2, label2>]>
     private static final Set<String> CUSTOM_SINK_STREAMS = new HashSet<>();
 
-    private static final String REF_FOLDER = "src/main/resources/";
     private static Class sink = null;
     private static Class processEvent = null;
 
     public static void processSink(TypeDescription target, Loader loader) {
-        Map<String, Class<?>> map = new HashMap<>();
         if (sink == null) {
             sink = loader.findClass("io.microhooks.sink.Sink");
         }
@@ -73,17 +70,18 @@ public class SinkBuilder {
     }
 
     public static void save() throws IOException {
-        String path = "./";
+        String path = ".microhooks/";
         if (new File("app/").exists()) {
-            path = "app/";
+            path = "app/.microhooks/";
         }
-        if (!new File(path + ".context").exists()) {
-            new File(path + ".context").mkdir();
-            new File(path + ".context/source").mkdir();
-            new File(path + ".context/sink").mkdir();
+        if (!new File(path).exists()) {
+            new File(path).mkdir();
+            new File(path + "sink").mkdir();
+        } else if (new File(path).exists() && !new File(path + "sink").exists()) {
+            new File(path + "sink").mkdir();
         }
-        path += ".context/sink/";
-        System.out.println(SINK_MAP);
+        path += "sink/";
+        
         if (!SINK_MAP.isEmpty()) {
            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "sinks.bin"))) {
                 out.writeObject(SINK_MAP);

@@ -13,8 +13,6 @@ import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 
-
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
 import net.bytebuddy.description.type.TypeDescription;
@@ -154,17 +152,18 @@ public class SourceBuilder {
     }
 
     public static void save() throws IOException {
-        String path = "./";
+        String path = ".microhooks/";
         if (new File("app/").exists()) {
-            path = "app/";
+            path = "app/.microhooks/";
         }
-        if (!new File(path + ".context").exists()) {
-            new File(path + ".context").mkdir();
-            new File(path + ".context/source").mkdir();
-            new File(path + ".context/sink").mkdir();
+        if (!new File(path).exists()) {
+            new File(path).mkdir();
+            new File(path + "source").mkdir();
+        } else if (new File(path).exists() && !new File(path + "sink").exists()) {
+            new File(path + "source").mkdir();
         }
-        path += ".context/source/";
-        System.out.println(SOURCE_MAP);
+        path += "source/";
+
         if (!SOURCE_MAP.isEmpty()) {
             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "sources.bin"))) {
                 out.writeObject(SOURCE_MAP);
