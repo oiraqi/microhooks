@@ -1,3 +1,9 @@
+buildscript {
+    dependencies {
+        classpath files('../../builder/lib/build/libs/microhooks-builder.jar')
+    }
+}
+
 plugins {
     id 'java'
     id 'net.bytebuddy.byte-buddy-gradle-plugin' version '1.14.5'
@@ -57,6 +63,6 @@ compileTestJava {
 
 /*byteBuddy {
   transformation {
-    plugin = io.microhooks.instrumentation.GradlePlugin.class
+    plugin = io.microhooks.builder.GradlePlugin.class
   }
 }*/

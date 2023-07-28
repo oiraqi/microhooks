@@ -1,4 +1,4 @@
-package io.microhooks.instrumentation;
+package io.microhooks.builder;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

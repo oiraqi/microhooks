@@ -1,4 +1,4 @@
-package io.microhooks.instrumentation;
+package io.microhooks.builder;
 
 import net.bytebuddy.dynamic.ClassFileLocator;
 

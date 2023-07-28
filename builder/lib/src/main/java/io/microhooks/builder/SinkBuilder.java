@@ -1,4 +1,4 @@
-package io.microhooks.instrumentation;
+package io.microhooks.builder;
 
 import java.util.Map;
 import java.util.HashMap;
