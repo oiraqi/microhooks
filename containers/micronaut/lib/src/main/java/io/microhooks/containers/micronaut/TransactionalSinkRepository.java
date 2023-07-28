@@ -30,15 +30,16 @@ public class TransactionalSinkRepository implements SinkRepository {
         }
     }
 
-    public void update(Class<?> sinkEntityClass, JsonNode payload, long sourceId) throws Exception{
+    public boolean update(Class<?> sinkEntityClass, JsonNode payload, long sourceId) {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         try {
             sinkHelper.update(sinkEntityClass, payload, sourceId, em);
             tx.commit();
+            return true;
         } catch (Exception ex) {
-        } finally {
             tx.rollback();
+            return false;
         }
     }
 

@@ -12,7 +12,7 @@ import org.apache.kafka.clients.consumer.Consumer;
 
 import io.microhooks.common.Event;
 import io.microhooks.internal.EventConsumer;
-import io.microhooks.internal.util.CachingReflector;
+import io.microhooks.internal.Context;
 import io.microhooks.internal.util.Config;
 
 public class KafkaEventConsumer extends EventConsumer {
@@ -30,7 +30,9 @@ public class KafkaEventConsumer extends EventConsumer {
     }
 
     protected void subscribe() {
-        consumer.subscribe(CachingReflector.getAllStreams());
+        consumer.subscribe(Context.getAllStreams());
+        System.out.println("000000000000000000000");
+        System.out.println(Context.getAllStreams());
         while (true) {
             ConsumerRecords<Long, Event<JsonNode>> records = consumer.poll(Duration.ofSeconds(60));
             records.forEach(record -> {

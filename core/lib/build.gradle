@@ -36,8 +36,6 @@ dependencies {
     
     implementation 'org.aspectj:aspectjrt:1.9.19'
 
-    implementation 'org.atteo.classindex:classindex:3.4'
-
     testImplementation 'ch.qos.logback:logback-classic:1.2.10'
 	
 	testCompileOnly 'org.projectlombok:lombok:1.18.22'

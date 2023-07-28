@@ -127,7 +127,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
         @Advice.OnMethodExit
         public static void enter(@Advice.This Object customSink) throws Exception {
-            Method method = Class.forName("io.microhooks.internal.util.CachingReflector")
+            Method method = Class.forName("io.microhooks.internal.Context")
                                 .getDeclaredMethod("registerCustomSink", Object.class);
             method.invoke(null, customSink);
         }

@@ -165,14 +165,20 @@ public class SourceBuilder {
         }
         path += ".context/source/";
         System.out.println(SOURCE_MAP);
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "sources.bin"))) {
-            out.writeObject(SOURCE_MAP);
+        if (!SOURCE_MAP.isEmpty()) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "sources.bin"))) {
+                out.writeObject(SOURCE_MAP);
+            }
         }
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "streams.bin"))) {
-            out.writeObject(SOURCE_STREAMS);
+        if (!SOURCE_STREAMS.isEmpty()) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "streams.bin"))) {
+                out.writeObject(SOURCE_STREAMS);
+            }
         }
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "tracked-fields-names.bin"))) {
-            out.writeObject(TRACKED_FIELDS_NAMES);
+        if (!TRACKED_FIELDS_NAMES.isEmpty()) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "tracked-fields-names.bin"))) {
+                out.writeObject(TRACKED_FIELDS_NAMES);
+            }
         }
         if (!PRODUCE_EVENT_ON_CREATE_METHODS.isEmpty()) {
             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "produce-event-on-create-methods.bin"))) {

@@ -35,6 +35,7 @@ public class SinkController {
         while (sinkIterator.hasNext()) {
             response.append(sinkIterator.next() + "\n");
         }
+        System.out.println(response);
         return response.toString();
     }
 }

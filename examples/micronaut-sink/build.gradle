@@ -40,9 +40,6 @@ dependencies {
     implementation files('../../containers/micronaut/lib/build/libs/microhooks-micronaut.jar')
     implementation files('../../brokers/kafka/lib/build/libs/microhooks-kafka.jar')
 
-    implementation 'org.atteo.classindex:classindex:3.4'
-    annotationProcessor 'org.atteo.classindex:classindex:3.4'
-
     implementation("io.micronaut.sql:micronaut-hibernate-jpa")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari") 
     runtimeOnly "com.h2database:h2"

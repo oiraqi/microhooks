@@ -62,16 +62,17 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     listeners = new Class[2];
                     listeners[0] = sourceListener;
                     listeners[1] = customListener;
-                    SourceBuilder.build(target, loader);
+                    SourceBuilder.processSource(target, loader);
                 } else {
                     listeners = new Class[1];
                     listeners[0] = customListener;
                 }
+                SourceBuilder.processCustomSource(target, loader);
             } else {
                 Class sourceListener = loader.findClass("io.microhooks.internal.SourceListener");
                 listeners = new Class[1];
                 listeners[0] = sourceListener;
-                SourceBuilder.build(target, loader);
+                SourceBuilder.processSource(target, loader);
             }
             return builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
                             .defineTypeArray("value", listeners).build());
@@ -90,11 +91,12 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                     .defineMethod("setMicrohooksSourceId", void.class, Visibility.PUBLIC)
                     .withParameters(long.class)
                     .intercept(FieldAccessor.ofField("microhooksSourceId"));
-                SinkBuilder.build(target, loader);
+                SinkBuilder.processSink(target, loader);
             }
             if (isCustomSink) {
                 builder = builder.constructor(ElementMatchers.any())
                             .intercept(Advice.to(CustomSinkAdvisor.class));
+                SinkBuilder.processCustomSink(target, loader);
             }
             return builder;
         } 
@@ -125,7 +127,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
         @Advice.OnMethodExit
         public static void enter(@Advice.This Object customSink) throws Exception {
-            Method method = Class.forName("io.microhooks.internal.util.CachingReflector")
+            Method method = Class.forName("io.microhooks.internal.Context")
                                 .getDeclaredMethod("registerCustomSink", Object.class);
             method.invoke(null, customSink);
         }

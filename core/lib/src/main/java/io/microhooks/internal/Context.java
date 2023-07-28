@@ -15,10 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import jakarta.persistence.Id;
 
-import org.atteo.classindex.ClassIndex;
-
-import io.microhooks.sink.CustomSink;
-import io.microhooks.sink.ProcessEvent;
+import io.microhooks.common.Event;
 
 public class Context {
 
@@ -49,11 +46,13 @@ public class Context {
     private static final Map<String, List<Method>> PRODUCE_EVENTS_ON_UPDATE_METHODS = new HashMap<>();
     private static final Map<String, List<Method>> PRODUCE_EVENTS_ON_DELETE_METHODS = new HashMap<>();
 
-    private static Map<String, ArrayList<Class<?>>> SINK_MAP; // <stream -- entityClasses>
-    private static final Map<String, ArrayList<Object>> CUSTOM_SINK_MAP = new HashMap<>(); // <stream -- [sink1, sink2, ...]>>
-    private static final Map<String, ArrayList<String>> REGISTERED_CUSTOM_SINK_CLASSES = new HashMap<>(); // <class - [stream1, stream2, ...]>
-    private static final Map<String, Map<Method, String>> PROCESS_EVENT_METHODS = new HashMap<>(); // <stream#className -- [<m1, label1>, <m2, label2>]>
-    private static final Set<String> CUSTOM_SINK_STREAMS = new HashSet<>();
+    private static Map<String, List<Class<?>>> SINK_MAP = new HashMap<>(); // <stream -- entityClasses>
+    private static final Map<String, List<Object>> CUSTOM_SINK_MAP = new HashMap<>(); // <stream -- [sink1, sink2, ...]>>
+    private static Map<String, List<String>> REGISTERED_CUSTOM_SINK_CLASSES; // <class - [stream1, stream2, ...]>
+    private static Map<String, Map<Method, String>> PROCESS_EVENT_METHODS = new HashMap<>(); // <stream#className -- [<m1, label1>, <m2, label2>]>
+    private static Set<String> CUSTOM_SINK_STREAMS;
+
+    private static final String CONTEXT_PATH = "./.context/";
 
     private Context() {
     }
@@ -135,14 +134,14 @@ public class Context {
         return methods != null ? methods:new ArrayList<>();
     }
 
-    public static ArrayList<Class<?>> getSinks(String stream) {
+    public static List<Class<?>> getSinks(String stream) {
         return SINK_MAP.get(stream);
     }
 
     public static void registerCustomSink(Object customSink) {
         List<String> streams = REGISTERED_CUSTOM_SINK_CLASSES.get(customSink.getClass().getName());
         for (String stream : streams) {
-            ArrayList<Object> customSinks = null;
+            List<Object> customSinks = null;
             if (!CUSTOM_SINK_MAP.containsKey(stream)) { // The first object to register for this stream
                 customSinks = new ArrayList<>();
                 CUSTOM_SINK_MAP.put(stream, customSinks);
@@ -189,15 +188,18 @@ public class Context {
         loadSourceMap();
         loadSourceStreams();
         loadTrackedFieldsNames();
+        loadProduceMethods();
     }
 
     private static void loadSinkContext() {
         loadSinkMap();
-        loadProduceMethods();
+        loadCustomSinkStreams();
+        loadRegisteredCustomSinkClasses();
+        loadProcessEventMethods();
     }
 
     private static void loadSourceMap() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/sources.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/sources.bin"))) {
             SOURCE_MAP = (Map<String, Map<String, Class<?>>>)in.readObject();
         } catch (Exception ex) {
             SOURCE_MAP = new HashMap<>();
@@ -205,7 +207,7 @@ public class Context {
     }
 
     private static void loadSourceStreams() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/streams.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/streams.bin"))) {
             SOURCE_STREAMS = (Set<String>)in.readObject();
         } catch (Exception ex) {
             SOURCE_STREAMS = new HashSet<>();
@@ -213,23 +215,15 @@ public class Context {
     }
 
     private static void loadTrackedFieldsNames() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/tracked-fields-names.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/tracked-fields-names.bin"))) {
             TRACKED_FIELDS_NAMES = (Map<String, Set<String>>)in.readObject();
         } catch (Exception ex) {
             TRACKED_FIELDS_NAMES = new HashMap<>();
         }
     }
 
-    private static void loadSinkMap() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/sink/sinks.bin"))) {
-            SINK_MAP = (Map<String, ArrayList<Class<?>>>)in.readObject();
-        } catch (Exception ex) {
-            SINK_MAP = new HashMap<>();
-        }
-    }
-
     private static void loadProduceMethods() {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-event-on-create-methods.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/produce-event-on-create-methods.bin"))) {
             Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
             for (Entry<String, List<String>> entry : map.entrySet()) {
                 List<Method> methods = new ArrayList<>();
@@ -241,7 +235,7 @@ public class Context {
         } catch (Exception ex) {
         }
 
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-events-on-create-methods.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/produce-events-on-create-methods.bin"))) {
             Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
             for (Entry<String, List<String>> entry : map.entrySet()) {
                 List<Method> methods = new ArrayList<>();
@@ -254,7 +248,7 @@ public class Context {
         } catch (Exception ex) {
         }
 
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-event-on-update-methods.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/produce-event-on-update-methods.bin"))) {
             Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
             for (Entry<String, List<String>> entry : map.entrySet()) {
                 List<Method> methods = new ArrayList<>();
@@ -267,7 +261,7 @@ public class Context {
         } catch (Exception ex) {
         }
 
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-events-on-update-methods.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/produce-events-on-update-methods.bin"))) {
             Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
             for (Entry<String, List<String>> entry : map.entrySet()) {
                 List<Method> methods = new ArrayList<>();
@@ -280,7 +274,7 @@ public class Context {
         } catch (Exception ex) {
         }
 
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-event-on-uelete-methods.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/produce-event-on-uelete-methods.bin"))) {
             Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
             for (Entry<String, List<String>> entry : map.entrySet()) {
                 List<Method> methods = new ArrayList<>();
@@ -293,7 +287,7 @@ public class Context {
         } catch (Exception ex) {
         }
 
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("src/main/resources/store/source/produce-events-on-uelete-methods.bin"))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/produce-events-on-uelete-methods.bin"))) {
             Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
             for (Entry<String, List<String>> entry : map.entrySet()) {
                 List<Method> methods = new ArrayList<>();
@@ -307,33 +301,55 @@ public class Context {
         }
     }
 
-    private static void registerCustomSinkClasses() {
-        Iterable<Class<?>> customSinks = ClassIndex.getAnnotated(CustomSink.class);
-        for (Class<?> customSink : customSinks) {
-            ArrayList<String> streams = new ArrayList<>();
-            for (Method method : customSink.getDeclaredMethods()) {
-                ProcessEvent pe = null;
-                if ((pe = method.getAnnotation(ProcessEvent.class)) != null) {
-                    String stream = pe.stream();
-                    if (!CUSTOM_SINK_STREAMS.contains(stream)) {
-                        CUSTOM_SINK_STREAMS.add(stream);
+    private static void loadSinkMap() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "sink/sinks.bin"))) {
+            Map<String, List<String>> map = (Map<String, List<String>>)in.readObject();
+            map.entrySet().forEach(entry -> {
+                List<Class<?>> classes = new ArrayList<>();
+                entry.getValue().forEach(className -> {
+                    try {
+                        classes.add(Class.forName(className));
+                    } catch (Exception ex) {
+
                     }
-                    String label = pe.label();
-                    String key = stream + "#" + customSink.getName();
-                    if (!streams.contains(stream)) {
-                        streams.add(stream);
-                    }
-                    Map<Method, String> methods = null;
-                    if (!PROCESS_EVENT_METHODS.containsKey(key)) {
-                        methods = new HashMap<>();
-                        PROCESS_EVENT_METHODS.put(key, methods);
-                    } else {
-                        methods = PROCESS_EVENT_METHODS.get(key);
-                    }
-                    methods.put(method, label);
+                });
+                SINK_MAP.put(entry.getKey(), classes);
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            SINK_MAP = new HashMap<>();
+        }
+    }
+
+    private static void loadCustomSinkStreams() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "sink/custom-sink-streams.bin"))) {
+            CUSTOM_SINK_STREAMS = (Set<String>)in.readObject();
+        } catch (Exception ex) {
+            CUSTOM_SINK_STREAMS = new HashSet<>();
+        }
+    }
+    private static void loadRegisteredCustomSinkClasses() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "sink/registered-custom-sink-classes.bin"))) {
+            REGISTERED_CUSTOM_SINK_CLASSES = (Map<String, List<String>>)in.readObject();
+        } catch (Exception ex) {
+            REGISTERED_CUSTOM_SINK_CLASSES = new HashMap<>();
+        }
+    }
+    
+    private static void loadProcessEventMethods() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "sink/process-event-methods.bin"))) {
+            Map<String, Map<String, String>> methods = (Map<String, Map<String, String>>)in.readObject();
+            for (Entry<String, Map<String, String>> entry : methods.entrySet()) {
+                Map<Method, String> map = new HashMap<>();
+                String className = entry.getKey().substring(entry.getKey().indexOf('#') + 1);
+                for (Entry<String, String> en : entry.getValue().entrySet()) {                    
+                    Method method = Class.forName(className).getMethod(en.getKey(), long.class, Event.class);
+                    map.put(method, en.getValue());
                 }
+                PROCESS_EVENT_METHODS.put(entry.getKey(), map);
             }
-            REGISTERED_CUSTOM_SINK_CLASSES.put(customSink.getName(), streams);
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

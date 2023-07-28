@@ -17,9 +17,8 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 
 public class SinkBuilder {
-    private static final Map<String, List<Class<?>>> SINK_MAP = new HashMap<>(); // <stream -- entityClasses>
-    private static final Map<String, ArrayList<Object>> CUSTOM_SINK_MAP = new HashMap<>(); // <stream -- [sink1, sink2, ...]>>
-    private static final Map<String, ArrayList<String>> REGISTERED_CUSTOM_SINK_CLASSES = new HashMap<>(); // <class - [stream1, stream2, ...]>
+    private static final Map<String, List<String>> SINK_MAP = new HashMap<>(); // <stream -- entityClasses>
+    private static final Map<String, List<String>> REGISTERED_CUSTOM_SINK_CLASSES = new HashMap<>(); // <class - [stream1, stream2, ...]>
     private static final Map<String, Map<String, String>> PROCESS_EVENT_METHODS = new HashMap<>(); // <stream#className -- [<m1, label1>, <m2, label2>]>
     private static final Set<String> CUSTOM_SINK_STREAMS = new HashSet<>();
 
@@ -34,10 +33,10 @@ public class SinkBuilder {
         }
         String stream = (String)target.getDeclaredAnnotations().ofType(sink).getValue("stream").resolve();
         if (SINK_MAP.containsKey(stream)) {
-            SINK_MAP.get(stream).add(sink);
+            SINK_MAP.get(stream).add(target.getActualName());
         } else {
-            List<Class<?>> list = new ArrayList<>();
-            list.add(sink);
+            List<String> list = new ArrayList<>();
+            list.add(target.getActualName());
             SINK_MAP.put(stream, list);
         }
     }
