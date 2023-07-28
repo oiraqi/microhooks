@@ -45,9 +45,7 @@ public class SourceEntity {
         if (!changedTrackedFieldsWithPreviousValues.containsKey("name")) {
             return null;
         }
-
         String oldName = (String) changedTrackedFieldsWithPreviousValues.get("name");
-        System.out.println(oldName + " --> " + name);
         return new Event<>(oldName + " --> " + name, "NameChanged");
     }
 
@@ -59,7 +57,6 @@ public class SourceEntity {
         }
 
         int oldAmount = (int) changedTrackedFieldsWithPreviousValues.get("amount");
-        System.out.println(oldAmount + " --> " + amount);
 
         if (Math.abs(oldAmount - amount) < 5) {
             // Won't produce any event

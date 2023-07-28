@@ -18,7 +18,7 @@ import io.microhooks.source.ProduceEventOnCreate;
 import io.microhooks.source.ProduceEventOnDelete;
 import io.microhooks.source.ProduceEventOnUpdate;
 
-public class CustomListener extends Listener {
+public class CustomSourceListener extends Listener {
 
     @PostPersist
     @Logged

@@ -55,17 +55,17 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
                         .withParameters(map)
                         .intercept(FieldAccessor.ofField("microhooksTrackedFields"));
                 
-                Class customListener = loader.findClass("io.microhooks.internal.CustomListener");
+                Class customSourceListener = loader.findClass("io.microhooks.internal.CustomSourceListener");
                 
                 if (isSource) {
                     Class sourceListener = loader.findClass("io.microhooks.internal.SourceListener");
                     listeners = new Class[2];
                     listeners[0] = sourceListener;
-                    listeners[1] = customListener;
+                    listeners[1] = customSourceListener;
                     SourceBuilder.processSource(target, loader);
                 } else {
                     listeners = new Class[1];
-                    listeners[0] = customListener;
+                    listeners[0] = customSourceListener;
                 }
                 SourceBuilder.processCustomSource(target, loader);
             } else {
