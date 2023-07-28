@@ -8,10 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
+
 import io.microhooks.common.Event;
 import io.microhooks.internal.util.logging.Logged;
 import io.microhooks.source.ProduceEventOnCreate;
@@ -47,7 +50,7 @@ public class CustomSourceListener extends Listener {
     @Logged
     @SuppressWarnings("unchecked")
     public void onPostUpdate(Object entity) throws Exception {
-        Map<String, Object> trackedFields = ((Trackable) entity).getMicrohooksTrackedFields();
+        Map<String, String> trackedFields = ((Trackable) entity).getMicrohooksTrackedFields();
         if (trackedFields == null) { // entity is Trackable but didn't define any @Track fields
             return;
         }
@@ -55,8 +58,8 @@ public class CustomSourceListener extends Listener {
         Map<String, Object> changedTrackedFields = new HashMap<>();
         while (keys.hasNext()) {
             String fieldName = keys.next();
-            Object oldValue = trackedFields.get(fieldName);
-            Object newValue = Context.getFieldValue(entity, fieldName);
+            String oldValue = trackedFields.get(fieldName);
+            String newValue = BeanUtils.getProperty(entity, fieldName);
             if (oldValue == null && newValue == null) {
                 continue;
             }
@@ -125,11 +128,11 @@ public class CustomSourceListener extends Listener {
 
         Trackable trackableEntity = (Trackable) entity;
         // Highly-concurrent thread-safe
-        Map<String, Object> trackedFields = new ConcurrentHashMap<>();
-        for (String filedName : trackedFieldsNames) {
-            Object fieldValue = Context.getFieldValue(entity, filedName);
+        Map<String, String> trackedFields = new ConcurrentHashMap<>();
+        for (String fieldName : trackedFieldsNames) {
+            String fieldValue = BeanUtils.getProperty(entity, fieldName);
             // Highly-concurrent thread safe
-            trackedFields.put(filedName, fieldValue);
+            trackedFields.put(fieldName, fieldValue);
         }
         trackableEntity.setMicrohooksTrackedFields(trackedFields);
     }

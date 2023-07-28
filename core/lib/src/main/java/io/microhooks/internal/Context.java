@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import jakarta.persistence.Id;
 
 import io.microhooks.common.Event;
@@ -62,15 +64,6 @@ public class Context {
         loadSinkContext();
     }
 
-    public static Object getFieldValue(Object instance, String fieldName) throws Exception {
-        for (Method method : instance.getClass().getDeclaredMethods()) {
-            if (method.getName().equals("get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1))) {
-                return method.invoke(instance);
-            }
-        }
-        return null;
-    }
-
     public static long getId(Object entity) throws Exception {
         Class<?> entityClass = entity.getClass();
         String entityClassName = entityClass.getName();
@@ -88,7 +81,7 @@ public class Context {
         if (!IDMAP.containsKey(entityClassName)) {
             throw new IdNotFoundException();
         }
-        return ((Long) Context.getFieldValue(entity, IDMAP.get(entityClassName)));
+        return Long.valueOf(BeanUtils.getProperty(entity, IDMAP.get(entityClassName)));
 
     }
 

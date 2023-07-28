@@ -45,7 +45,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
 
             if (isCustomSource) {
                 Class trackable = loader.findClass("io.microhooks.internal.Trackable");
-                Generic map = TypeDescription.Generic.Builder.parameterizedType(Map.class, String.class, Object.class)
+                Generic map = TypeDescription.Generic.Builder.parameterizedType(Map.class, String.class, String.class)
                         .build();
                 builder = builder.implement(trackable)
                         .defineField("microhooksTrackedFields", map, Visibility.PRIVATE, FieldPersistence.TRANSIENT)
