@@ -59,7 +59,7 @@ public class Context {
     private Context() {
     }
 
-    public static void init() {
+    public static void load() {
         loadSourceContext();
         loadSinkContext();
     }

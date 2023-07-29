@@ -9,7 +9,7 @@ public class ApplicationBootstrap {
     public void setup(SinkRepository sinkRepository) {
 
         Config.init();
-        Context.init();
+        Context.load();
         System.out.println(Config.getServiceName() + " Started!");
         
         if (Context.hasSinks()) {
