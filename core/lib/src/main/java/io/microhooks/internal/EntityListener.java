@@ -3,7 +3,7 @@ package io.microhooks.internal;
 
 import io.microhooks.internal.util.Config;
 
-public abstract class Listener {
+public abstract class EntityListener {
     
     private EventProducer eventProducer;
     

@@ -41,7 +41,7 @@ public class GradlePlugin implements net.bytebuddy.build.Plugin {
         if (isSource || isCustomSource) {
             Class[] listeners = null;
             Class entityListeners = loader.findClass("jakarta.persistence.EntityListeners");
-            loader.findClass("io.microhooks.internal.Listener");
+            loader.findClass("io.microhooks.internal.EntityListener");
 
             if (isCustomSource) {
                 Class trackable = loader.findClass("io.microhooks.internal.Trackable");

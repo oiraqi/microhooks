@@ -11,7 +11,7 @@ import io.microhooks.internal.SinkRepository;
 import io.microhooks.internal.util.SinkHelper;
 
 @Singleton
-public class TransactionalSinkRepository implements SinkRepository {
+public class MicronautSinkRepository implements SinkRepository {
 
     @PersistenceContext
     protected EntityManager em;

@@ -14,7 +14,7 @@ import io.microhooks.internal.util.SinkHelper;
 
 @ApplicationScoped
 @Transactional
-public class TransactionalSinkRepository implements SinkRepository {
+public class QuarkusSinkRepository implements SinkRepository {
     
     @PersistenceContext
     EntityManager em;

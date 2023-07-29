@@ -14,9 +14,9 @@ import io.microhooks.internal.Context;
 import lombok.Getter;
 import lombok.Setter;
 
-public class StreamLackingWindows {
+public class StreamSynchronizer {
 
-    private static final String STREAMS_FILE = "src/main/resources/META-INF/streams.bin";
+    private static final String STREAMS_FILE = ".microhooks/source/streams.bin";
     private static Map<String, LackingWindow> map;
 
     public static void init() throws Exception {

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.microhooks.common.Event;
 import io.microhooks.internal.util.logging.Logged;
 
-public class SourceListener extends Listener {
+public class SourceListener extends EntityListener {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

@@ -13,7 +13,7 @@ import io.microhooks.internal.util.SinkHelper;
 
 @Component
 @Transactional
-public class TransactionalSinkRepository implements SinkRepository {
+public class SpringSinkRepository implements SinkRepository {
     
     @PersistenceContext
     EntityManager em;
