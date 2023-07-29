@@ -130,6 +130,8 @@ public class CustomSourceListener extends EntityListener {
         // Highly-concurrent thread-safe
         Map<String, String> trackedFields = new ConcurrentHashMap<>();
         for (String fieldName : trackedFieldsNames) {
+            // fieldValue is not necessarily a String, but it's OK for
+            // comparison as both olValue and newValue are converted to Strings
             String fieldValue = BeanUtils.getProperty(entity, fieldName);
             // Highly-concurrent thread safe
             trackedFields.put(fieldName, fieldValue);
