@@ -61,6 +61,6 @@ application {
 
 byteBuddy {
   transformation {
-    plugin = io.microhooks.builder.GradlePlugin.class
+    plugin = io.microhooks.builder.Builder.class
   }
 }

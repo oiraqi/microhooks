@@ -19,7 +19,9 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.description.annotation.AnnotationList;
 
 
-public class SourceBuilder {
+public class SourceContextBuilder {
+
+    private static final Map<String, String> ID_MAP = new HashMap<>();
     private static final Map<String, Map<String, Class<?>>> SOURCE_MAP = new HashMap<>();
     private static final Set<String> SOURCE_STREAMS = new HashSet<>();
     
@@ -40,7 +42,12 @@ public class SourceBuilder {
     private static Class produceEventOnDelete = null;
     private static Class produceEventsOnDelete = null;
 
+    private static Class id;
+
     public static void processSource(TypeDescription target, Loader loader) {
+        
+        getId(target, loader);
+        
         Map<String, Class<?>> map = new HashMap<>();
         if (source == null) {
             source = loader.findClass("io.microhooks.source.Source");
@@ -77,7 +84,7 @@ public class SourceBuilder {
 
     public static void processCustomSource(TypeDescription target, Loader loader) {
         
-        parseTrackedFields(target, loader);
+        parseTrackedFieldsByAnnotation(target, loader);
 
         if (produceEventOnCreate == null) {
             produceEventOnCreate = loader.findClass("io.microhooks.source.ProduceEventOnCreate");
@@ -133,17 +140,33 @@ public class SourceBuilder {
         }
     }
 
-    private static void parseTrackedFields(TypeDescription target, Loader loader) {
+    private static void getId(TypeDescription target, Loader loader) {
+        if (id == null) {
+            id = loader.findClass("jakarta.persistence.Id");
+        }
+        target.getDeclaredFields().forEach(field -> {
+            if(field.getDeclaredAnnotations().isAnnotationPresent(id)) {
+                ID_MAP.put(target.getActualName(), field.getName());
+            }
+        });
+    }
+
+    private static void parseTrackedFieldsByAnnotation(TypeDescription target, Loader loader) {
         Set<String> filedNames = TRACKED_FIELDS_NAMES.get(target.getActualName());
         if (filedNames == null) {
             filedNames = new HashSet<>();
             TRACKED_FIELDS_NAMES.put(target.getActualName(), filedNames);
         }
+        if (id == null) {
+            id = loader.findClass("jakarta.persistence.Id");
+        }
         Class track = loader.findClass("io.microhooks.source.Track");
         final Set<String> trackedFieldNames = filedNames;
         target.getDeclaredFields().forEach(field -> {
-            if (field.getDeclaredAnnotations().isAnnotationPresent(track)) {
-                if (!trackedFieldNames.contains(field.getName())) {
+            if(field.getDeclaredAnnotations().isAnnotationPresent(id)) {
+                ID_MAP.put(target.getActualName(), field.getName());
+            } else if (field.getDeclaredAnnotations().isAnnotationPresent(track)) {
+                if (!trackedFieldNames.contains(field.getName())) { // Maybe it has already been added by projection
                     trackedFieldNames.add(field.getName());
                 }                
             }
@@ -163,6 +186,12 @@ public class SourceBuilder {
             new File(path + "source").mkdir();
         }
         path += "source/";
+
+        if (!ID_MAP.isEmpty()) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "ids.bin"))) {
+                out.writeObject(ID_MAP);
+            }
+        }
 
         if (!SOURCE_MAP.isEmpty()) {
             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path + "sources.bin"))) {

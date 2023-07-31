@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -21,23 +20,13 @@ import io.microhooks.common.Event;
 
 public class Context {
 
-    // We use ConcurrentHashMap here for thread safety without sacrificing
-    // performance
+    private static Map<String, String> ID_MAP;
 
-    // A cache for entity class Id names, so that they are extracted through
-    // refflection only once per entity class for better performance
-    private static final Map<String, String> IDMAP = new ConcurrentHashMap<>();
-
-    // A cache for reflected stream/Projection mappings so that reflection is performed
-    // only once per Source, entity class (for all its instances)
     private static Map<String, Map<String, Class<?>>> SOURCE_MAP;
 
     private static Set<String> SOURCE_STREAMS;
 
 
-    // We use Vector here for thread safety
-    // A cache for reflected fields so that reflection is performed only
-    // once per Trackable entity class (for all its instances)
     private static Map<String, Set<String>> TRACKED_FIELDS_NAMES;
 
     private static final Map<String, List<Method>> PRODUCE_EVENT_ON_CREATE_METHODS = new HashMap<>();
@@ -68,20 +57,12 @@ public class Context {
         Class<?> entityClass = entity.getClass();
         String entityClassName = entityClass.getName();
 
-        if (!IDMAP.containsKey(entityClassName)) {
-            Field[] fields = entityClass.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(Id.class)) {                    
-                    IDMAP.put(entityClassName, field.getName());
-                    break;
-                }
-            }
+        String idName = ID_MAP.get(entityClassName);
+        if (idName != null) {
+            return Long.parseLong(BeanUtils.getProperty(entity, idName));
         }
 
-        if (!IDMAP.containsKey(entityClassName)) {
-            throw new IdNotFoundException();
-        }
-        return Long.valueOf(BeanUtils.getProperty(entity, IDMAP.get(entityClassName)));
+        throw new IdNotFoundException();
 
     }
 
@@ -178,6 +159,7 @@ public class Context {
     }
 
     private static void loadSourceContext() {
+        loadIdMap();
         loadSourceMap();
         loadSourceStreams();
         loadTrackedFieldsNames();
@@ -189,6 +171,14 @@ public class Context {
         loadCustomSinkStreams();
         loadRegisteredCustomSinkClasses();
         loadProcessEventMethods();
+    }
+
+    private static void loadIdMap() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(CONTEXT_PATH + "source/ids.bin"))) {
+            ID_MAP = (Map<String, String>)in.readObject();
+        } catch (Exception ex) {
+            ID_MAP = new HashMap<>();
+        }
     }
 
     private static void loadSourceMap() {
