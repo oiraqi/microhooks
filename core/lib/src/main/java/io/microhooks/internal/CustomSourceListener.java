@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -38,9 +37,9 @@ public class CustomSourceListener extends EntityListener {
             Map<Event<Object>, String[]> eventsToStream = (Map<Event<Object>, String[]>) method.invoke(entity);
             if (eventsToStream != null) {
                 long id = Context.getId(entity);
-                for (Entry<Event<Object>, String[]> entry : eventsToStream.entrySet()) {
+                eventsToStream.entrySet().forEach(entry -> {
                     getEventProducer().publish(id, entry.getKey(), entry.getValue());
-                }
+                });
             }
             // Don't return here as we allow several methods to be annotated with OnUpdate
         }
@@ -82,9 +81,9 @@ public class CustomSourceListener extends EntityListener {
             Map<Event<Object>, String[]> eventsToStream = (Map<Event<Object>, String[]>) method.invoke(entity, changedTrackedFields);
             if (eventsToStream != null) {
                 long id = Context.getId(entity);
-                for (Entry<Event<Object>, String[]> entry : eventsToStream.entrySet()) {
+                eventsToStream.entrySet().forEach(entry -> {
                     getEventProducer().publish(id, entry.getKey(), entry.getValue());
-                }
+                });
             }
             // Don't return here as we allow several methods to be annotated with OnUpdate
         }
@@ -110,9 +109,9 @@ public class CustomSourceListener extends EntityListener {
             Map<Event<Object>, String[]> eventsToStream = (Map<Event<Object>, String[]>) method.invoke(entity);
             if (eventsToStream != null) {
                 long id = Context.getId(entity);
-                for (Entry<Event<Object>, String[]> entry : eventsToStream.entrySet()) {
+                eventsToStream.entrySet().forEach(entry -> {
                     getEventProducer().publish(id, entry.getKey(), entry.getValue());
-                }
+                });
             }
             // Don't return here as we allow several methods to be annotated with OnUpdate
         }

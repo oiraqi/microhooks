@@ -52,12 +52,14 @@ public class SourceContextBuilder {
         if (source == null) {
             source = loader.findClass("io.microhooks.source.Source");
         }
-        String[] mappings = (String[])target.getDeclaredAnnotations().ofType(source).getValue("mappings").resolve();
+        
         Set<String> filedNames = TRACKED_FIELDS_NAMES.get(target.getActualName());
         if (filedNames == null) {
             filedNames = new HashSet<>();
             TRACKED_FIELDS_NAMES.put(target.getActualName(), filedNames);
         }
+
+        String[] mappings = (String[])target.getDeclaredAnnotations().ofType(source).getValue("mappings").resolve();
         try {
             for (String mapping : mappings) {
                 StringTokenizer strTok = new StringTokenizer(mapping, ":");
@@ -147,6 +149,8 @@ public class SourceContextBuilder {
         target.getDeclaredFields().forEach(field -> {
             if(field.getDeclaredAnnotations().isAnnotationPresent(id)) {
                 ID_MAP.put(target.getActualName(), field.getName());
+                System.out.println("---------------> " + field.getName());
+                return;
             }
         });
     }

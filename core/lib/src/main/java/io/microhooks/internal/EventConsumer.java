@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -96,7 +95,7 @@ public abstract class EventConsumer {
         }
         for (Object customSink : customSinks) {
             Map<Method, String> map = Context.getProcessEventMethodsToInvoke(stream, customSink);
-            for (Entry<Method, String> entry : map.entrySet()) {
+            map.entrySet().forEach(entry -> {
                 Method method = entry.getKey();
                 String label = entry.getValue();
                 if (label.equals("*") || label.equals(event.getLabel())) {
@@ -106,7 +105,7 @@ public abstract class EventConsumer {
                         ex.printStackTrace();
                     }
                 }
-            }
+            });
         }
     }
 
