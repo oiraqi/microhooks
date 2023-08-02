@@ -11,6 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import io.microhooks.examples.spring.raw.boilerplate.SourceEntityListener;
+
 import lombok.Data;
 
 @Entity

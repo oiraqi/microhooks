@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring.raw;
+package io.microhooks.examples.spring.raw.boilerplate;
 
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
