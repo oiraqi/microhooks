@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring;
+package io.microhooks.examples.spring.raw;
 
 import lombok.Data;
 

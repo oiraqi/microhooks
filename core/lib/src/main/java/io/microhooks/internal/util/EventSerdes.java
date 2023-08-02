@@ -24,8 +24,7 @@ public class EventSerdes {
     }
 
     public byte[] serialize(Event<Object> event) throws IOException {
-        byte[] bytes = mapper.writeValueAsBytes(event);
-        return bytes;
+        return mapper.writeValueAsBytes(event);
     }
 
     public Event<JsonNode> deserialize(byte[] bytes) throws IOException {
