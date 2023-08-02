@@ -53,11 +53,7 @@ public class Context {
 
     public static long getId(Object entity) throws Exception {
         String entityClassName = entity.getClass().getName();
-
-        System.out.println("--------------> " + entityClassName);
-
         String idName = ID_MAP.get(entityClassName);
-        System.out.println(idName);
         if (idName != null) {
             return Long.parseLong(BeanUtils.getProperty(entity, idName));
         }
