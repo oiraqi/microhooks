@@ -2,6 +2,7 @@ package io.microhooks.examples.spring.raw;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Arrays;
 
@@ -13,13 +14,16 @@ import jakarta.persistence.Id;
 
 import io.microhooks.examples.spring.raw.boilerplate.SourceEntityListener;
 import io.microhooks.examples.spring.raw.boilerplate.CustomSourceEntityListener;
+import io.microhooks.examples.spring.raw.boilerplate.TrackedEntity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper=false)
 @EntityListeners({SourceEntityListener.class, CustomSourceEntityListener.class})
-public class SourceEntity {
+public class SourceEntity extends TrackedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

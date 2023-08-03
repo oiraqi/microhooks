@@ -53,21 +53,24 @@ public class CustomSourceListener extends EntityListener {
         if (trackedFields == null) { // entity is Trackable but didn't define any @Track fields
             return;
         }
-        Iterator<String> keys = trackedFields.keySet().iterator();
-        Map<String, Object> changedTrackedFields = new HashMap<>();
-        while (keys.hasNext()) {
-            String fieldName = keys.next();
-            String oldValue = trackedFields.get(fieldName);
-            String newValue = BeanUtils.getProperty(entity, fieldName);
-            if (oldValue == null && newValue == null) {
-                continue;
+        final Map<String, String> changedTrackedFields = new HashMap<>();
+        trackedFields.entrySet().forEach(entry -> {
+            try {
+                String fieldName = entry.getKey();
+                String oldValue = entry.getValue();
+                String newValue = BeanUtils.getProperty(entity, fieldName);
+                if (oldValue == null && newValue == null) {
+                    return;
+                }
+                if (oldValue == null || !oldValue.equals(newValue)) {
+                    changedTrackedFields.put(fieldName, trackedFields.get(fieldName));
+                    // Highly-concurrent thread safe
+                    trackedFields.put(fieldName, newValue);
+                }
+            } catch(Exception ex) {
             }
-            if (oldValue == null || !oldValue.equals(newValue)) {
-                changedTrackedFields.put(fieldName, trackedFields.get(fieldName));
-                // Highly-concurrent thread safe
-                trackedFields.put(fieldName, newValue);
-            }
-        }
+        });
+
         for (Method method : Context.getProduceEventOnUpdateMethods(entity)) {
             String[] streams = method.getAnnotation(ProduceEventOnUpdate.class).streams();
             Event<Object> event = (Event<Object>) method.invoke(entity, changedTrackedFields);

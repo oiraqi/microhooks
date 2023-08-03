@@ -50,13 +50,13 @@ public class SourceEntity {
     }
 
     @ProduceEventOnUpdate(streams="CustomStream2") // Notice Event (of ProduceEventOnUpdate) in singular form
-    public Event<String> produceAmountExcessivelyChangedEvent(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
+    public Event<String> produceAmountExcessivelyChangedEvent(Map<String, String> changedTrackedFieldsWithPreviousValues) {
         if (!changedTrackedFieldsWithPreviousValues.containsKey("amount")) {
             // Won't produce any event
             return null;
         }
 
-        int oldAmount = (int) changedTrackedFieldsWithPreviousValues.get("amount");
+        int oldAmount = Integer.parseInt(changedTrackedFieldsWithPreviousValues.get("amount"));
 
         if (Math.abs(oldAmount - amount) < 5) {
             // Won't produce any event
