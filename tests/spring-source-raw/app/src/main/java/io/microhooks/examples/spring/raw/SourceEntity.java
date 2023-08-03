@@ -12,12 +12,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import io.microhooks.examples.spring.raw.boilerplate.SourceEntityListener;
+import io.microhooks.examples.spring.raw.boilerplate.CustomSourceEntityListener;
 
 import lombok.Data;
 
 @Entity
 @Data
-@EntityListeners(SourceEntityListener.class)
+@EntityListeners({SourceEntityListener.class, CustomSourceEntityListener.class})
 public class SourceEntity {
 
     @Id

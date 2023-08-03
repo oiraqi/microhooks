@@ -54,7 +54,7 @@ public class Builder implements net.bytebuddy.build.Plugin {
         }
 
         if (annotations.contains("@io.microhooks.source.Projection")) {
-            return SinkInstrumenter.processProjection(builder, loader);
+            return SourceInstrumenter.processProjection(builder, loader);
         } 
         
         if (annotations.contains("@org.springframework.boot.autoconfigure.SpringBootApplication")) {

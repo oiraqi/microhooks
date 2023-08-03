@@ -45,5 +45,5 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'io.microhooks.examples.spring.SourceMicroservice'
+    mainClass = 'io.microhooks.examples.spring.raw.SourceMicroservice'
 }

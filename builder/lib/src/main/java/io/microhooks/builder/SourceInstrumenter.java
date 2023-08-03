@@ -49,4 +49,10 @@ public class SourceInstrumenter {
         return builder.annotateType(AnnotationDescription.Builder.ofType(entityListeners)
                     .defineTypeArray("value", listeners).build());
     }
+
+    public static DynamicType.Builder<?> processProjection(DynamicType.Builder<?> builder, Loader loader) {
+        Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties");
+        return builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
+                    .define("ignoreUnknown", true).build());
+    }
 }

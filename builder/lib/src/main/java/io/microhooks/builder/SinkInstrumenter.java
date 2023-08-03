@@ -28,12 +28,6 @@ public class SinkInstrumenter {
         return builder.constructor(ElementMatchers.any()).intercept(Advice.to(CustomSinkAdvisor.class));
     }
 
-    public static DynamicType.Builder<?> processProjection(DynamicType.Builder<?> builder, Loader loader) {
-        Class jsonIgnoreProperties = loader.findClass("com.fasterxml.jackson.annotation.JsonIgnoreProperties");
-        return builder.annotateType(AnnotationDescription.Builder.ofType(jsonIgnoreProperties)
-                    .define("ignoreUnknown", true).build());
-    }
-
     private static class CustomSinkAdvisor {
 
         @Advice.OnMethodExit

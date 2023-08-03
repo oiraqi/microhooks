@@ -13,7 +13,7 @@ public class KafkaEventProducer {
         props.put("bootstrap.servers", brokers);
         props.put("acks", "all");
         props.put("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
-        props.put("value.serializer", "io.microhooks.examples.spring.raw.EventSerializer");
+        props.put("value.serializer", "io.microhooks.examples.spring.raw.boilerplate.EventSerializer");
         producer = new KafkaProducer<>(props);
     }
 
