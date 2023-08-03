@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring.raw;
+package io.microhooks.tests.spring.raw;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,9 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import io.microhooks.examples.spring.raw.boilerplate.SourceEntityListener;
-import io.microhooks.examples.spring.raw.boilerplate.CustomSourceEntityListener;
-import io.microhooks.examples.spring.raw.boilerplate.TrackedEntity;
+import io.microhooks.tests.spring.raw.boilerplate.SourceEntityListener;
+import io.microhooks.tests.spring.raw.boilerplate.CustomSourceEntityListener;
+import io.microhooks.tests.spring.raw.boilerplate.TrackedEntity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

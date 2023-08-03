@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring.raw.boilerplate;
+package io.microhooks.tests.spring.raw.boilerplate;
 
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
@@ -6,9 +6,9 @@ import jakarta.persistence.PostUpdate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.microhooks.examples.spring.raw.Projection1;
-import io.microhooks.examples.spring.raw.Projection2;
-import io.microhooks.examples.spring.raw.SourceEntity;
+import io.microhooks.tests.spring.raw.Projection1;
+import io.microhooks.tests.spring.raw.Projection2;
+import io.microhooks.tests.spring.raw.SourceEntity;
 
 import java.util.Map;
 

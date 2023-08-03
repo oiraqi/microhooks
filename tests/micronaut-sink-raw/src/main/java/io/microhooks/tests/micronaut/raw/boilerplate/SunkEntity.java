@@ -1,4 +1,4 @@
-package io.microhooks.tests.microhooks.raw.boilerplate;
+package io.microhooks.tests.micronaut.raw.boilerplate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

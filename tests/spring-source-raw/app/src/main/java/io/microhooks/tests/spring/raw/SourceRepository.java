@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring.raw;
+package io.microhooks.tests.spring.raw;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;

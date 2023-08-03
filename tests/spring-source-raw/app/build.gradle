@@ -46,7 +46,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'io.microhooks.examples.spring.raw.SourceMicroservice'
+    mainClass = 'io.microhooks.tests.spring.raw.SourceMicroservice'
 }
 
 sonar {

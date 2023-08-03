@@ -12,7 +12,7 @@ plugins {
 }
 
 version = "0.1"
-group = "io.microhooks.examples"
+group = "io.microhooks.tests"
 
 repositories {
     maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
@@ -67,7 +67,7 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("io.microhooks.examples.*")
+        annotations("io.microhooks.tests.*")
     }
     aot {
     // Please review carefully the optimizations enabled below

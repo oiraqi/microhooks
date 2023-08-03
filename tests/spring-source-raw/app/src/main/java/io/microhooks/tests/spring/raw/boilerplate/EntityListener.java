@@ -1,4 +1,4 @@
-package io.microhooks.examples.spring.raw.boilerplate;
+package io.microhooks.tests.spring.raw.boilerplate;
 
 
 public abstract class EntityListener {

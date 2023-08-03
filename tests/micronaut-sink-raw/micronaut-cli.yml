@@ -1,5 +1,5 @@
 applicationType: default
-defaultPackage: io.microhooks.examples
+defaultPackage: io.microhooks.tests
 testFramework: junit
 sourceLanguage: java
 buildTool: gradle

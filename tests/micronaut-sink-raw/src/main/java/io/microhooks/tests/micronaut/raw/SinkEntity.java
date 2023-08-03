@@ -1,6 +1,6 @@
 package io.microhooks.tests.micronaut.raw;
 
-import io.microhooks.tests.microhooks.raw.boilerplate.SunkEntity;
+import io.microhooks.tests.micronaut.raw.boilerplate.SunkEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
