@@ -115,10 +115,11 @@ public class KafkaEventConsumer {
     }
 
     private void subscribe() {
-        consumer.subscribe(Arrays.asList("SourceMicroservice1-Stream1", "SourceMicroservice1-CustomStream", "SourceMicroservice1-CustomStream1"));
+        consumer.subscribe(Arrays.asList("SourceMicroservice-Stream1", "SourceMicroservice-CustomStream", "SourceMicroservice-CustomStream1"));
         while (true) {
             ConsumerRecords<Long, Event<JsonNode>> records = consumer.poll(Duration.ofSeconds(60));
             records.forEach(record -> {
+                //System.out.println
                 processEvent(record.key(), record.value(), record.topic());
             });
         }
