@@ -31,8 +31,6 @@ public class KafkaEventConsumer extends EventConsumer {
 
     protected void subscribe() {
         consumer.subscribe(Context.getAllStreams());
-        System.out.println("000000000000000000000");
-        System.out.println(Context.getAllStreams());
         while (true) {
             ConsumerRecords<Long, Event<JsonNode>> records = consumer.poll(Duration.ofSeconds(60));
             records.forEach(record -> {

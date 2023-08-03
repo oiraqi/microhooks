@@ -8,7 +8,6 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.0.0"
     id("io.micronaut.aot") version "4.0.0"
-    id 'net.bytebuddy.byte-buddy-gradle-plugin' version '1.14.5'
     id 'org.sonarqube' version '4.3.0.3225'
 }
 
@@ -30,6 +29,9 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     testImplementation("io.micronaut:micronaut-http-client")
 
+    implementation 'javax.inject:javax.inject:1'
+
+
     compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
@@ -42,10 +44,6 @@ dependencies {
     implementation 'org.apache.kafka:kafka-streams:3.5.0'
 
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
-
-    implementation files('../../core/lib/build/libs/microhooks.jar')
-    implementation files('../../containers/micronaut/lib/build/libs/microhooks-micronaut.jar')
-    implementation files('../../brokers/kafka/lib/build/libs/microhooks-kafka.jar')
 
     implementation("io.micronaut.sql:micronaut-hibernate-jpa")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari") 
@@ -84,15 +82,9 @@ micronaut {
     }
 }
 
-byteBuddy {
-  transformation {
-    plugin = io.microhooks.builder.Builder.class
-  }
-}
-
 sonar {
   properties {
-    property("sonar.projectKey", "micronaut-sink")
+    property("sonar.projectKey", "micronaut-sink-raw")
     property("sonar.organization", "Microhooks")
     property("sonar.host.url", "http://localhost:9000")
   }

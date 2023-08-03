@@ -22,11 +22,11 @@ public abstract class EventConsumer {
         subscribe();
     }
 
-    public void processEvent(long sourceId, Event<JsonNode> event, String stream) {
-        String label = event.getLabel();
-        List<Class<?>> sinkEntityClassList = Context.getSinks(stream);
+    protected void processEvent(long sourceId, Event<JsonNode> event, String stream) {
+        String label = event.getLabel();        
 
-        if (label != null) {            
+        if (label != null) {
+            List<Class<?>> sinkEntityClassList = Context.getSinks(stream);
             if (label.equals(Event.RECORD_CREATED)) {
                 handleRecordCreatedEvent(sourceId, event, sinkEntityClassList);
                 return;
