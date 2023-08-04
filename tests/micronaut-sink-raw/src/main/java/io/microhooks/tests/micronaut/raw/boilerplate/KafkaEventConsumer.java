@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.microhooks.tests.micronaut.raw.SinkEntity;
 import io.microhooks.tests.micronaut.raw.SinkService;
+import io.microhooks.tests.micronaut.raw.monitor.Monitor;
 
 public class KafkaEventConsumer {
 
@@ -46,7 +47,7 @@ public class KafkaEventConsumer {
         subscribe();
     }
 
-    public void processEvent(long sourceId, Event<JsonNode> event, String stream) {
+    private void processEvent(long sourceId, Event<JsonNode> event, String stream) {
         String label = event.getLabel();
 
         if (stream != null && stream.equals("SourceMicroservice-Stream1")) {
@@ -71,7 +72,7 @@ public class KafkaEventConsumer {
 
     }
 
-    private void handleRecordCreatedEvent(long sourceId, Event<JsonNode> event) {        
+    private void handleRecordCreatedEvent(long sourceId, Event<JsonNode> event) {    
         try {
             SinkEntity sinkEntity = objectMapper.<SinkEntity>convertValue(event.getPayload(), SinkEntity.class);
             sinkRepository.create(sinkEntity, sourceId);
@@ -115,12 +116,33 @@ public class KafkaEventConsumer {
     }
 
     private void subscribe() {
-        consumer.subscribe(Arrays.asList("SourceMicroservice-Stream1", "SourceMicroservice-CustomStream", "SourceMicroservice-CustomStream1"));
+        consumer.subscribe(Arrays.asList("SourceMicroservice-Stream1", "SourceMicroservice-CustomStream1"));
         while (true) {
             ConsumerRecords<Long, Event<JsonNode>> records = consumer.poll(Duration.ofSeconds(60));
             records.forEach(record -> {
-                //System.out.println
+                long startTime = System.nanoTime();
+
                 processEvent(record.key(), record.value(), record.topic());
+
+                long endTime = System.nanoTime();
+                long duration = endTime - startTime;
+                String label = record.value().getLabel();
+                if (label.equals(Event.RECORD_CREATED)) {
+                    Monitor.sourceCount++;
+                    Monitor.sourceTotalTime += duration;
+                    if (Monitor.sourceCount % 1000 == 0) {
+                        System.out.println("Create count: " + Monitor.sourceCount);
+                        System.out.println("Create avg: " + (float)Monitor.sourceTotalTime / Monitor.sourceCount);
+                    }
+                } else if (!label.equals(Event.RECORD_UPDATED) && !label.equals(Event.RECORD_DELETED)) {
+                    Monitor.customCount++;
+                    Monitor.customTotalTime += duration;
+                    if (Monitor.customCount % 1000 == 0) {
+                        System.out.println("Custom count: " + Monitor.customCount);
+                        System.out.println("custom avg: " + (float)Monitor.customTotalTime / Monitor.customCount);
+                    }
+                }
+                
             });
         }
     }

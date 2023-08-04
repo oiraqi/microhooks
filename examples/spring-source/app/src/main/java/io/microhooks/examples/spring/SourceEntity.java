@@ -41,7 +41,7 @@ public class SourceEntity {
     }
 
     @ProduceEventOnUpdate(streams="CustomStream1") // Notice Event (of ProduceEventOnUpdate) in singular form
-    public Event<String> produceNameChangedEvent(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
+    public Event<String> produceNameChangedEvent(Map<String, String> changedTrackedFieldsWithPreviousValues) {
         if (!changedTrackedFieldsWithPreviousValues.containsKey("name")) {
             return null;
         }
@@ -66,12 +66,12 @@ public class SourceEntity {
         return new Event<>(oldAmount + " --> " + amount, "AmountExcessivelyChanged");
     }
 
-    @ProduceEventsOnUpdate // Notice Events (of ProduceEventsOnUpdate) in plural form
+    /*@ProduceEventsOnUpdate // Notice Events (of ProduceEventsOnUpdate) in plural form
     public Map<Event<String>, String[]> produceGreetingsOnUpdate(Map<String, Object> changedTrackedFieldsWithPreviousValues) {
         Map<Event<String>, String[]> streamedEvents = new HashMap<>();
         streamedEvents.put(new Event<>("Hi Micronaut!", "Greetings"), new String[]{"CustomStream1"});
         streamedEvents.put(new Event<>("Hi Quarkus!", "Greetings"), new String[]{"CustomStream2"});
         return streamedEvents;
-    }
+    }*/
 
 }

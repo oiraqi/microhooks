@@ -3,7 +3,6 @@ package io.microhooks.internal;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +14,8 @@ import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;
 
 import io.microhooks.common.Event;
-import io.microhooks.internal.util.logging.Logged;
+import io.microhooks.internal.util.Monitor;
+//import io.microhooks.internal.util.logging.Logged;
 import io.microhooks.source.ProduceEventOnCreate;
 import io.microhooks.source.ProduceEventOnDelete;
 import io.microhooks.source.ProduceEventOnUpdate;
@@ -23,7 +23,7 @@ import io.microhooks.source.ProduceEventOnUpdate;
 public class CustomSourceListener extends EntityListener {
 
     @PostPersist
-    @Logged
+    //@Logged
     @SuppressWarnings("unchecked")
     public void onPostPersist(Object entity) throws Exception {
         setTrackedFields(entity);
@@ -46,9 +46,10 @@ public class CustomSourceListener extends EntityListener {
     }
 
     @PostUpdate
-    @Logged
+    //@Logged
     @SuppressWarnings("unchecked")
     public void onPostUpdate(Object entity) throws Exception {
+        long startTime = System.nanoTime();
         Map<String, String> trackedFields = ((Trackable) entity).getMicrohooksTrackedFields();
         if (trackedFields == null) { // entity is Trackable but didn't define any @Track fields
             return;
@@ -70,11 +71,10 @@ public class CustomSourceListener extends EntityListener {
             } catch(Exception ex) {
             }
         });
-
-        for (Method method : Context.getProduceEventOnUpdateMethods(entity)) {
-            String[] streams = method.getAnnotation(ProduceEventOnUpdate.class).streams();
+        for (Method method : Context.getProduceEventOnUpdateMethods(entity)) {      
             Event<Object> event = (Event<Object>) method.invoke(entity, changedTrackedFields);
             if (event != null) {
+                String[] streams = method.getAnnotation(ProduceEventOnUpdate.class).streams();
                 long id = Context.getId(entity);
                 getEventProducer().publish(id, event, streams);
             }
@@ -90,16 +90,29 @@ public class CustomSourceListener extends EntityListener {
             }
             // Don't return here as we allow several methods to be annotated with OnUpdate
         }
+        long endTime = System.nanoTime();
+        long duration = endTime - startTime;
+
+        Monitor.customTotalTime += duration;
+
+        Monitor.customCount++;
+
+        if (Monitor.customCount % 1000 == 0) {
+            System.out.println("duration: " + duration);
+            System.out.println("custom count: " + Monitor.customCount);
+            System.out.println("custom total: " + Monitor.customTotalTime);
+            System.out.println("custom avg: " + (float)Monitor.customTotalTime / Monitor.customCount);
+        }
     }
 
     @PostLoad
-    @Logged
+    //@Logged
     public void onPostLoad(Object entity) throws Exception {
         setTrackedFields(entity);
     }
 
     @PostRemove
-    @Logged
+    //@Logged
     @SuppressWarnings("unchecked")
     public void onPostRemove(Object entity) throws Exception {
         for (Method method : Context.getProduceEventOnDeleteMethods(entity)) {

@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 public abstract class TrackedEntity {
 
-    private transient Map<String, String> previousState = new ConcurrentHashMap<>();
+    private transient Map<String, String> previousState;
 
 }

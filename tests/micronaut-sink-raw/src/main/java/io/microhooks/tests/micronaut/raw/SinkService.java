@@ -21,7 +21,6 @@ public class SinkService {
         System.out.println("----------NAME CHANGED---------------");
         System.out.println("Received Event Key: " + key);
         System.out.println("Received Event Timestamp: " + event.getTimestamp());
-        // System.out.println("Received Event Username: " + event.getUsername());
         System.out.println("Received Event Payload: " + event.getPayload().asText());        
     }
 

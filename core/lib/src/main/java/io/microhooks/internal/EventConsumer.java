@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.microhooks.common.Event;
 
+import io.microhooks.internal.util.Monitor;
+
 public abstract class EventConsumer {
 
     private SinkRepository sinkRepository;
@@ -50,6 +52,7 @@ public abstract class EventConsumer {
     }
 
     private void handleRecordCreatedEvent(long sourceId, Event<JsonNode> event, List<Class<?>> sinkEntityClassList) {
+        long startTime = System.nanoTime();
         for (Class<?> sinkEntityClass : sinkEntityClassList) {
             try {
                 Object sinkEntity = objectMapper.convertValue(event.getPayload(), sinkEntityClass);
@@ -57,6 +60,11 @@ public abstract class EventConsumer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        long endTime = System.nanoTime();
+        Monitor.hrcTotalTime += endTime - startTime;
+        if (Monitor.sourceCount % 1000 == 0) {
+            System.out.println("hrc-avg: " + (float)Monitor.hrcTotalTime / Monitor.sourceCount);
         }
     }
 
