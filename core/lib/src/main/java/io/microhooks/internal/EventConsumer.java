@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +22,7 @@ public abstract class EventConsumer {
 
     public void launch(SinkRepository sinkRepository) {
         this.sinkRepository = sinkRepository;
-        subscribe();
+        subscribe(Context.getAllStreams());
     }
 
     protected void processEvent(long sourceId, Event<JsonNode> event, String stream) {
@@ -117,6 +118,6 @@ public abstract class EventConsumer {
         }
     }
 
-    protected abstract void subscribe();
+    protected abstract void subscribe(Set<String> streams);
 
 }

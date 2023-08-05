@@ -1,6 +1,7 @@
 package io.microhooks.brokers.kafka;
 
 import java.util.Properties;
+import java.util.Set;
 import java.time.Duration;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -30,8 +31,8 @@ public class KafkaEventConsumer extends EventConsumer {
         consumer = new KafkaConsumer<>(props);
     }
 
-    protected void subscribe() {
-        consumer.subscribe(Context.getAllStreams());
+    protected void subscribe(Set<String> streams) {
+        consumer.subscribe(streams);
         while (true) {
             ConsumerRecords<Long, Event<JsonNode>> records = consumer.poll(Duration.ofSeconds(60));
             records.forEach(record -> {
