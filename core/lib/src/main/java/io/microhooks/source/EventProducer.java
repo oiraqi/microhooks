@@ -18,5 +18,9 @@ public class EventProducer {
     public void publish(long id, Event<Object> event, String[] streams) {
         producer.publish(id, event, streams);
     }
+
+    public void publishTx(long id, Event<Object> event, String[] streams) {
+        producer.publishTx(id, event, streams);
+    }
     
 }

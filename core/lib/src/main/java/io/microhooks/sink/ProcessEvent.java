@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface ProcessEvent {
     String stream();
     String label() default "*";
+    boolean prepare() default false; //For Two-Phase Commit
 }

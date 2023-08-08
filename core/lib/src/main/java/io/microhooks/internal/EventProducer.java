@@ -24,6 +24,10 @@ public abstract class EventProducer {
         }
     }
 
+    public void publishTx(long id, Event<Object> event, String[] streams) {
+        publish(id, new TransactionalEvent<>(event), streams);
+    }
+
     protected abstract void doPublish(long id, Event<Object> event, String stream);
 
 }
