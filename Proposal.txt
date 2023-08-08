@@ -1,5 +1,5 @@
 Abstract
-Microhooks will be framework to streamline the development of microservices
+Microhooks will be a framework to streamline the development of microservices
 
 Proposal
 Microhooks aims at allowing microservice developers to focus on their business logic while declaratively expressing low-level, recurring needs, such as inter-service communication, brokering, event management, data replication, and distributed transaction management. Based on the inversion of control, the materialized view pattern, and the two-phase commit protocol among others, our framework automatically generates and injects the corresponding artifacts. It leverages 100% build time code introspection and instrumentation, as well as context building, for optimized runtime performance. From the user perspective, Microhooks exposes an intuitive, container-agnostic, broker-neutral, and ORM framework-independent API.
