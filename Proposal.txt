@@ -1,4 +1,4 @@
-Abstract
+# Abstract
 Microhooks will be a framework that streamlines the development of microservices
 
 Proposal
@@ -13,5 +13,5 @@ Current Status
 So far, Microhooks initial functional and non-functional requirements have been specified, and the corresponding high-level design, detailed design, and implementation have been performed. Microhooks evaluation against state-of-the-art practices has demonstrated its effectiveness in drastically reducing code size
 and complexity, without incurring any considerable cost on performance.
 
-[Git Repositories]
+Git Repositories
 https://github.com/oiraqi/microhooks
