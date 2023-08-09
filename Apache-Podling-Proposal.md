@@ -12,5 +12,8 @@ The microservices architectural model has gained widespread adoption in recent y
 ## Current Status
 So far, Microhooks initial functional and non-functional requirements have been specified, and the corresponding high-level design, detailed design, and implementation have been performed. Microhooks evaluation against state-of-the-art practices has demonstrated its effectiveness in drastically reducing code size and complexity, without incurring any considerable cost on performance.
 
+## Meritocracy
+Microhooks was originally created by Omar Iraqi in 2022. We are committed to elect any developer who has made enough good contributions as a committer. Moreover, we are committed to elect active contributors to the PMC.
+
 ## Git Repositories
 https://github.com/oiraqi/microhooks
