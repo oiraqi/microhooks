@@ -24,3 +24,6 @@ A community is yet to be built and nurtured. But we are confident Microhooks wil
 
 ## Git Repositories
 https://github.com/oiraqi/microhooks
+
+## Initial Committers
+Omar Iraqi (o dot iraqi at aui dot ma)
