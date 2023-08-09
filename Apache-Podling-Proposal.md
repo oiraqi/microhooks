@@ -22,6 +22,9 @@ Microhooks was originally created by Omar Iraqi in 2022. We highly welcome other
 ## Community
 A community is yet to be built and nurtured. But we are confident Microhooks will gain a growing popularity within the developer community since it address real-life and daily issues related to the development of microservices, in a transparent way, using an intuitive, annotation-based, container-agnostic, broker-neutral, and ORM-framework-independent API.
 
+## External Dependencies
+All current dependencies have Apache compatible licenses. Moreover, we commit to making compatibility with Apache license a mandatory selection criteria for any future dependencies.
+
 ## Git Repositories
 https://github.com/oiraqi/microhooks
 
