@@ -29,4 +29,4 @@ All current dependencies have Apache compatible licenses. Moreover, we commit to
 https://github.com/oiraqi/microhooks
 
 ## Initial Committers
-Omar Iraqi (o dot iraqi at aui dot ma)
+Omar Iraqi (o dot iraqi at aui dot ma).
