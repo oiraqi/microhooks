@@ -6,7 +6,8 @@ Microhooks is a novel framework designed to streamline the development of micros
 Microhooks evaluation against state-of-the-art practices has demonstrated its effectiveness in drastically reducing code size and complexity, without incurring any considerable cost on performance. Based on such promising results, we believe that Microhooks has the potential to become an essential component of the microservices development ecosystem.
 
 <p align="center">
-    <img src="figures/Microhooks-SMQ-KR.png"/>
+    <img src="figures/Microhooks-SMQ-KR.png"/><br/>
+    Containers, Brokers and ORM Frameworks Integration - Sample Deployment Scenarios
 </p>
 <p align="center">
     <img src="figures/Microhooks-Architecture.png"/>
