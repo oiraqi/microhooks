@@ -19,3 +19,8 @@ Microhooks evaluation against state-of-the-art practices has demonstrated its ef
 <p align="center">
     <img src="figures/Microhooks-Class-Diagram.png"/>
 </p>
+
+# Microhooks Code Enhancement
+<p align="center">
+    <img src="figures/Microhooks-Code-Enhancement.png"/>
+</p>
