@@ -34,6 +34,7 @@ supports the materialized view pattern, as well as custom events, through two im
 <p align="center">
     <img src="figures/Microhooks-Performance-Evaluation-CE.png"/>
 </p>
+
 ### Custom Event on Record Update
 <p align="center">
     <img src="figures/Microhooks-Performance-Evaluation-Custom.png"/>
