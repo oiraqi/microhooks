@@ -28,3 +28,9 @@ supports the materialized view pattern, as well as custom events, through two im
 <p align="center">
     <img src="figures/Microhooks-Code-Enhancement.png"/>
 </p>
+
+## Performance Evaluation
+### Record Creation
+<p align="center">
+    <img src="figures/Microhooks-Performance-Evaluation-CE.png"/>
+</p>
