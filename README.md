@@ -21,7 +21,7 @@ Microhooks evaluation against state-of-the-art practices has demonstrated its ef
 </p>
 
 # Microhooks Evaluation
-we developed an application with two microservices, a Spring-based source and a Micronaut-based sink. This application
+We developed an application with two microservices, a Spring-based source and a Micronaut-based sink. This application
 supports the materialized view pattern, as well as custom events, through two implementations: a raw implementation
 (without Microhooks) and a second one using Microhooks.
 ## Code Enhancement
@@ -30,7 +30,11 @@ supports the materialized view pattern, as well as custom events, through two im
 </p>
 
 ## Performance Evaluation
-### Record Creation
+### Record Creation Event
 <p align="center">
     <img src="figures/Microhooks-Performance-Evaluation-CE.png"/>
+</p>
+### Custom Event on Record Update
+<p align="center">
+    <img src="figures/Microhooks-Performance-Evaluation-Custom.png"/>
 </p>
