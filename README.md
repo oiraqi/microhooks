@@ -14,3 +14,8 @@ Microhooks evaluation against state-of-the-art practices has demonstrated its ef
 <p align="center">
     <img src="figures/Microhooks-Architecture.png"/>
 </p>
+
+# Microhooks Class Diagram
+<p align="center">
+    <img src="figures/Microhooks-Class-Diagram.png"/>
+</p>
