@@ -20,7 +20,11 @@ Microhooks evaluation against state-of-the-art practices has demonstrated its ef
     <img src="figures/Microhooks-Class-Diagram.png"/>
 </p>
 
-# Microhooks Code Enhancement
+# Microhooks Evaluation
+we developed an application with two microservices, a Spring-based source and a Micronaut-based sink. This application
+supports the materialized view pattern, as well as custom events, through two implementations: a raw implementation
+(without Microhooks) and a second one using Microhooks.
+## Code Enhancement
 <p align="center">
     <img src="figures/Microhooks-Code-Enhancement.png"/>
 </p>
